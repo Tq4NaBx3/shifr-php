@@ -119,40 +119,24 @@ found :
     ++  $stringi ;
   } while ( $str [ $stringi ] ) ;
   return  array ( $pass ) ; }
-  
-/*
-static inline void  password_load ( uint64_t  const password_const  , 
-  arrp const shifrp , arrp const deship ) {
-# define  codefree  ((uint8_t)0xff)
-  initarr ( shifrp , codefree , shifr_deshi_size2 )  ;
-  initarr ( deship , codefree , shifr_deshi_size2 )  ;
-# undef codefree
-  uint64_t  password = password_const ;
-  uint8_t arrind  [ 0x10  ] ;
-  { uint8_t * arrj  = & ( arrind  [ 0x10  ] ) ;
-    uint8_t j = 0x10  ;
-    do  {
-      --  arrj  ;
-      --  j ;
-      ( * arrj )  = j ;
-    } while ( arrj  not_eq & ( arrind  [ 0 ] ) ) ;  }
-  // 0 .. 15
-  uint8_t cindex  = password  bitand  0xf ; //  % 16
-  password  >>= 4 ; //  /= 16
-  ( * shifrp  ) [ 0 ] = cindex  ;
-  ( * deship  ) [ cindex  ] = 0 ;
-  uint8_t inde  = 1 ;
-  do  {
-    memmove ( & ( arrind  [ cindex  ] ) , & ( arrind  [ cindex  + 1 ] ) ,
-      0x10  - inde  - cindex  ) ;
-    { ldiv_t di = ldiv ( password  , 0x10  - inde ) ;
-      cindex  = di . rem ;
-      password  = di  . quot  ; 
-      ( * shifrp  ) [ inde ] = arrind [ di . rem ] ;
-      ( * deship  ) [ arrind [ di . rem ]  ] = inde ; }
-    ++  inde  ;
-  } while ( inde  < 0x10  ) ; }
-*/  
+    
+function  shifr_password_load  ( array $password ) {
+  global  $shifr_shifra ;
+  global  $shifr_deshia ;
+  $shifr_shifra = array_fill  ( 0 , 4 , 0xff  ) ;
+  $shifr_deshia = array_fill  ( 0 , 4 , 0xff  ) ;
+  $arrind = array ( ) ;
+  for ( $i = 0 ; $i < 4 ; ++ $i ) $arrind [ ] = $i ;
+  $inde = 0 ;
+  do {
+    $cindex = $password [ 0 ] % ( 4 - $inde ) ;
+    $password [ 0 ] = intdiv (  $password [ 0 ] , 4 - $inde ) ;
+    $shifr_shifra [ $inde ] = $arrind [ $cindex ] ;
+    $shifr_deshia [ $arrind [ $cindex ] ] = $inde ;
+    unset ( $arrind [ $cindex ] ) ;
+    $arrind = array_values ( $arrind ) ;
+    ++ $inde  ;
+  } while ( $inde < 4 ) ; }
   
 $local = setlocale ( LC_ALL  , ''  ) ;  
 if ( $local == 'ru_RU.UTF-8' ) $shifr_localerus = true ;
@@ -165,7 +149,7 @@ echo '<style> p { font-size: 36px; } </style>' ;
 <h1>Шифруемся!</h1>
 <p>
 <?php
-echo  '<p>Кокаль = \'' ;
+echo  '<p>Локаль = \'' ;
 print_r ($local);
 echo '\' ; $shifr_localerus = '.$shifr_localerus.'</p>'.PHP_EOL ;
 $p = shifr_generate_pass ( ) ;
@@ -179,31 +163,38 @@ echo '</p>'.PHP_EOL ;
 echo '<p>Пароль не ноль = ' ;
 print_r ( shifr_password_is_not_zero ( $ar ) ) ;
 echo '</p>'.PHP_EOL ;
-shifr_password_dec ( $ar )  ;
+/*shifr_password_dec ( $ar )  ;
 echo  '<p>-- пароль ; => ' ;
 print_r ( $ar ) ;
-echo '</p>' ;
-$shifr_letters = array ( 'o' , 'i' ) ;
+echo '</p>'.PHP_EOL ;*/
+/*$shifr_letters = array ( 'o' , 'i' ) ;
 $st = shifr_password_to_string ( $ar ) ;
 echo  '<p>пароль в строку => буквы : ' ;
 print_r ( $shifr_letters ) ;
 echo '<br>пароль буквами = \'' ;
 print_r ( $st ) ;
-echo '\'</p>' ;
+echo '\'</p>'.PHP_EOL ;*/
 $shifr_letters = array ( ) ;
 for ( $i = 0 ; $i < 24 ; ++ $i )
   $shifr_letters [ ] = chr ( ord ( 'a' ) + $i ) ;
 echo '<p>буквы = ';
 print_r ( $shifr_letters ) ;
-echo '</p>';
+echo '</p>'.PHP_EOL;
 $st = shifr_password_to_string ( $ar ) ;
 echo '<p>пароль буквами = \'' ;
 print_r ( $st ) ;
-echo '\'</p>' ;
+echo '\'</p>'.PHP_EOL ;
 $pa = shifr_string_to_password  ( $st ) ;
-echo '<p>пароль числами = \'' ;
+echo '<p>пароль числами = ' ;
 print_r ( $pa ) ;
-echo '\'</p>' ;
+echo '</p>'.PHP_EOL ;
+shifr_password_load  ( $pa ) ;
+echo '<p>$shifr_shifra = ' ;
+print_r ( $shifr_shifra ) ;
+echo '<br>'.PHP_EOL ;
+echo '$shifr_deshia = ' ;
+print_r ( $shifr_deshia ) ;
+echo '</p>'.PHP_EOL ;
 ?>
 </p>
 </body>
