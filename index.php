@@ -126,14 +126,26 @@ function  shifr_byte_to_array ( int $byte ) : array {
   
 function  shifr_data_xor ( int & $old_last_data , int & $old_last_sole ,
   array & $secret_data_sole ) {
-  foreach ( $secret_data_sole as $key => $ids ) {
+  foreach ( $secret_data_sole as & $ids ) {
     $cur_data = $ids  >>  1 ;
     $cur_sole = $ids  & 0x1 ;
     $ids  ^=  ( $old_last_sole  <<  1 ) ;
     $ids  ^=  $old_last_data  ;
-    $secret_data_sole [ $key ] = $ids ;
     $old_last_data = $cur_data ;
     $old_last_sole  = $cur_sole ; } }
+  
+function  shifr_crypt_decrypt ( array $datap , array & $tablep ) : array {
+  $encrp = array ( ) ;
+  foreach ( $datap as $id ) $encrp [ ] = $tablep [ $id ] ;
+  return  $encrp  ; }
+  
+function  shifr_array_to_bytes ( array $arr ) : array {
+  $bytes = array ( ) ;
+  for ( $j = 0 ; $j < 2 ; ++ $j ) {
+    $bytes [ $j ] = 0 ;
+    for ( $i = 0 ; $i < 4 ; ++ $i ) {
+      $bytes [ $j ] |= $arr [ $j * 4 + $i ] << ( $i << 1 ) ; } }
+  return  $bytes ; }
   
 $local = setlocale ( LC_ALL  , ''  ) ;  
 if ( $local == 'ru_RU.UTF-8' ) $shifr_localerus = true ;
@@ -205,6 +217,14 @@ shifr_data_xor ( $old_last_data , $old_last_sole ,
   $secret_data_sole ) ;
 echo '<p>после XOR $secret_data_sole = ' ;
 print_r ( $secret_data_sole ) ;
+echo '</p>'.PHP_EOL ;
+$encrypteddata = shifr_crypt_decrypt ( $secret_data_sole , $shifr_shifra )  ;
+echo '<p>$encrypteddata = ' ;
+print_r ( $encrypteddata ) ;
+echo '</p>'.PHP_EOL ;
+$encryptedbytes = shifr_array_to_bytes ( $encrypteddata ) ;
+echo '<p>$encryptedbytes = ' ;
+print_r ( $encryptedbytes ) ;
 echo '</p>'.PHP_EOL ;
 ?>
 </p>
