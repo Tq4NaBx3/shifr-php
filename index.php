@@ -17,7 +17,7 @@ log(2,24) = 4.585 бит <= 5 бит
 */
 // возвращается массивы 
 // [ 0..3 , 0..2 , 0..1 ]
-function shifr_generate_pass ( ) {
+function shifr_generate_pass ( ) : array {
   $dice = array ( ) ;
   for ( $i  = 3 ; $i  > 0 ; $i -- ) {
     $r = rand  ( 0 , $i )  ;
@@ -26,7 +26,7 @@ function shifr_generate_pass ( ) {
 
 // [ 0..3 , 0..2 , 0..1 ] = [ x , y , z ] =
 // = x + y * 4 + z * 12 = 0 .. 23
-function  shifr_pass_to_array ( array & $password ) {
+function  shifr_pass_to_array ( array & $password ) : array {
   $re = 0 ;
   $mu = 1 ; // 1 , 4 , 4 * 3
   $in = 0 ;
@@ -37,7 +37,7 @@ function  shifr_pass_to_array ( array & $password ) {
   } while ( $in <= 2 ) ;
   return  array ( $re ) ; }
   
-function  shifr_password_is_not_zero ( array & $passworda ) {
+function  shifr_password_is_not_zero ( array & $passworda ) : bool {
   foreach ( $passworda as $digit ) {
     if ( $digit != 0 ) return true ; }
   return false ; }
@@ -51,37 +51,8 @@ function  shifr_password_dec ( array & $passworda ) {
     $passworda [ $i ] = 23 ;
     ++  $i  ;
   } while ( $i < 1 ) ; }
-  
-/*
-буквы равны : o , i
 
-[0,0,0] = []
-[1,0,0] = [o]
-[2,0,0] = [i]
-[3,0,0] = [o,o]
-[0,1,0] = [i,o]
-[1,1,0] = [o,i]
-[2,1,0] = [i,i]
-[3,1,0] = [o,o,o]
-[0,2,0] = [i,o,o]
-[1,2,0] = [o,i,o]
-[2,2,0] = [i,i,o]
-[3,2,0] = [o,o,i]
-[0,0,1] = [i,o,i]
-[1,0,1] = [o,i,i]
-[2,0,1] = [i,i,i]
-[3,0,1] = [o,o,o,o]
-[0,1,1] = [i,o,o,o]
-[1,1,1] = [o,i,o,o]
-[2,1,1] = [i,i,o,o]
-[3,1,1] = [o,o,i,o]
-[0,2,1] = [i,o,i,o]
-[1,2,1] = [o,i,i,o]
-[2,2,1] = [i,i,i,o]
-[3,2,1] = [o,o,o,i]
-*/  
-
-function  shifr_password_to_string ( array $passworda ) {
+function  shifr_password_to_string ( array $passworda ) : string {
   global  $shifr_letters  ;
   $letters_count  = count ( $shifr_letters  ) ;
   $str = '' ;
@@ -137,6 +108,32 @@ function  shifr_password_load  ( array $password ) {
     $arrind = array_values ( $arrind ) ;
     ++ $inde  ;
   } while ( $inde < 4 ) ; }
+  
+function  shifr_data_sole ( array $secret_data ) : array {
+  $secret_data_sole = array ( ) ;
+  $ra = rand ( 0 , 0xff ) ;
+  foreach ( $secret_data as $da ) {
+    $secret_data_sole [ ] = ( $da << 1 ) | ( $ra & 0x1 ) ;
+    $ra >>= 1 ; }
+  return  $secret_data_sole ; }
+
+function  shifr_byte_to_array ( int $byte ) : array {
+  $arr = array ( ) ;
+  for ( $i = 0 ; $i < 8 ; ++ $i ) {
+    $arr [ ] = $byte & 0x1 ;
+    $byte >>= 1 ; }
+  return  $arr ; }
+  
+function  shifr_data_xor ( int & $old_last_data , int & $old_last_sole ,
+  array & $secret_data_sole ) {
+  foreach ( $secret_data_sole as $key => $ids ) {
+    $cur_data = $ids  >>  1 ;
+    $cur_sole = $ids  & 0x1 ;
+    $ids  ^=  ( $old_last_sole  <<  1 ) ;
+    $ids  ^=  $old_last_data  ;
+    $secret_data_sole [ $key ] = $ids ;
+    $old_last_data = $cur_data ;
+    $old_last_sole  = $cur_sole ; } }
   
 $local = setlocale ( LC_ALL  , ''  ) ;  
 if ( $local == 'ru_RU.UTF-8' ) $shifr_localerus = true ;
@@ -194,6 +191,20 @@ print_r ( $shifr_shifra ) ;
 echo '<br>'.PHP_EOL ;
 echo '$shifr_deshia = ' ;
 print_r ( $shifr_deshia ) ;
+echo '</p>'.PHP_EOL ;
+$secret_data = shifr_byte_to_array ( 0xaa ) ;
+$secret_data_sole = shifr_data_sole ( $secret_data ) ;
+echo '<p>$secret_data_sole(';
+print_r ( $secret_data ) ;
+echo ') = ' ;
+print_r ( $secret_data_sole ) ;
+echo '</p>'.PHP_EOL ;
+$old_last_data  = 0 ;
+$old_last_sole  = 0 ;
+shifr_data_xor ( $old_last_data , $old_last_sole ,
+  $secret_data_sole ) ;
+echo '<p>после XOR $secret_data_sole = ' ;
+print_r ( $secret_data_sole ) ;
 echo '</p>'.PHP_EOL ;
 ?>
 </p>
