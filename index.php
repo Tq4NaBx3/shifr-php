@@ -1,5 +1,6 @@
 <?php 
 /*
+RUS
 1 бит соль
 1 бит инфо
 в сумме 2 бита
@@ -147,12 +148,49 @@ function  shifr_array_to_bytes ( array $arr ) : array {
       $bytes [ $j ] |= $arr [ $j * 4 + $i ] << ( $i << 1 ) ; } }
   return  $bytes ; }
   
+function  shifr_byte_to_hex ( int $buf ) : array {
+  $c = $buf & 0xf ;
+  $res = array ( ) ;
+  if ( $c <= 9 ) $res [ 0 ] = chr ( ord ( '0' ) + $c ) ;
+  else  $res [ 0 ] = chr ( ord ( 'a' ) + $c - 10 ) ;
+  $c = ( $buf >> 4 ) & 0xf ;
+  if ( $c <= 9 ) $res [ 1 ] = chr ( ord ( '0' ) + $c ) ;
+  else  $res  [ 1 ] = chr ( ord ( 'a' ) + $c - 10 ) ; 
+  return  $res ; }
+  
+if  ( $_POST  ) {
+  if  ( isset ( $_POST  [ 'submit'  ] ) ) {
+    if  ( $_POST  [ 'submit'] == 'зашифровать сообщение' or 
+      $_POST  [ 'submit'  ] == 'encrypt a message'  ) {
+      $flag_encrypt_message = true ;
+      $password = $_REQUEST['password'] ;
+      $message = $_REQUEST['message'] ;
+      
+      $shifr_letters = array ( ) ;
+      for ( $i = 0 ; $i < 24 ; ++ $i )
+        $shifr_letters [ ] = chr ( ord ( 'a' ) + $i ) ;
+      $pa = shifr_string_to_password  ( $password ) ;
+      shifr_password_load  ( $pa ) ;
+      $message_array = str_split  ( $message  ) ;
+      $message =  '';
+      $old_last_data  = 0 ;
+      $old_last_sole  = 0 ;
+      foreach ( $message_array as $char ) {
+        $secret_data = shifr_byte_to_array ( ord ( $char ) ) ;
+        $secret_data_sole = shifr_data_sole ( $secret_data ) ;
+        shifr_data_xor ( $old_last_data , $old_last_sole ,
+          $secret_data_sole ) ;
+        $encrypteddata = shifr_crypt_decrypt ( $secret_data_sole , $shifr_shifra )  ;
+        $encryptedbytes = shifr_array_to_bytes ( $encrypteddata ) ;
+        foreach ( $encryptedbytes as $byte2 ) {
+          $hexarr = shifr_byte_to_hex ( $byte2 ) ;
+          foreach ( $hexarr as $h ) $message .= $h ; } } } } }
+  
 $local = setlocale ( LC_ALL  , ''  ) ;  
 if ( $local == 'ru_RU.UTF-8' ) $shifr_localerus = true ;
 else $shifr_localerus = false ;
-echo '<style> p { font-size: 36px; } </style>' ;
 ?>
-
+<style> p { font-size: 36px; }  textarea { font-size: 36px; } </style>
 <html>
 <body>
 <h1>Шифруемся!</h1>
@@ -204,6 +242,7 @@ echo '<br>'.PHP_EOL ;
 echo '$shifr_deshia = ' ;
 print_r ( $shifr_deshia ) ;
 echo '</p>'.PHP_EOL ;
+
 $secret_data = shifr_byte_to_array ( 0xaa ) ;
 $secret_data_sole = shifr_data_sole ( $secret_data ) ;
 echo '<p>$secret_data_sole(';
@@ -226,7 +265,44 @@ $encryptedbytes = shifr_array_to_bytes ( $encrypteddata ) ;
 echo '<p>$encryptedbytes = ' ;
 print_r ( $encryptedbytes ) ;
 echo '</p>'.PHP_EOL ;
+echo '<p>HEX $encryptedbytes = [' ;
+foreach ( $encryptedbytes as $byte ) {
+  $hexarr = shifr_byte_to_hex ( $byte ) ;
+  print_r ( $hexarr ) ; }
+echo ']</p>'.PHP_EOL ;
+
 ?>
 </p>
+<form method="post" action="<?php echo $_SERVER['PHP_SELF'] ; ?>">
+<?php
+  if  ( $shifr_localerus )
+    echo 'Сообщение:'  ;
+  else
+    echo 'Message:' ;
+?>
+  <br />
+  <textarea name="message" rows="12" cols="60">
+<?php
+  if (  $flag_encrypt_message ) {
+    echo $message ;
+    }
+?>
+  </textarea><br />
+<p>
+<?php
+  if  ( $shifr_localerus )
+    echo 'Ваш пароль:'  ;
+  else
+    echo 'Your password:' ;
+?>
+<input name="password" type="text" value="<?php echo $st ; ?>" /><br />
+</p>
+<?php
+  if  ( $shifr_localerus )
+    echo '<input type="submit" name="submit" value="зашифровать сообщение" />'  ;
+  else
+    echo '<input type="submit" name="submit" value="encrypt a message" />' ;
+?>
+</form>
 </body>
 </html>
