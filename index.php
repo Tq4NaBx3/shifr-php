@@ -185,6 +185,7 @@ if  ( $_POST  ) {
       $message =  '';
       $old_last_data  = 0 ;
       $old_last_sole  = 0 ;
+      $bytecount  = 0 ;
       foreach ( $message_array as $char ) {
         $secret_data = shifr_byte_to_array ( ord ( $char ) ) ;
         $secret_data_sole = shifr_data_sole ( $secret_data ) ;
@@ -194,7 +195,11 @@ if  ( $_POST  ) {
         $encryptedbytes = shifr_array_to_bytes ( $encrypteddata ) ;
         foreach ( $encryptedbytes as $byte2 ) {
           $hexarr = shifr_byte_to_hex ( $byte2 ) ;
-          foreach ( $hexarr as $h ) $message .= $h ; } } }
+          foreach ( $hexarr as $h ) $message .= $h ; }
+        ++ $bytecount ;
+        if ( $bytecount == 15 ) {
+          $message .= "\n" ;
+          $bytecount = 0 ; } } }
   else if  ( $_POST  [ 'submit'] == 'расшифровать' or 
       $_POST  [ 'submit'  ] == 'decrypt'  ) {
       $flag_message = true ;
@@ -252,7 +257,7 @@ else $shifr_localerus = false ;
     echo 'Message:' ;
 ?>
   <br />
-  <textarea name="message" rows="12" cols="60"><?php if (  $flag_message ) { echo $message ; } ?></textarea><br />
+  <textarea name="message" rows="12" cols="61"><?php if (  $flag_message ) { echo $message ; } ?></textarea><br />
 <p>
 <?php
   if  ( $shifr_localerus )
