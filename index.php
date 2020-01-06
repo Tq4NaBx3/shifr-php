@@ -176,8 +176,10 @@ function  shifr_encode2 ( ) {
   global  $shifr_old_last_data  ;
   global  $shifr_old_last_sole  ;
   global  $shifr_bytecount  ;
+  global  $shifr_flagtext ;
       $message_array = str_split  ( $shifr_message  ) ;
       $shifr_message =  '';
+//print_r ( '$shifr_flagtext = ' ) ; var_dump ( $shifr_flagtext ) ;      
       foreach ( $message_array as $char ) {
         $secret_data = shifr_byte_to_array ( ord ( $char ) ) ;
         $secret_data_sole = shifr_data_sole ( $secret_data ) ;
@@ -185,13 +187,18 @@ function  shifr_encode2 ( ) {
           $secret_data_sole ) ;
         $encrypteddata = shifr_crypt_decrypt ( $secret_data_sole , $shifr_shifra )  ;
         $encryptedbytes = shifr_array_to_bytes ( $encrypteddata ) ;
-        foreach ( $encryptedbytes as $byte2 ) {
-          $hexarr = shifr_byte_to_hex ( $byte2 ) ;
-          foreach ( $hexarr as $h ) $shifr_message .= $h ; }
-        ++ $shifr_bytecount ;
-        if ( $shifr_bytecount == 15 ) {
-          $shifr_message .= "\n" ;
-          $shifr_bytecount = 0 ; } } }
+//print_r ( '$encryptedbytes = ' ) ; var_dump ( $encryptedbytes ) ;
+        if ( $shifr_flagtext ) {
+          foreach ( $encryptedbytes as $byte2 ) {
+            $hexarr = shifr_byte_to_hex ( $byte2 ) ;
+            foreach ( $hexarr as $h ) $shifr_message .= $h ; }
+          ++ $shifr_bytecount ;
+          if ( $shifr_bytecount == 15 ) {
+            $shifr_message .= "\n" ;
+            $shifr_bytecount = 0 ; } }
+        else {
+          foreach ( $encryptedbytes as $byte2 )
+            $shifr_message .= chr ( $byte2 ) ;  } } }
     
 function  shifr_decode2 ( ) {
   global  $shifr_password ;
@@ -199,8 +206,10 @@ function  shifr_decode2 ( ) {
   global  $shifr_deshia ;
   global  $shifr_old_last_data  ;
   global  $shifr_old_last_sole  ;
-      $message_array = str_split  ( $shifr_message  ) ;
-      $shifr_message = '' ;
+  global  $shifr_flagtext ;
+  $message_array = str_split  ( $shifr_message  ) ;
+  $shifr_message = '' ;
+  if ( $shifr_flagtext ) {
       for ( $i = 0 ; $i < count($message_array) ; $i += 4 ) {
         $hexarray =  array( ) ;
         while ( ( $message_array[$i] < '0' or $message_array[$i] > '9') and
@@ -229,7 +238,34 @@ function  shifr_decode2 ( ) {
         ( ( $decrypteddata [ 5 ] & 0x1  ) << 5  ) |
         ( ( $decrypteddata [ 6 ] & 0x1  ) << 6  ) |
         ( ( $decrypteddata [ 7 ] & 0x1  ) << 7  ) ) ; } // for $i    
-    }
+  }
+  else {
+//print_r('$message_array=');var_dump($message_array);  
+    // binary
+    for ( $i = 0 ; $i < count ( $message_array  ) - 1 ; $i += 2 ) {
+//print_r('$i=');var_dump($i);
+      $binarray = array ( ) ;
+//print_r('$binarray=');var_dump($binarray);      
+      for ( $j = 0 ; $j <= 1 ; ++ $j ) {
+//print_r('$j=');var_dump($j);      
+        for ( $d = 0 ; $d < 8 ; $d += 2 ) {
+//print_r('$d=');var_dump($d);        
+          $binarray [ ] = ( ord($message_array [ $i + $j ]) >> $d ) & 3 ;
+//print_r('$binarray=');var_dump($binarray);          
+          } }
+print_r('$binarray=');var_dump($binarray);          
+      $decrypteddata = array ( ) ;
+      shifr_decrypt_sole ( $binarray , $shifr_deshia , $decrypteddata ,
+        $shifr_old_last_sole , $shifr_old_last_data ) ;
+      $shifr_message .= chr (
+        ( $decrypteddata [ 0 ] & 0x1  ) |
+        ( ( $decrypteddata [ 1 ] & 0x1  ) << 1  ) |
+        ( ( $decrypteddata [ 2 ] & 0x1  ) << 2  ) |
+        ( ( $decrypteddata [ 3 ] & 0x1  ) << 3  ) |
+        ( ( $decrypteddata [ 4 ] & 0x1  ) << 4  ) |
+        ( ( $decrypteddata [ 5 ] & 0x1  ) << 5  ) |
+        ( ( $decrypteddata [ 6 ] & 0x1  ) << 6  ) |
+        ( ( $decrypteddata [ 7 ] & 0x1  ) << 7  ) ) ; } } }
     
 $shifr_letters = array ( ) ;
       for ( $i = 0 ; $i < 24 ; ++ $i )
@@ -239,6 +275,9 @@ $local = setlocale ( LC_ALL  , ''  ) ;
 if ( $local == 'ru_RU.UTF-8' ) $shifr_localerus = true ;
 else $shifr_localerus = false ;
 
+if  ( isset ( $_REQUEST [ 'Шифрование_в_текстовом_режиме' ] ) or
+  isset ( $_REQUEST [ 'Encryption_in_text_mode' ] ) )
+  $shifr_flagtext = true ;
         
 if  ( $_POST  ) {
   if  ( isset ( $_POST  [ 'submit'  ] ) ) {
@@ -353,15 +392,12 @@ else
     echo '<input type="submit" name="submit" value="генерировать" />'  ;
   else
     echo '<input type="submit" name="submit" value="generate" />' ;
-    if(isset($_REQUEST['Шифрование_в_текстовом_режиме']) or
-      isset($_REQUEST['Encryption_in_text_mode']))
-      $galochkatext = true ;
     
 if  ( $shifr_localerus )    {
-  echo '<br>Шифрование в текстовом режиме : <input type="checkbox" class="largerCheckbox" name="Шифрование_в_текстовом_режиме" value="1" id="SText" '; if($galochkatext)echo 'checked'; echo ' />' ; }
+  echo '<br>Шифрование в текстовом режиме : <input type="checkbox" class="largerCheckbox" name="Шифрование_в_текстовом_режиме" value="1" id="SText" '; if($shifr_flagtext)echo 'checked'; echo ' />' ; }
 else {
   echo '<br>Encryption in text mode : <input type="checkbox" class="largerCheckbox" name="Encryption_in_text_mode" value="1" id="SText" ';
-  if($galochkatext)echo 'checked'; echo ' />' ;
+  if($shifr_flagtext)echo 'checked'; echo ' />' ;
     }
     ?>
 
