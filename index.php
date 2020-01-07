@@ -345,7 +345,22 @@ function  number_add  ( array & $num , array & $xnum ) {
   if ( $per > 0 ) $num [ $i ] = 1 ; }
 
 function  number_mul_byte ( array & $number , int $byte ) {
-  }
+  if ( $byte == 0 ) {
+    $number = array ( ) ;
+    return  ; }
+  if ( $byte == 1 ) return ;
+  if ( $byte < 0 ) {
+    echo 'number_mul_byte: $byte < 0' ;
+    return  ; }
+  if ( $byte >= 0x100 ) {
+    echo 'number_mul_byte: $byte >= 0x100' ;
+    return  ; }
+  $per = 0 ;
+  for ( $i = 0 ; $i < count  ( $number ) ; ++ $i )  {
+    $x = $number [ $i ] *  $byte  + $per ;
+    $number [ $i ] = $x & 0xff ;
+    $per = $x >> 8 ; }
+  if ( $per > 0 ) $number [ $i ] = $per ; }
   
 $shifr_letters = array ( ) ;
       for ( $i = 0 ; $i < 24 ; ++ $i )
