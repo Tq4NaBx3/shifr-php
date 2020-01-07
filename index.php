@@ -267,6 +267,63 @@ print_r('$binarray=');var_dump($binarray);
         ( ( $decrypteddata [ 6 ] & 0x1  ) << 6  ) |
         ( ( $decrypteddata [ 7 ] & 0x1  ) << 7  ) ) ; } } }
     
+// number /= div , number := floor [ деление ] , return := остаток
+function  number_div8_mod ( array & $number , int $div ) : int {
+  $modi = 0 ;
+  for ( $i = count  ( $number ) ; $i > 0 ; )  {
+    -- $i ;
+    $x = ( $modi << 8 ) | ( $number [ $i  ] ) ;
+    $modi = $x % $div  ;
+    $number [ $i  ] = intdiv  ( $x , $div  ) ;  }
+  for ( $i = count  ( $number ) ; $i > 0 ; )  {
+    -- $i ;
+    if ( $number [ $i  ] != 0 ) break ;
+    unset ( $number [ $i  ] ) ; }
+  return  $modi ; }
+    
+function  number_dec  ( array & $number ) {
+  for ( $i = 0 ; $i < count  ( $number ) ; ++ $i )  {
+    if ( $number [ $i  ] != 0 ) {
+      $number [ $i  ] = $number [ $i  ] - 1 ;
+      break ; }
+    $number [ $i  ] = 0xff  ; }
+  if ( $i == count  ( $number ) ) {
+    echo  'number_dec:$i == count  ( $number )' ;
+    return  ; }
+  for ( $i = count  ( $number ) ; $i > 0 ; )  {
+    -- $i ;
+    if ( $number [ $i  ] != 0 ) break ;
+    unset ( $number [ $i  ] ) ; } }
+    
+function  number_not_zero ( array & $number ) {
+  return  count  ( $number ) >  0 ; }
+
+function  number_set_zero ( array & $number ) {
+  $number = array ( ) ; }
+
+function  number_set_byte ( array & $number , int $byte ) {
+  if ( $byte != 0 )
+    $number = array ( $byte ) ;
+  else
+    $number = array ( ) ; }
+  
+function  number_add  ( array & $num , array & $xnum ) {
+  $per = 0 ;
+  for ( $i = 0 ; $i < count  ( $num ) and $i < count  ( $xnum ) ; ++ $i )  {
+    $s = $num [ $i ] + $xnum [ $i ] + $per ;
+    if ( $s >= 0x100  ) {
+      $num [ $i ] = $s - 0x100 ;
+      $per = 1 ; }
+    else  {
+      $num [ $i ] = $s  ;
+      $per = 0 ;  } }
+  if ( $per > 0 ) {
+    if ( count  ( $num ) > count  ( $xnum ) );
+    else if ( count  ( $num ) < count  ( $xnum ) );
+    else if ( count  ( $num ) == count  ( $xnum ) );
+    } }
+
+  
 $shifr_letters = array ( ) ;
       for ( $i = 0 ; $i < 24 ; ++ $i )
         $shifr_letters [ ] = chr ( ord ( 'a' ) + $i ) ;
@@ -308,7 +365,29 @@ if  ( $_POST  ) {
       $shifr_message = $_REQUEST['message'] ; }
   else  if  ( $_POST  [ 'submit'] == 'Загрузить' or 
       $_POST  [ 'submit'  ] == 'Download'  ) { 
-      $fp = fopen ( $_FILES['uploadfile']['tmp_name'] , 'rb'  ) ;
+      // Каталог, в который мы будем принимать файл:
+      $uploaddir = './uploads/';
+      $uploadfile = $uploaddir  . basename  (
+        $_FILES [ 'uploadfile'  ] [ 'name'  ] ) ;
+//echo '$uploadfile=' . $uploadfile ;
+      // Копируем файл из каталога для временного хранения файлов:
+      if (  copy  ( $_FILES [ 'uploadfile'  ] [ 'tmp_name'  ] , $uploadfile ) ) {
+        /*if  ( $shifr_localerus )
+          echo '<h3>Файл успешно загружен на сервер</h3>' ;
+        else  echo '<h3>File succesfull loaded to server</h3>' ;*/ }
+      else {
+        if  ( $shifr_localerus )
+          echo '<h3>Ошибка! Не удалось загрузить файл на сервер!</h3>' ;
+        else  echo '<h3>Error! Unsuccessful loading file to server!</h3>' ;
+        exit  ; }
+      // Выводим информацию о загруженном файле:
+      /*echo "<h3>Информация о загруженном на сервер файле: </h3>";
+      echo "<p><b>Оригинальное имя загруженного файла: ".$_FILES['uploadfile']['name']."</b></p>";
+      echo "<p><b>Mime-тип загруженного файла: ".$_FILES['uploadfile']['type']."</b></p>";
+      echo "<p><b>Размер загруженного файла в байтах: ".$_FILES['uploadfile']['size']."</b></p>";
+      echo "<p><b>Временное имя файла: ".$_FILES['uploadfile']['tmp_name']."</b></p>";   */     
+      //$fp = fopen ( $_FILES['uploadfile']['tmp_name'] , 'rb'  ) ;
+      $fp = fopen ( $uploadfile , 'rb'  ) ;
       $shifr_message  = ''  ;
       do  {
         $shifr_message .= fread ( $fp , 0x1000 ) ;
