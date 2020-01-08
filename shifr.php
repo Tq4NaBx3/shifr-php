@@ -144,10 +144,10 @@ function  shifr_decode4 ( ) {
     // binary
     for ( $i = 0 ; $i < count ( $message_array  ) - 1 ; $i += 2 ) {
       $secretdata = array (
-        $message_array [ i ] & 0xf ,
-        ( $message_array [ i ] >> 4 ) & 0xf ,
-        $message_array [ i + 1 ] & 0xf ,
-        ( $message_array [ i + 1 ] >> 4 ) & 0xf ) ;
+        ord ( $message_array [ $i ] ) & 0xf ,
+        ( ord ( $message_array [ $i ] ) >> 4 ) & 0xf ,
+        ord ( $message_array [ $i + 1 ] ) & 0xf ,
+        ( ord ( $message_array [ $i + 1 ] ) >> 4 ) & 0xf ) ;
       $decrypteddata = array ( ) ;
       shifr_decrypt_sole4 ( $secretdata , $shifr_deshia , $decrypteddata ,
         $shifr_old_last_sole , $shifr_old_last_data ) ;
@@ -432,12 +432,6 @@ input { font-size: 36px; } input.largerCheckbox { transform : scale(2); }
 </style>
 <html>
 <body>
-<?php
-if  ( $shifr_localerus )
-    echo 'Сообщение:'  ;
-  else
-    echo 'Message:' ;
-?>
 <form action="<?php echo $_SERVER['PHP_SELF'] ; ?>" method=post enctype=multipart/form-data>
 <input type=file name=uploadfile>
 <?php
@@ -453,6 +447,11 @@ if  ( $shifr_localerus )
   echo '<input type=submit name="submit" value="Расшифровать файл" ><br>'.PHP_EOL ;
 else
   echo '<input type=submit name="submit" value="Decrypt file" ><br>'.PHP_EOL  ;
+
+if  ( $shifr_localerus )
+    echo 'Сообщение:'  ;
+  else
+    echo 'Message:' ;
 
 ?>
   <br />
