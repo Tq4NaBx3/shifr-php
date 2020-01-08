@@ -123,6 +123,14 @@ function  shifr_data_sole ( array $secret_data ) : array {
     $secret_data_sole [ ] = ( $da << 1 ) | ( $ra & 0x1 ) ;
     $ra >>= 1 ; }
   return  $secret_data_sole ; }
+
+function  shifr_data_sole4 ( array $secret_data ) : array {
+  $secret_data_sole = array ( ) ;
+  $ra = rand ( 0 , 0xff ) ;
+  foreach ( $secret_data as $da ) {
+    $secret_data_sole [ ] = ( $da << 2 ) | ( $ra & 0x3 ) ;
+    $ra >>= 2 ; }
+  return  $secret_data_sole ; }
   
 function  shifr_byte_to_array ( int $byte ) : array {
   $arr = array ( ) ;
@@ -130,7 +138,14 @@ function  shifr_byte_to_array ( int $byte ) : array {
     $arr [ ] = $byte & 0x1 ;
     $byte >>= 1 ; }
   return  $arr ; }
-  
+
+function  shifr_byte_to_array4 ( int $byte ) : array {
+  $arr = array ( ) ;
+  for ( $i = 0 ; $i < 8 ; $i += 2 ) {
+    $arr [ ] = $byte & 0x3 ;
+    $byte >>= 2 ; }
+  return  $arr ; }
+
 function  shifr_data_xor ( int & $old_last_data , int & $old_last_sole ,
   array & $secret_data_sole ) {
   foreach ( $secret_data_sole as & $ids ) {
@@ -140,7 +155,17 @@ function  shifr_data_xor ( int & $old_last_data , int & $old_last_sole ,
     $ids  ^=  $old_last_data  ;
     $old_last_data = $cur_data ;
     $old_last_sole  = $cur_sole ; } }
-  
+
+function  shifr_data_xor4 ( int & $old_last_data , int & $old_last_sole ,
+  array & $secret_data_sole ) {
+  foreach ( $secret_data_sole as & $ids ) {
+    $cur_data = $ids  >>  2 ;
+    $cur_sole = $ids  & 0x3 ;
+    $ids  ^=  ( $old_last_sole  <<  2 ) ;
+    $ids  ^=  $old_last_data  ;
+    $old_last_data = $cur_data ;
+    $old_last_sole  = $cur_sole ; } }
+
 function  shifr_crypt_decrypt ( array $datap , array & $tablep ) : array {
   $encrp = array ( ) ;
   foreach ( $datap as $id ) $encrp [ ] = $tablep [ $id ] ;
@@ -203,6 +228,44 @@ function  shifr_encode2 ( ) {
         else {
           foreach ( $encryptedbytes as $byte2 )
             $shifr_message .= chr ( $byte2 ) ;  } } }
+    
+function  shifr_encode4 ( ) {
+  global  $shifr_password ;
+  global  $shifr_message  ;
+  global  $shifr_shifra ;
+  global  $shifr_old_last_data  ;
+  global  $shifr_old_last_sole  ;
+  global  $shifr_bytecount  ;
+  global  $shifr_flagtext ;
+      $message_array = str_split  ( $shifr_message  ) ;
+      $shifr_message =  '';
+      foreach ( $message_array as $char ) {      
+        $secret_data = shifr_byte_to_array4 ( ord ( $char ) ) ;
+        $secret_data_sole = shifr_data_sole4 ( $secret_data ) ;
+        shifr_data_xor4 ( $shifr_old_last_data , $shifr_old_last_sole ,
+          $secret_data_sole ) ;
+        $encrypteddata = shifr_crypt_decrypt ( $secret_data_sole , $shifr_shifra )  ;
+        //$encryptedbytes = shifr_array_to_bytes ( $encrypteddata ) ;
+//print_r('$encrypteddata=');var_dump($encrypteddata);
+        if ( $shifr_flagtext ) {
+          $buf16 = ( $encrypteddata [ 0 ] & 0xf ) |
+            ( ( $encrypteddata [ 1 ] & 0xf ) << 4 ) |
+            ( ( $encrypteddata [ 2 ] & 0xf ) << 8 ) |
+            ( ( $encrypteddata [ 3 ] & 0xf ) << 12 ) ;
+          $shifr_message .=  chr ( ord ( 'R' ) + ( $buf16 % 40 ) ) ;
+          $buf16 = intdiv ( $buf16  , 40 )  ;
+          $shifr_message .= chr ( ord ( 'R' ) + ( $buf16 % 40 ) ) ;
+          $buf16 = intdiv ( $buf16  , 40 )  ;
+          $shifr_message .=  chr ( ord ( 'R' ) + $buf16 ) ;
+          $shifr_bytecount += 3 ;
+          if ( $shifr_bytecount == 60 ) {
+            $shifr_message .= "\n" ;
+            $shifr_bytecount = 0 ; } }
+        else {
+          $shifr_message .=  chr ( ( $encrypteddata [ 0 ] & 0xf ) |
+            ( ( $encrypteddata [ 1 ] & 0xf ) << 4 ) ) ;
+          $shifr_message .=  chr ( ( $encrypteddata [ 2 ] & 0xf ) |
+            ( ( $encrypteddata [ 3 ] & 0xf ) << 4 ) ) ; } } }   
     
 function  shifr_decode2 ( ) {
   global  $shifr_password ;
@@ -396,6 +459,59 @@ function  shifr_pass_to_array4 ( array & $password ) : array {
 //echo '$re=';var_dump($re);
   return  $re ; }
   
+function  shifr_password_load4  ( array $password ) {
+  global  $shifr_shifra ;
+  global  $shifr_deshia ;
+  $shifr_shifra = array_fill  ( 0 , 16 , 0xff  ) ;
+  $shifr_deshia = array_fill  ( 0 , 16 , 0xff  ) ;
+  $arrind = array ( ) ;
+  for ( $i = 0 ; $i < 16 ; ++ $i ) $arrind [ ] = $i ;
+  $inde = 0 ;
+  do {
+//print_r('0.$password=');var_dump($password);  
+    $cindex = number_div8_mod ( $password , 16 - $inde ) ;
+//print_r('1.$password=');var_dump($password);      
+    $shifr_shifra [ $inde ] = $arrind [ $cindex ] ;
+    $shifr_deshia [ $arrind [ $cindex ] ] = $inde ;
+    unset ( $arrind [ $cindex ] ) ;
+    $arrind = array_values ( $arrind ) ;
+    ++ $inde  ;
+  } while ( $inde < 16 ) ;
+//print_r('$shifr_shifra=');var_dump($shifr_shifra);
+//print_r('$shifr_deshia=');var_dump($shifr_deshia);
+  }
+  
+function  shifr_string_to_password4  ( string & $str ) {
+  global  $shifr_localerus  ;
+  global  $shifr_letters  ;
+  $strn = strlen  ( $str  ) ;
+  $passarr = array ( ) ;
+  number_set_zero ( $passarr ) ;
+  if ( $strn == 0 ) return $passarr ;
+  $letters_count  = count ( $shifr_letters  ) ;
+  $mult = array ( ) ;
+  number_set_byte ( $mult , 1 ) ;
+  $stringi  = 0 ;
+  do  {
+    $i = $letters_count ;
+    do {
+      -- $i ;
+      if ( $str [ $stringi ] == $shifr_letters [ $i ] ) goto found ; 
+    } while ( $i ) ;
+    if  ( $shifr_localerus )
+      echo 'неправильная буква в пароле'  ;
+    else
+      echo 'wrong letter in password' ;
+    return ;
+found :
+    $tmp = $mult ;
+    number_mul_byte ( $tmp , $i + 1 ) ;
+    number_add ( $passarr , $tmp ) ;
+    number_mul_byte ( $mult , $letters_count ) ;
+    ++  $stringi ;
+  } while ( $str [ $stringi ] ) ;
+  return  $passarr ; }  
+  
 $shifr_letters95 = array ( ) ;
 for ( $i = ord(' ') ; $i <= ord('~') ; ++ $i )
   $shifr_letters95 [ ] = chr ( $i ) ;
@@ -429,7 +545,18 @@ if  ( $_POST  ) {
       $shifr_old_last_data  = 0 ;
       $shifr_old_last_sole  = 0 ;
       $shifr_bytecount  = 0 ;
-      shifr_encode2 ( ) ; }
+      shifr_encode2 ( ) ; 
+      if ( $shifr_flagtext && $shifr_bytecount > 0 ) $shifr_message .= "\n" ; }
+  else  if  ( $_POST  [ 'submit'] == 'зашифровать4' or 
+      $_POST  [ 'submit'  ] == 'encrypt4'  ) {
+      $shifr_password = $_REQUEST['password'] ;
+      $shifr_message = $_REQUEST['message'] ;
+      shifr_password_load4  ( shifr_string_to_password4  ( $shifr_password ) ) ;
+      $shifr_old_last_data  = 0 ;
+      $shifr_old_last_sole  = 0 ;
+      $shifr_bytecount  = 0 ;
+      shifr_encode4 ( ) ; 
+      if ( $shifr_flagtext && $shifr_bytecount > 0 ) $shifr_message .= "\n" ; }
   else if  ( $_POST  [ 'submit'] == 'расшифровать' or 
       $_POST  [ 'submit'  ] == 'decrypt'  ) {
       $shifr_password = $_REQUEST['password'] ;
@@ -493,7 +620,8 @@ if  ( $_POST  ) {
         shifr_encode2 ( ) ;
         $shifr_message_encode .= $shifr_message ; }
       fclose  ( $fp ) ;
-      $shifr_message = $shifr_message_encode  ; }
+      $shifr_message = $shifr_message_encode  ;
+      if ( $shifr_flagtext && $shifr_bytecount > 0 ) $shifr_message .= "\n" ;  }
    else
    if  ( $_POST  [ 'submit'] == 'Расшифровать файл' or 
       $_POST  [ 'submit'  ] == 'Decrypt file'  ) {
@@ -576,6 +704,10 @@ else {
     echo '<input type="submit" name="submit" value="зашифровать" />'  ;
   else
     echo '<input type="submit" name="submit" value="encrypt" />' ;
+  if  ( $shifr_localerus )
+    echo '<input type="submit" name="submit" value="зашифровать4" />'  ;
+  else
+    echo '<input type="submit" name="submit" value="encrypt4" />' ;
   if  ( $shifr_localerus )
     echo ' <input type="submit" name="submit" value="расшифровать" />'  ;
   else
