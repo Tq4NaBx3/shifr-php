@@ -2,20 +2,39 @@
 
 /*
 RUS
-1 бит соль
-1 бит инфо
-в сумме 2 бита
-b0 может быть зашифрован двумя способами из четырёх:
-00 , 01 , 10 , 11
-вариантов шифрования b0 :
-b0 = 4 * 3 = 12 шт
-b1 = 2 * 1 = 2 шт
-в общем 4 ! = 24 шт
+2 бит соль
+2 бит инфо
+в сумме 4 бита
+b00 может быть зашифрован четырьмя способами из шестнадцати :
+ b0000 ... b1111
+вариантов шифрования :
+ b00 = 16*15*14*13 = 43680
+ b01 = 12*11*10*9 = 11880
+ b10 = 8*7*6*5 = 1680
+ b11 = 4*3*2*1 = 24
+в общем 16 ! = 20922789888000 шт
 минимум можно записать пароль с помощью
-log(2,24) = 4.585 бит <= 5 бит
-пароль будет 5 бит
-можно разрешить только одну маленькую букву
+ log(2,20922789888000) ≈ 44.25 бит <= 6 байт
+ пароль будет 45 бит
+ ascii буквы 126-32+1 = 95 шт
+ длина буквенного пароля : log ( 95 , 20922789888000 ) ≈ 6.735 букв <= 7 букв
+  log ( 62 , 20922789888000 ) ≈ 7.432 буквы <= 8 букв
 
+OrigData   : 01 11 11
+RandomSalt : 10 11 10
+
+Data 01---\/---10⊻11=01---\/---11⊻11=00
+Salt 10___/\___01⊻11=10___/\___11⊻10=01  
+Pair 0110      0110            0001
+Secr xxxx      xxxx            yyyy
+
+Соль одного элемента будет ксорить следующий элемент для исчезания повторов.
+Данные первого элемента будут ксорить соль второго элемента.
+Если все элементы будут одного значения, тогда все
+ шифрованные значения будут иметь свойство псевдо-случайности.
+И данные и соль имеют секретность кроме первой нулевой соли.
+Функция Шифр(пары: данные+соль) должна быть случайной неупорядоченной.  
+  
 */
 
 // returns [ 0..15 , 0..14 , ... , 0..2 , 0..1 ]
@@ -297,6 +316,7 @@ function  shifr_password_load4  ( array $password ) {
   } while ( $inde < 16 ) ; }
   
 function  shifr_string_to_password4  ( string & $str ) {
+//echo '$str=' ; var_dump ( $str ) ;
   global  $shifr_localerus  ;
   global  $shifr_letters  ;
   $strn = strlen  ( $str  ) ;
@@ -308,6 +328,7 @@ function  shifr_string_to_password4  ( string & $str ) {
   number_set_byte ( $mult , 1 ) ;
   $stringi  = 0 ;
   do  {
+//echo '$str [ '.$stringi.' ]=' ; var_dump ( $str [ $stringi ] ) ;
     $i = $letters_count ;
     do {
       -- $i ;
@@ -319,12 +340,14 @@ function  shifr_string_to_password4  ( string & $str ) {
       echo 'wrong letter in password' ;
     return ;
 found :
+//echo '$shifr_letters [ '.$i.' ]=' ; var_dump ( $shifr_letters [ $i ] ) ;
     $tmp = $mult ;
     number_mul_byte ( $tmp , $i + 1 ) ;
     number_add ( $passarr , $tmp ) ;
     number_mul_byte ( $mult , $letters_count ) ;
     ++  $stringi ;
-  } while ( $str [ $stringi ] ) ;
+  } while ( ord ( $str [ $stringi ] ) ) ;
+//echo 'shifr_string_to_password4=' ; var_dump ( $passarr ) ;
   return  $passarr ; }  
   
 $shifr_letters95 = array ( ) ;
