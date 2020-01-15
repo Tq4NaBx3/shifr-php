@@ -288,24 +288,27 @@ function  shifr_decode4 ( ) {
   global  $shifr_old_last_data  ;
   global  $shifr_old_last_sole  ;
   global  $shifr_flagtext ;
+  global  $shifr_buf3 ;
+  global  $shifr_buf3_index ;
   $message_array = str_split  ( $shifr_message  ) ;
   $shifr_message = '' ;
   if ( $shifr_flagtext ) {
-      for ( $i = 0 ; $i < count($message_array) - 2 ; $i += 3 ) {
-        $hexarray =  array( ) ;
-        while ( $message_array [ $i ] < 'R' or $message_array [ $i ] > 'z') {
-          ++ $i ;
-          if ( $i + 3 > count($message_array) ) break ; }
-        if ( $i + 3 > count($message_array) ) break ;
-        $buf3 = array ( ) ;
-        $buf3 [ 0 ] = ord ( $message_array [ $i ] ) - ord ( 'R' ) ;
-        for ( $j = 1; $j <= 2 ; ++ $j ) {
-          $hexdig = 0 ;
-          if  ( $message_array [ $i + $j ] >= 'R' and
-            $message_array [ $i + $j ] <= 'z' )
-            $buf3 [ $j  ] = ord ( $message_array [ $i + $j ] ) - ord ( 'R' ) ;
-          else return ; }
-        $u16 = $buf3 [ 0 ] + 40 * ( $buf3 [ 1 ] + 40 * $buf3 [ 2 ] ) ;
+    for ( $i = 0 ; $i < count ( $message_array  )  ; ++ $i ) {
+      do  {
+        while ( ord ( $message_array [ $i ] ) < ord ( 'R' ) or
+          ord ( $message_array [ $i ] ) > ord ( 'z' ) )  {
+          ++  $i  ;
+          if ( $i >= count ( $message_array  ) ) break ;  }
+        if ( $i >= count  (  $message_array  ) ) break ; 
+        $shifr_buf3 [ ] = ord ( $message_array [ $i ] ) - ord ( 'R' ) ;
+        ++  $shifr_buf3_index ;
+        if ( $shifr_buf3_index < 3 )  ++  $i  ;
+      } while ( $shifr_buf3_index < 3 ) ;
+      if ( $i >= count  (  $message_array  ) ) break ; 
+      $shifr_buf3_index = 0 ;
+      $u16 = $shifr_buf3 [ 0 ] + 40 * ( $shifr_buf3 [ 1 ] +
+        40 * $shifr_buf3 [ 2 ] ) ;
+      $shifr_buf3 = array ( ) ;
         $buf = array ( $u16 & 0xff , $u16 >> 8 ) ;
         $secretdata = array (
           $buf [ 0 ] & 0xf ,
@@ -543,11 +546,9 @@ if  ( isset ( $_REQUEST [ 'Шифрование_в_текстовом_режим
         
 if  ( $_POST  ) {
   if  ( isset ( $_POST  [ 'submit'  ] ) ) {
-  
     if  ( isset ( $_POST  [ 'radio' ] ) ) {
       if (  $_POST  [ 'radio' ] == 'ASCII' )  $shifr_letters_mode = 95 ;  
       else  $shifr_letters_mode = 62 ; }
-  
     if  ( $_POST  [ 'submit'] == 'зашифровать' or 
       $_POST  [ 'submit'  ] == 'encrypt'  ) {
       $shifr_password = $_REQUEST['password'] ;
@@ -558,7 +559,6 @@ if  ( $_POST  ) {
       $shifr_bytecount  = 0 ;
       $shifr_flagtext = true  ;
       shifr_encode4 ( ) ; 
-      //if ( $shifr_flagtext && $shifr_bytecount > 0 ) $shifr_message .= "\n" ;
       if ( $shifr_bytecount > 0 ) $shifr_message .= "\n" ; }
   else if  ( $_POST  [ 'submit'] == 'расшифровать' or 
       $_POST  [ 'submit'  ] == 'decrypt'  ) {
@@ -567,71 +567,44 @@ if  ( $_POST  ) {
       shifr_password_load4 ( shifr_string_to_password4  ( $shifr_password ) ) ;
       $shifr_old_last_data  = 0 ;
       $shifr_old_last_sole  = 0 ;
+      $shifr_buf3_index = 0 ;
+      $shifr_buf3 = array ( ) ;
       shifr_decode4 ( ) ; }    
   else  if  ( $_POST  [ 'submit'] == 'генерировать' or 
       $_POST  [ 'submit'  ] == 'generate'  ) {
       $shifr_password = shifr_password_to_string4 ( shifr_pass_to_array4 (
           shifr_generate_pass4 ( ) ) ) ;
-/*$password_array = str_split  ( $shifr_password  ) ;          
-echo '$password_array = ' ; var_dump ( $password_array  ) ;*/
       $shifr_message = $_REQUEST['message'] ; }
-  /*else  if  ( $_POST  [ 'submit'] == 'Загрузить' or 
-      $_POST  [ 'submit'  ] == 'Download'  ) {
-      // Каталог, в который мы будем принимать файл:
-      $uploaddir = './uploads/';
-      $uploadfile = $uploaddir  . basename  (
-        $_FILES [ 'uploadfile'  ] [ 'name'  ] ) ;
-      // Копируем файл из каталога для временного хранения файлов:
-      if (  copy  ( $_FILES [ 'uploadfile'  ] [ 'tmp_name'  ] , $uploadfile ) ) {
-        }
-      else {
-        if  ( $shifr_localerus )
-          echo '<h3>Ошибка! Не удалось загрузить файл на сервер!</h3>' ;
-        else  echo '<h3>Error! Unsuccessful loading file to server!</h3>' ;
-        exit  ; }
-      $fp = fopen ( $uploadfile , 'rb'  ) ;
-      $shifr_message  = ''  ;
-      do  {
-        $shifr_message .= fread ( $fp , 0x1000 ) ;
-      } while ( ! feof  ( $fp ) ) ;
-      fclose  ( $fp ) ; } */
    else
-   if  ( $_POST  [ 'submit'] == 'Зашифровать файл' or 
-      $_POST  [ 'submit'  ] == 'Encrypt file'  ) {
+   if ( ( $_POST  [ 'submit'] == 'Зашифровать файл' or 
+        $_POST  [ 'submit'  ] == 'Encrypt file'  ) and
+      ( $_FILES [ 'uploadfile'  ] [ 'size' ] > 0 ) ) {
       $fp = fopen ( $_FILES [ 'uploadfile'  ] [ 'tmp_name'  ] , 'rb'  ) ;
       $uploaddir = './uploads/';
       $uploadfile = $uploaddir  . basename  (
         $_FILES [ 'uploadfile'  ] [ 'name'  ] ) ;
       $fpw = fopen ( $uploadfile . '.shi' , 'wb'  ) ;
-      //$shifr_message_encode = ''  ;
       $shifr_password = $_REQUEST['password'] ;
-//echo '$shifr_password = ' ; var_dump  ( str_split ( $shifr_password ) ) ;
       shifr_password_load4  ( shifr_string_to_password4  ( $shifr_password ) ) ;
-//echo '<br>$shifr_shifra = ' ; var_dump ( $shifr_shifra ) ;
-//echo '<br>$shifr_deshia = ' ; var_dump ( $shifr_deshia ) ;
       $shifr_old_last_data  = 0 ;
       $shifr_old_last_sole  = 0 ;
       $shifr_bytecount  = 0 ;
       while ( ! feof  ( $fp ) ) {
         $shifr_message = fread ( $fp , 0x1000 ) ;
         shifr_encode4 ( ) ;
-        fwrite  ( $fpw , $shifr_message ) ;
-        /*$shifr_message_encode .= $shifr_message ;*/ }
+        fwrite  ( $fpw , $shifr_message ) ; }
       fclose  ( $fpw  ) ;
       fclose  ( $fp ) ;
-      //$shifr_message = $shifr_message_encode  ;
       if  ( $shifr_localerus )
         $shifr_message = 'зашифрованный файл сохранён с именем : ' ;
       else
         $shifr_message = 'encrypted file saved with name : ' ;
-      $shifr_message .= "'". $uploadfile . '.shi'."'\n" ;
-      /*if ( $shifr_flagtext && $shifr_bytecount > 0 ) $shifr_message .= "\n" ;*/ }
+      $shifr_message .= "'". $uploadfile . '.shi'."'\n" ; }
    else
-   if  ( $_POST  [ 'submit'] == 'Расшифровать файл' or 
-      $_POST  [ 'submit'  ] == 'Decrypt file'  ) {
-//echo  '$_FILES [ \'uploadfile\'  ] [ \'tmp_name\'  ] = ' ; var_dump ( $_FILES [ 'uploadfile'  ] [ 'tmp_name'  ] ) ;      
+   if  ( ( $_POST  [ 'submit'] == 'Расшифровать файл' or 
+        $_POST  [ 'submit'  ] == 'Decrypt file' ) and
+      ( $_FILES [ 'uploadfile'  ] [ 'size' ] > 0 ) ) {
       $fp = fopen ( $_FILES [ 'uploadfile'  ] [ 'tmp_name'  ] , 'rb'  ) ;
-//echo  '$fp = ' ; var_dump ( $fp ) ;
       $uploaddir = './uploads/';
       $uploadfile = $uploaddir  . basename  (
         $_FILES [ 'uploadfile'  ] [ 'name'  ] ) ;
@@ -640,28 +613,24 @@ echo '$password_array = ' ; var_dump ( $password_array  ) ;*/
         $uploadfile2 = substr ( $uploadfile , 0 , -4 ) ;
       else  $uploadfile2 = $uploadfile  . '.des' ;
       $fpw = fopen ( $uploadfile2 , 'wb'  ) ;
-      //$shifr_message_decode = ''  ;
       $shifr_password = $_REQUEST['password'] ;
       shifr_password_load4  ( shifr_string_to_password4  ( $shifr_password ) ) ;
       $shifr_old_last_data  = 0 ;
       $shifr_old_last_sole  = 0 ;
       $shifr_bytecount  = 0 ;
-//echo  '$shifr_flagtext = ' ; var_dump ( $shifr_flagtext ) ;       
+      $shifr_buf3_index = 0 ;
+      $shifr_buf3 = array ( ) ;
       while ( ! feof  ( $fp ) ) {
-//echo ' r ' ;      
-        // 0xff7 == 4087 = 67 * 61
-        $shifr_message = fread ( $fp , $shifr_flagtext ? 0xff7 : 0x1000 ) ;
+        $shifr_message = fread ( $fp , 0x1000 ) ;
         shifr_decode4 ( ) ;
-        fwrite  ( $fpw , $shifr_message ) ;
-        /*$shifr_message_decode .= $shifr_message ;*/ }
+        fwrite  ( $fpw , $shifr_message ) ; }
       fclose  ( $fpw  ) ;
       fclose  ( $fp ) ;
       if  ( $shifr_localerus )
         $shifr_message = 'расшифрованный файл сохранён с именем : ' ;
       else
         $shifr_message = 'decrypted file saved with name : ' ;
-      $shifr_message .= "'". $uploadfile2 ."'\n" ;
-      /*$shifr_message = $shifr_message_decode  ;*/ } } }
+      $shifr_message .= "'". $uploadfile2 ."'\n" ;  } } }
   
 ?>
 <style> p { font-size: 36px; }  textarea { font-size: 36px; }
@@ -692,20 +661,12 @@ echo 'Alphabet of characters in a password :' ; ?>
     echo 'Ваш пароль : '  ;
   else
     echo 'Your password : ' ;
-    /*
-$chars = '' ;
-for ( $i  = 0x20  ; $i  <=  0x7e  ; ++  $i  )
-  $chars  .= chr  ( $i  ) ;
-echo  '$0.chars = ' ; var_dump  ( $chars  ) ;
-$chars2  = htmlspecialchars  ( $chars ) ;
-echo  'htmlspecialchars($chars) = ' ; var_dump  ( $chars2  ) ;*/
 ?>
 <input name="password" type="text" value="<?php echo htmlspecialchars ( $shifr_password ) ; ?>" /> <?php if  ( $shifr_localerus )
     echo '<input type="submit" name="submit" value="генерировать" />'  ;
   else
     echo '<input type="submit" name="submit" value="generate" />' ;
     ?>
-
     <br />
 </p>
 <?php
@@ -717,13 +678,6 @@ echo  'htmlspecialchars($chars) = ' ; var_dump  ( $chars2  ) ;*/
     echo ' <input type="submit" name="submit" value="расшифровать" />'  ;
   else
     echo ' <input type="submit" name="submit" value="decrypt" />' ;  
-    /*
-$chars = '' ;
-for ( $i  = 0x20  ; $i  <=  0x7e  ; ++  $i  )
-  $chars  .= chr  ( $i  ) ;
-echo  '$chars = ' ; var_dump  ( $chars  ) ;
-echo htmlspecialchars($shifr_password) ;
-*/
 ?>
 <hr>
 <input type=file name=uploadfile>
