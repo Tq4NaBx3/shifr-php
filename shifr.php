@@ -180,6 +180,9 @@ class shifr {
   public  $buf3 ; // decode text buffer // расшифровка текстовый буфер
   public  $shifra ; // array for encryption // массив для шифрования
   public  $deshia ; // array for decryption // массив для расшифровки
+  public  $streambuf_bufbitsize ; // 0 .. 7
+  public  $streambuf_buf  ;
+  public  $key_mode ; // 45 или 296 // 45 or 296
 }
     
 function  shifr_encode4 ( shifr & $sh ) {
@@ -254,37 +257,26 @@ function  shifr_write_array ( shifr & $sh , array $secret_data  ) {
       $sh -> bytecount = 0 ; } }
   else
     foreach ( $encrypteddata as $ed ) {
-      /*
-if  ( streambuf_bufbitsize  ( me  ) < 2 ) {
-      streambuf_buf ( me  ) or_eq ( ( ( * encrypteddata ) [ i ] ) <<
-        streambuf_bufbitsize  ( me  ) ) ;
-      streambuf_bufbitsize  ( me  ) +=  6 ; }
-    else  {
-      uint8_t const to_write  = ( ( ( * encrypteddata ) [ i ] ) <<
-        streambuf_bufbitsize  ( me  ) ) bitor streambuf_buf ( me  ) ;
-        size_t  writen_count  ;
-        writen_count = fwrite ( & to_write , 1 , 1 ,
-          streambuf_file  ( me  ) ) ;
-      if ( writen_count < 1 ) {
-        clearerr ( streambuf_file  ( me  ) ) ; 
-        ns_shifr  . string_exception  = ( ns_shifr . localerus ? 
-          ( strcp ) & u8"streambuf_write6: ошибка записи байта" :
-          ( strcp ) & "streambuf_write6: byte write error" ) ;
-        longjmp(ns_shifr  . jump,1); }
-      
+      if  ( $sh ->  streambuf_bufbitsize  < 2 ) {
+        $sh ->  streambuf_buf |=  ( $ed << ( $sh ->  streambuf_bufbitsize ) ) ;
+        $sh ->  streambuf_bufbitsize  +=  6 ; }
+      else  {
+        $sh -> message  .=  chr (
+          ( ( $ed << ( $sh ->  streambuf_bufbitsize ) ) & 0xff ) |
+          $sh ->  streambuf_buf ) ;
         // + 6 - 8
-        streambuf_bufbitsize  ( me  ) -= 2 ;
-        streambuf_buf ( me  ) = ( ( * encrypteddata ) [ i ] ) >>
-          ( 6 - streambuf_bufbitsize  ( me  ) ) ;  }      
-      */
-      } }
+        $sh -> streambuf_bufbitsize -= 2 ;
+        $sh -> streambuf_buf  = $ed >>
+          ( 6 - ( $sh -> streambuf_bufbitsize ) ) ; } } }
         
 function  shifr_encode6 ( shifr & $sh ) {
   $message_array = str_split  ( $sh -> message  ) ;
-  $sh -> message =  '';
+  $sh -> message =  ''  ;
   $bufin = 0 ;
   $bufout = array ( ) ;
   $bitscount  = 0 ;
+  $sh ->  streambuf_bufbitsize = 0 ;
+  $sh ->  streambuf_buf = 0 ;
   foreach ( $message_array as $char ) 
     shifr_write_array ( $sh , shifr_byte_to_array6 ( $sh , ord ( $char ) , $bufin , 
       $bitscount  ) ) ;
@@ -465,6 +457,23 @@ function  shifr_pass_to_array4 ( array & $password ) : array {
     ++  $in ;
   } while ( $in < 15 ) ;
   return  $re ; }
+
+// [ 0..63 , 0..62 , 0..61 , ... , 0..2 , 0..1 ] = [ x , y , z , ... , u , v ] =
+// = x + y * 64 + z * 64 * 63 + ... + u * 64! / 2 / 3 + v * 64! / 2 = 0 .. 64!-1
+function  shifr_pass_to_array6 ( array & $password ) : array {
+  $re = array ( ) ;
+  $mu = array ( 1 ) ;
+  $in = 0 ;
+  do {
+    // $re += $password [ $in ] * $mu ;
+    $mux = $mu ;
+    number_mul_byte ( $mux  , $password [ $in ] ) ;
+    number_add  ( $re , $mux  ) ;
+    //$mu *=  64 - $in ;
+    number_mul_byte ( $mu , 64 - $in  ) ;
+    ++  $in ;
+  } while ( $in < 63 ) ;
+  return  $re ; }
   
 function  shifr_password_load4  ( shifr & $sh , array $password ) {
   $sh -> shifra = array_fill  ( 0 , 16 , 0xff  ) ;
@@ -525,7 +534,8 @@ function  shifr_init ( shifr & $sh ) {
     $sh ->  letters [ ] = chr ( $i ) ;
   for ( $i = ord  ( 'a' ) ; $i <= ord ( 'z' ) ; ++ $i )
     $sh ->  letters [ ] = chr ( $i ) ; 
-  $sh ->  letters_mode = 62 ;  
+  $sh ->  letters_mode = 62 ;
+  $sh ->  key_mode = 296 ;
   $sh ->  old_last_data  = 0 ;
   $sh ->  old_last_sole  = 0 ;
   $sh ->  bytecount  = 0 ;

@@ -17,6 +17,9 @@ if  ( $_POST  ) {
     if  ( isset ( $_POST  [ 'radio' ] ) ) {
       if (  $_POST  [ 'radio' ] == 'ASCII' )  $shifr -> letters_mode = 95 ;  
       else  $shifr -> letters_mode = 62 ; }
+    if  ( isset ( $_POST  [ 'radiokey' ] ) ) {
+      if (  $_POST  [ 'radiokey' ] == 'Key296' )  $shifr -> key_mode = 296 ;  
+      else  $shifr -> key_mode = 45 ; }
     if  ( $_POST  [ 'submit'] == 'зашифровать' or 
       $_POST  [ 'submit'  ] == 'encrypt'  ) {
       $shifr -> password = $_REQUEST  [ 'password'  ] ;
@@ -35,8 +38,17 @@ if  ( $_POST  ) {
       shifr_decode4 ( $shifr ) ; }    
   else  if  ( $_POST  [ 'submit'] == 'генерировать' or 
       $_POST  [ 'submit'  ] == 'generate'  ) {
-      $shifr -> password = shifr_password_to_string4 ( $shifr ,
-        shifr_pass_to_array4 ( shifr_generate_pass4 ( ) ) ) ;
+      if ( $shifr -> key_mode == 45 )
+        $shifr -> password = shifr_password_to_string4 ( $shifr ,
+          shifr_pass_to_array4 ( shifr_generate_pass4 ( ) ) ) ;
+      else {
+        /*$shifr -> password = shifr_password_to_string6 ( $shifr ,
+          shifr_pass_to_array6 ( shifr_generate_pass6 ( ) ) ) ;*/
+        $pa = shifr_generate_pass6 ( ) ;
+echo  'shifr_generate_pass6 = ' ; var_dump ( $pa ) ;
+        $par = shifr_pass_to_array6 ( $pa ) ;
+echo  '<br>shifr_pass_to_array6 = ' ; var_dump ( $par ) ;        
+        }
       $shifr -> message = $_REQUEST [ 'message' ] ; }
    else
    if ( ( $_POST  [ 'submit'] == 'Зашифровать файл' or 
@@ -110,10 +122,21 @@ if  ( $shifr -> localerus )
   <textarea name="message" rows="12" cols="61"><?php echo htmlspecialchars($shifr -> message) ; ?></textarea><br />
 <p>
 
-<?php if  ( $shifr -> localerus ) echo 'Алфавит знаков в пароле :' ; else
-echo 'Alphabet of characters in a password :' ; ?>
+<?php
+  if  ( $shifr -> localerus ) echo 'Алфавит знаков в пароле :' ;
+  else echo 'Alphabet of characters in a password :' ;
+?>
 <input type="radio" name="radio" value="ASCII" <?php if ( $shifr -> letters_mode == 95 ) echo 'checked' ?> >ASCII <?php if  ( $shifr -> localerus ) echo 'буквы цифры знаки пробел'; else echo 'letters digits signs space'; ?>
 <input type="radio" name="radio" value="LettDigit" <?php if ( $shifr -> letters_mode == 62 ) echo 'checked' ?> ><?php if  ( $shifr -> localerus ) echo 'цифры и буквы'; else echo 'digits and letters'; ?>
+<br>
+<?php
+  if  ( $shifr -> localerus )
+    echo 'Ключ бит : '  ;
+  else
+    echo 'Key bits : ' ;
+?>
+<input type="radio" name="radiokey" value="Key45" <?php if ( $shifr -> key_mode == 45 ) echo 'checked' ?> >45 : <?php if  ( $shifr -> localerus ) echo '7-8 букв'; else echo '7-8 letters'; ?>
+<input type="radio" name="radiokey" value="Key296" <?php if ( $shifr -> key_mode == 296 ) echo 'checked' ?> >296 : <?php if  ( $shifr -> localerus ) echo '46-50 букв'; else echo '46-50 letters'; ?>
 <br>
 <?php
   if  ( $shifr -> localerus )
