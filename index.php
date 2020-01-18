@@ -24,7 +24,11 @@ if  ( $_POST  ) {
       $_POST  [ 'submit'  ] == 'encrypt'  ) {
       $shifr -> password = $_REQUEST  [ 'password'  ] ;
       $shifr -> message = $_REQUEST  [ 'message' ] ;
-      shifr_password_load4  ( $shifr , shifr_string_to_password4  ( $shifr ,
+      if ( $shifr -> key_mode == 45 )
+        shifr_password_load4  ( $shifr , shifr_string_to_password4  ( $shifr ,
+          $shifr -> password ) ) ;
+      else
+        shifr_password_load6  ( $shifr , shifr_string_to_password4  ( $shifr ,
           $shifr -> password ) ) ;
       $shifr -> flagtext = true  ;
       shifr_encode4 ( $shifr ) ; 
@@ -33,7 +37,11 @@ if  ( $_POST  ) {
       $_POST  [ 'submit'  ] == 'decrypt'  ) {
       $shifr -> password = $_REQUEST  [ 'password'  ] ;
       $shifr -> message = $_REQUEST [ 'message' ] ;
-      shifr_password_load4 ( $shifr , shifr_string_to_password4  ( $shifr ,
+      if ( $shifr -> key_mode == 45 )
+        shifr_password_load4 ( $shifr , shifr_string_to_password4  ( $shifr ,
+          $shifr -> password ) ) ;
+      else
+        shifr_password_load6 ( $shifr , shifr_string_to_password4  ( $shifr ,
           $shifr -> password ) ) ;
       shifr_decode4 ( $shifr ) ; }    
   else  if  ( $_POST  [ 'submit'] == 'генерировать' or 
@@ -42,12 +50,14 @@ if  ( $_POST  ) {
         $shifr -> password = shifr_password_to_string4 ( $shifr ,
           shifr_pass_to_array4 ( shifr_generate_pass4 ( ) ) ) ;
       else {
-        /*$shifr -> password = shifr_password_to_string6 ( $shifr ,
-          shifr_pass_to_array6 ( shifr_generate_pass6 ( ) ) ) ;*/
-        $pa = shifr_generate_pass6 ( ) ;
+        $shifr -> password = shifr_password_to_string4 ( $shifr ,
+          shifr_pass_to_array6 ( shifr_generate_pass6 ( ) ) ) ;
+        /*$pa = shifr_generate_pass6 ( ) ;
 echo  'shifr_generate_pass6 = ' ; var_dump ( $pa ) ;
         $par = shifr_pass_to_array6 ( $pa ) ;
 echo  '<br>shifr_pass_to_array6 = ' ; var_dump ( $par ) ;        
+        $shifr -> password = shifr_password_to_string4 ( $shifr , $par ) ;
+echo  '<br>$shifr -> password('.strlen($shifr -> password).') = "' ; echo  htmlspecialchars ( $shifr -> password ) ; echo '"';       */
         }
       $shifr -> message = $_REQUEST [ 'message' ] ; }
    else
@@ -60,7 +70,11 @@ echo  '<br>shifr_pass_to_array6 = ' ; var_dump ( $par ) ;
         $_FILES [ 'uploadfile'  ] [ 'name'  ] ) ;
       $fpw = fopen ( $uploadfile . '.shi' , 'wb'  ) ;
       $shifr -> password = $_REQUEST  [ 'password'  ] ;
-      shifr_password_load4  ( $shifr , shifr_string_to_password4  ( $shifr ,
+      if ( $shifr -> key_mode == 45 )
+        shifr_password_load4  ( $shifr , shifr_string_to_password4  ( $shifr ,
+          $shifr -> password ) ) ;
+      else
+        shifr_password_load6  ( $shifr , shifr_string_to_password4  ( $shifr ,
           $shifr -> password ) ) ;
       while ( ! feof  ( $fp ) ) {
         $shifr -> message = fread ( $fp , 0x1000 ) ;
@@ -89,7 +103,11 @@ echo  '<br>shifr_pass_to_array6 = ' ; var_dump ( $par ) ;
       else  $uploadfile2 = $uploadfile  . '.des' ;
       $fpw = fopen ( $uploadfile2 , 'wb'  ) ;
       $shifr -> password = $_REQUEST  [ 'password'  ] ;
-      shifr_password_load4  ( $shifr , shifr_string_to_password4  ( $shifr ,
+      if ( $shifr -> key_mode == 45 )
+        shifr_password_load4  ( $shifr , shifr_string_to_password4  ( $shifr ,
+          $shifr -> password ) ) ;
+      else
+        shifr_password_load6  ( $shifr , shifr_string_to_password4  ( $shifr ,
           $shifr -> password ) ) ;
       while ( ! feof  ( $fp ) ) {
         $shifr -> message = fread ( $fp , 0x1000 ) ;
@@ -136,30 +154,26 @@ if  ( $shifr -> localerus )
     echo 'Key bits : ' ;
 ?>
 <input type="radio" name="radiokey" value="Key45" <?php if ( $shifr -> key_mode == 45 ) echo 'checked' ?> >45 : <?php if  ( $shifr -> localerus ) echo '7-8 букв'; else echo '7-8 letters'; ?>
-<input type="radio" name="radiokey" value="Key296" <?php if ( $shifr -> key_mode == 296 ) echo 'checked' ?> >296 : <?php if  ( $shifr -> localerus ) echo '46-50 букв'; else echo '46-50 letters'; ?>
+<input type="radio" name="radiokey" value="Key296" <?php if ( $shifr -> key_mode == 296 ) echo 'checked' ?> >296 : <?php if  ( $shifr -> localerus ) echo '45-50 букв'; else echo '45-50 letters'; ?>
 <br>
 <?php
-  if  ( $shifr -> localerus )
+  if  ( $shifr -> localerus ) {
     echo 'Ваш пароль : '  ;
-  else
+    echo '<input type="submit" name="submit" value="генерировать" />'  ; }
+  else {
     echo 'Your password : ' ;
+    echo '<input type="submit" name="submit" value="generate" />' ; }
 ?>
-<input name="password" type="text" value="<?php echo htmlspecialchars ( $shifr -> password ) ; ?>" /> <?php if  ( $shifr -> localerus )
-    echo '<input type="submit" name="submit" value="генерировать" />'  ;
-  else
-    echo '<input type="submit" name="submit" value="generate" />' ;
-    ?>
-    <br />
+<br>
+<input name="password" type="text" value="<?php echo htmlspecialchars ( $shifr -> password ) ; ?>" size ="51" />
 </p>
 <?php
-  if  ( $shifr -> localerus )
+  if  ( $shifr -> localerus ) {
     echo ' <input type="submit" name="submit" value="зашифровать" />'  ;
-  else
+    echo ' <input type="submit" name="submit" value="расшифровать" />'  ; }
+  else {
     echo ' <input type="submit" name="submit" value="encrypt" />' ;
-  if  ( $shifr -> localerus )
-    echo ' <input type="submit" name="submit" value="расшифровать" />'  ;
-  else
-    echo ' <input type="submit" name="submit" value="decrypt" />' ;  
+    echo ' <input type="submit" name="submit" value="decrypt" />' ; }      
 ?>
 <hr>
 <input type=file name=uploadfile>

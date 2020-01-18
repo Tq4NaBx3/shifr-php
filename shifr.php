@@ -489,6 +489,21 @@ function  shifr_password_load4  ( shifr & $sh , array $password ) {
     $arrind = array_values ( $arrind ) ;
     ++ $inde  ;
   } while ( $inde < 16 ) ; }
+
+function  shifr_password_load6  ( shifr & $sh , array $password ) {
+  $sh -> shifra = array_fill  ( 0 , 64 , 0xff  ) ;
+  $sh -> deshia = array_fill  ( 0 , 64 , 0xff  ) ;
+  $arrind = array ( ) ;
+  for ( $i = 0 ; $i < 64 ; ++ $i ) $arrind [ ] = $i ;
+  $inde = 0 ;
+  do {
+    $cindex = number_div8_mod ( $password , 64 - $inde ) ;
+    $sh -> shifra [ $inde ] = $arrind [ $cindex ] ;
+    $sh -> deshia [ $arrind [ $cindex ] ] = $inde ;
+    unset ( $arrind [ $cindex ] ) ;
+    $arrind = array_values ( $arrind ) ;
+    ++ $inde  ;
+  } while ( $inde < 64 ) ; }
   
 function  shifr_string_to_password4  ( shifr & $sh , string & $str ) {
   $strn = strlen  ( $str  ) ;
