@@ -24,26 +24,28 @@ if  ( $_POST  ) {
       $_POST  [ 'submit'  ] == 'encrypt'  ) {
       $shifr -> password = $_REQUEST  [ 'password'  ] ;
       $shifr -> message = $_REQUEST  [ 'message' ] ;
-      if ( $shifr -> key_mode == 45 )
+      $shifr -> flagtext = true  ;
+      if ( $shifr -> key_mode == 45 ) {
         shifr_password_load4  ( $shifr , shifr_string_to_password4  ( $shifr ,
           $shifr -> password ) ) ;
-      else
+        shifr_encode4 ( $shifr ) ; }
+      else {
         shifr_password_load6  ( $shifr , shifr_string_to_password4  ( $shifr ,
           $shifr -> password ) ) ;
-      $shifr -> flagtext = true  ;
-      shifr_encode4 ( $shifr ) ; 
+        shifr_encode6 ( $shifr ) ; }
       if ( $shifr -> bytecount > 0 ) $shifr -> message .= "\n" ; }
   else if  ( $_POST  [ 'submit'] == 'расшифровать' or 
       $_POST  [ 'submit'  ] == 'decrypt'  ) {
       $shifr -> password = $_REQUEST  [ 'password'  ] ;
       $shifr -> message = $_REQUEST [ 'message' ] ;
-      if ( $shifr -> key_mode == 45 )
+      if ( $shifr -> key_mode == 45 ) {
         shifr_password_load4 ( $shifr , shifr_string_to_password4  ( $shifr ,
           $shifr -> password ) ) ;
-      else
+        shifr_decode4 ( $shifr ) ; }
+      else {
         shifr_password_load6 ( $shifr , shifr_string_to_password4  ( $shifr ,
           $shifr -> password ) ) ;
-      shifr_decode4 ( $shifr ) ; }    
+        shifr_decode6 ( $shifr ) ; } }
   else  if  ( $_POST  [ 'submit'] == 'генерировать' or 
       $_POST  [ 'submit'  ] == 'generate'  ) {
       if ( $shifr -> key_mode == 45 )

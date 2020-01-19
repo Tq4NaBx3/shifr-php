@@ -183,6 +183,8 @@ class shifr {
   public  $streambuf_bufbitsize ; // 0 .. 7
   public  $streambuf_buf  ;
   public  $key_mode ; // 45 или 296 // 45 or 296
+  public  $filebuffrom ;
+  public  $filebufto ;
 }
     
 function  shifr_encode4 ( shifr & $sh ) {
@@ -281,6 +283,14 @@ function  shifr_encode6 ( shifr & $sh ) {
     shifr_write_array ( $sh , shifr_byte_to_array6 ( $sh , ord ( $char ) , $bufin , 
       $bitscount  ) ) ;
   if ( $bitscount ) shifr_write_array ( $sh , array ( $bufin )  ) ; }
+    
+function  shifr_decode6 ( shifr & $sh ) {
+  $secretdata = array ( ) ;
+  while ( ! isEOFstreambuf_read6bits ( $sh -> filebuffrom ,
+    $secretdata , $sh  -> flagtext ) ) {
+    $decrypteddata = array ( ) ;
+    shifr_decrypt_sole6 ( $secretdata , $sh -> deshia , $decrypteddata , $sh -> old_last_sole ,  $sh -> old_last_data ) ;
+    streambuf_write3bits ( $sh -> filebufto , $decrypteddata ) ; } }
     
 function  shifr_decode4 ( shifr & $sh ) {
   $message_array = str_split  ( $sh -> message  ) ;
@@ -524,10 +534,8 @@ function  shifr_string_to_password4  ( shifr & $sh , string & $str ) {
       -- $i ;
       if ( $str [ $stringi ] == $letters [ $i ] ) goto found ; 
     } while ( $i ) ;
-    if  ( $sh -> localerus )
-      echo 'неправильная буква в пароле'  ;
-    else
-      echo 'wrong letter in password' ;
+    if  ( $sh -> localerus ) echo 'неправильная буква в пароле'  ;
+    else  echo 'wrong letter in password' ;
     return ;
 found :
     $tmp = $mult ;
