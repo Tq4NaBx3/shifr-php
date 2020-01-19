@@ -550,12 +550,12 @@ function  shifr_init ( shifr & $sh ) {
   for ( $i = ord  ( 'a' ) ; $i <= ord ( 'z' ) ; ++ $i )
     $sh ->  letters [ ] = chr ( $i ) ; 
   $sh ->  letters_mode = 62 ;
-  $sh ->  key_mode = 296 ;
+  $sh ->  key_mode = 45 ;
   $sh ->  old_last_data  = 0 ;
   $sh ->  old_last_sole  = 0 ;
   $sh ->  bytecount  = 0 ;
   $sh ->  buf3_index = 0 ;
   $sh ->  buf3 = array ( ) ; }
 
-
+?>
 

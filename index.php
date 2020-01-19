@@ -149,12 +149,12 @@ if  ( $shifr -> localerus )
 <br>
 <?php
   if  ( $shifr -> localerus )
-    echo 'Ключ бит : '  ;
+    echo 'Размер ключа : '  ;
   else
-    echo 'Key bits : ' ;
+    echo 'Key size : ' ;
 ?>
-<input type="radio" name="radiokey" value="Key45" <?php if ( $shifr -> key_mode == 45 ) echo 'checked' ?> >45 : <?php if  ( $shifr -> localerus ) echo '7-8 букв'; else echo '7-8 letters'; ?>
-<input type="radio" name="radiokey" value="Key296" <?php if ( $shifr -> key_mode == 296 ) echo 'checked' ?> >296 : <?php if  ( $shifr -> localerus ) echo '45-50 букв'; else echo '45-50 letters'; ?>
+<input type="radio" name="radiokey" value="Key45" <?php if ( $shifr -> key_mode == 45 ) echo 'checked' ?> >45 <?php if  ( $shifr -> localerus ) echo 'бит , 6-8 букв'; else echo 'bits , 6-8 letters'; ?>
+<input type="radio" name="radiokey" value="Key296" <?php if ( $shifr -> key_mode == 296 ) echo 'checked' ?> >296 <?php if  ( $shifr -> localerus ) echo 'бит , 45-50 букв'; else echo 'bits , 45-50 letters'; ?>
 <br>
 <?php
   if  ( $shifr -> localerus ) {
