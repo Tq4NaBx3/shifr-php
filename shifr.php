@@ -171,6 +171,7 @@ class shifr {
   public  $flagtext ; // true or false // флаг текст true или false
   public  $password ; // пароль
   public  $message  ; // сообщение/данные // message/data
+  public  $messageout  ; // сообщение/данные // message/data
   public  $old_last_data  ; // предыдущие данные
   public  $old_last_sole  ; // предыдущая соль
   // текстовый режим : букв в строке написано
@@ -185,6 +186,9 @@ class shifr {
   public  $key_mode ; // 45 или 296 // 45 or 296
   public  $filebuffrom ;
   public  $filebufto ;
+  public  $buf  ; // buf to write // буфер записи
+  public  $bufbitsize ; // размер буфера в битах
+  public  $decode_read_index  ; // индекс чтения для расшифровки
 }
     
 function  shifr_encode4 ( shifr & $sh ) {
@@ -284,13 +288,71 @@ function  shifr_encode6 ( shifr & $sh ) {
       $bitscount  ) ) ;
   if ( $bitscount ) shifr_write_array ( $sh , array ( $bufin )  ) ; }
     
+// читаю 6 бит
+// 6 bits reads
+function  isEOFstreambuf_read6bits ( shifr & $sh , array & $encrypteddata ) : bool {
+/*echo 'isEOFstreambuf_read6bits : $sh->message = ' ; echo '\'' ;
+echo htmlspecialchars ( $sh -> message ) ; echo '\'' ;*/
+//echo 'isEOFstreambuf_read6bits : $sh->flagtext = ' ; var_dump ( $sh->flagtext ) ;
+//echo 'isEOFstreambuf_read6bits : $sh->bufbitsize = ' ; var_dump ( $sh->bufbitsize ) ;
+  if  ( ( ! $sh -> flagtext ) and ( $sh -> bufbitsize >= 6 ) ) {
+    $sh -> bufbitsize -=  6 ;
+    $encrypteddata [ ] = $sh -> buf & ( 0x40 - 1 ) ;
+    $sh -> buf  >>= 6 ;
+    return  false ; }
+  if ( $sh -> decode_read_index >= strlen ( $sh -> message ) ) return true ;
+  $reads = ord ( $sh -> message [ $sh -> decode_read_index ] ) ;
+//echo 'isEOFstreambuf_read6bits : $reads = ' ; var_dump ( $reads ) ;
+  ++  $sh -> decode_read_index  ;
+/*echo 'isEOFstreambuf_read6bits : decode_read_index = ' ;
+var_dump ( $sh -> decode_read_index ) ;*/
+  if  ( $sh -> flagtext ) {
+    // читаем одну букву ';'-'z' -> декодируем в шесть бит
+    // reads one letter ';'-'z' -> decode to six bits
+    while ( ( $reads < ord ( ';' ) ) or ( $reads > ord ( 'z' ) ) ) {
+      if ( $sh -> decode_read_index >= strlen ( $sh -> message ) ) return true ;
+      $reads = ord ( $sh -> message [ $sh -> decode_read_index ] ) ;
+      ++  $sh -> decode_read_index  ; }
+    $encrypteddata [ ] = $reads - ord ( ';' ) ; }
+  else  {
+    $encrypteddata [ ] = ( $sh -> buf | 
+      ( $reads <<  $sh -> bufbitsize ) ) & ( 0x40 - 1 )  ;
+    $sh -> buf = $reads >>  ( 6 - $sh -> bufbitsize ) ;
+    $sh -> bufbitsize +=  2 ; } // + 8 - 6
+  return  false ; }
+    
+// версия 6 пишу три бита для расшифровки
+// version 6 write three bits to decode
+function  streambuf_write3bits ( shifr & $sh , $decrypteddata ) {
+//echo 'streambuf_write3bits : $decrypteddata = ' ; var_dump ( $decrypteddata ) ;
+//echo 'streambuf_write3bits : $sh -> bufbitsize = ' ; var_dump ( $sh -> bufbitsize ) ;
+  if  ( $sh -> bufbitsize < 5 ) {
+    $sh -> buf |= ( $decrypteddata << ( $sh -> bufbitsize ) ) ;
+    $sh -> bufbitsize +=  3 ; }
+  else  {
+    $to_write  = ( ( $decrypteddata << $sh -> bufbitsize ) | ( $sh -> buf ) ) &
+      0xff ;
+//echo 'streambuf_write3bits : $to_write = ' ; var_dump ( $to_write ) ;
+    $sh -> messageout .= chr ( $to_write ) ;
+/*echo 'streambuf_write3bits : $sh->messageout = ' ; echo '\'' ;
+echo htmlspecialchars ( $sh -> messageout ) ; echo '\'' ;*/
+    // + 3 - 8
+    $sh -> bufbitsize -= 5 ;
+    $sh -> buf = $decrypteddata >> ( 3 - ( $sh -> bufbitsize ) ) ; } }
+    
 function  shifr_decode6 ( shifr & $sh ) {
   $secretdata = array ( ) ;
-  while ( ! isEOFstreambuf_read6bits ( $sh -> filebuffrom ,
-    $secretdata , $sh  -> flagtext ) ) {
+//echo 'shifr_decode6 : $sh->message = ' ; echo '\'' ;
+//echo htmlspecialchars ( $sh -> message ) ; echo '\'' ;
+  while ( ! isEOFstreambuf_read6bits ( $sh , $secretdata ) ) {
+//echo 'shifr_decode6 : $secretdata = ' ; var_dump ( $secretdata ) ;
     $decrypteddata = array ( ) ;
-    shifr_decrypt_sole6 ( $secretdata , $sh -> deshia , $decrypteddata , $sh -> old_last_sole ,  $sh -> old_last_data ) ;
-    streambuf_write3bits ( $sh -> filebufto , $decrypteddata ) ; } }
+    shifr_decrypt_sole6 ( $secretdata , $sh -> deshia , $decrypteddata ,
+      $sh -> old_last_sole ,  $sh -> old_last_data ) ;
+    $secretdata = array ( ) ;
+//echo 'shifr_decode6 : $decrypteddata = ' ; var_dump ( $decrypteddata ) ;
+    streambuf_write3bits ( $sh , $decrypteddata [ 0 ] ) ; }
+  $sh -> message = $sh -> messageout ; }
     
 function  shifr_decode4 ( shifr & $sh ) {
   $message_array = str_split  ( $sh -> message  ) ;
@@ -563,7 +625,10 @@ function  shifr_init ( shifr & $sh ) {
   $sh ->  old_last_sole  = 0 ;
   $sh ->  bytecount  = 0 ;
   $sh ->  buf3_index = 0 ;
-  $sh ->  buf3 = array ( ) ; }
-
+  $sh ->  buf3 = array ( ) ;
+  $sh ->  buf = 0 ;
+  $sh ->  bufbitsize = 0 ;
+  $sh ->  decode_read_index = 0 ;
+  $sh ->  messageout = '' ; }
 ?>
 

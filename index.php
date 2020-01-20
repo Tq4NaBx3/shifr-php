@@ -43,8 +43,12 @@ if  ( $_POST  ) {
           $shifr -> password ) ) ;
         shifr_decode4 ( $shifr ) ; }
       else {
-        shifr_password_load6 ( $shifr , shifr_string_to_password4  ( $shifr ,
-          $shifr -> password ) ) ;
+        $st_to_psw = shifr_string_to_password4  ( $shifr ,
+          $shifr -> password ) ;
+//echo 'shifr_string_to_password4 : ' ; var_dump ( $st_to_psw ) ;
+        shifr_password_load6 ( $shifr , $st_to_psw ) ;
+//echo '$sh -> shifra = ' ; var_dump ( $shifr -> shifra ) ;
+//echo '$sh -> deshia = ' ; var_dump ( $shifr -> deshia ) ;
         shifr_decode6 ( $shifr ) ; } }
   else  if  ( $_POST  [ 'submit'] == 'генерировать' or 
       $_POST  [ 'submit'  ] == 'generate'  ) {
