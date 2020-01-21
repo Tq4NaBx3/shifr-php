@@ -363,6 +363,8 @@ function  shifr_decode6 ( shifr & $sh ) {
   $secretdata = array ( ) ;
 //echo 'shifr_decode6 : $sh->message = ' ; echo '\'' ;
 //echo htmlspecialchars ( $sh -> message ) ; echo '\'' ;
+  $sh -> messageout = ''  ;
+  $sh -> decode_read_index  = 0 ;
   while ( ! isEOFstreambuf_read6bits ( $sh , $secretdata ) ) {
 //echo 'shifr_decode6 : $secretdata = ' ; var_dump ( $secretdata ) ;
     $decrypteddata = array ( ) ;

@@ -123,9 +123,11 @@ echo  '<br>$shifr -> password('.strlen($shifr -> password).') = "' ; echo  htmls
         shifr_password_load6  ( $shifr , shifr_string_to_password  ( $shifr ,
           $shifr -> password ) ) ;
       while ( ! feof  ( $fp ) ) {
-        $shifr -> message = fread ( $fp , 0x1000 ) ;
+        $shifr -> message = fread ( $fp , 0x100 ) ;
+//echo 'in=';var_dump($shifr -> message);        
         if ( $shifr -> key_mode == 45 ) shifr_decode4 ( $shifr ) ;
         else  shifr_decode6 ( $shifr ) ;
+//echo 'out=';var_dump($shifr -> message);        
         fwrite  ( $fpw , $shifr -> message ) ; }
       fclose  ( $fpw  ) ;
       fclose  ( $fp ) ;
