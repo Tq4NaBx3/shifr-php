@@ -32,6 +32,7 @@ if  ( $_POST  ) {
       else {
         shifr_password_load6  ( $shifr , shifr_string_to_password  ( $shifr ,
           $shifr -> password ) ) ;
+        $sh -> bitscount  = 0 ;
         shifr_encode6 ( $shifr ) ; 
         streambuf_writeflushzero ( $shifr ) ; }
       if ( $shifr -> bytecount > 0 ) $shifr -> message .= "\n" ; }
@@ -87,6 +88,7 @@ echo  '<br>$shifr -> password('.strlen($shifr -> password).') = "' ; echo  htmls
       $sh ->  in_buf = 0 ;
       $sh ->  out_bufbitsize = 0 ;
       $sh ->  out_buf = 0 ;
+      $sh -> bitscount  = 0 ;
       while ( ! feof  ( $fp ) ) {
         $shifr -> message = fread ( $fp , 0x1000 ) ;
         if ( $shifr -> key_mode == 45 ) shifr_encode4 ( $shifr ) ;
