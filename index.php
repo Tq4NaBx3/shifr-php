@@ -26,26 +26,27 @@ if  ( $_POST  ) {
       $shifr -> message = $_REQUEST  [ 'message' ] ;
       $shifr -> flagtext = true  ;
       if ( $shifr -> key_mode == 45 ) {
-        shifr_password_load4  ( $shifr , shifr_string_to_password4  ( $shifr ,
+        shifr_password_load4  ( $shifr , shifr_string_to_password  ( $shifr ,
           $shifr -> password ) ) ;
         shifr_encode4 ( $shifr ) ; }
       else {
-        shifr_password_load6  ( $shifr , shifr_string_to_password4  ( $shifr ,
+        shifr_password_load6  ( $shifr , shifr_string_to_password  ( $shifr ,
           $shifr -> password ) ) ;
-        shifr_encode6 ( $shifr ) ; }
+        shifr_encode6 ( $shifr ) ; 
+        streambuf_writeflushzero ( $shifr ) ; }
       if ( $shifr -> bytecount > 0 ) $shifr -> message .= "\n" ; }
   else if  ( $_POST  [ 'submit'] == 'расшифровать' or 
       $_POST  [ 'submit'  ] == 'decrypt'  ) {
       $shifr -> password = $_REQUEST  [ 'password'  ] ;
       $shifr -> message = $_REQUEST [ 'message' ] ;
       if ( $shifr -> key_mode == 45 ) {
-        shifr_password_load4 ( $shifr , shifr_string_to_password4  ( $shifr ,
+        shifr_password_load4 ( $shifr , shifr_string_to_password  ( $shifr ,
           $shifr -> password ) ) ;
         shifr_decode4 ( $shifr ) ; }
       else {
-        $st_to_psw = shifr_string_to_password4  ( $shifr ,
+        $st_to_psw = shifr_string_to_password  ( $shifr ,
           $shifr -> password ) ;
-//echo 'shifr_string_to_password4 : ' ; var_dump ( $st_to_psw ) ;
+//echo 'shifr_string_to_password : ' ; var_dump ( $st_to_psw ) ;
         shifr_password_load6 ( $shifr , $st_to_psw ) ;
 //echo '$sh -> shifra = ' ; var_dump ( $shifr -> shifra ) ;
 //echo '$sh -> deshia = ' ; var_dump ( $shifr -> deshia ) ;
@@ -53,16 +54,16 @@ if  ( $_POST  ) {
   else  if  ( $_POST  [ 'submit'] == 'генерировать' or 
       $_POST  [ 'submit'  ] == 'generate'  ) {
       if ( $shifr -> key_mode == 45 )
-        $shifr -> password = shifr_password_to_string4 ( $shifr ,
+        $shifr -> password = shifr_password_to_string ( $shifr ,
           shifr_pass_to_array4 ( shifr_generate_pass4 ( ) ) ) ;
       else {
-        $shifr -> password = shifr_password_to_string4 ( $shifr ,
+        $shifr -> password = shifr_password_to_string ( $shifr ,
           shifr_pass_to_array6 ( shifr_generate_pass6 ( ) ) ) ;
         /*$pa = shifr_generate_pass6 ( ) ;
 echo  'shifr_generate_pass6 = ' ; var_dump ( $pa ) ;
         $par = shifr_pass_to_array6 ( $pa ) ;
 echo  '<br>shifr_pass_to_array6 = ' ; var_dump ( $par ) ;        
-        $shifr -> password = shifr_password_to_string4 ( $shifr , $par ) ;
+        $shifr -> password = shifr_password_to_string ( $shifr , $par ) ;
 echo  '<br>$shifr -> password('.strlen($shifr -> password).') = "' ; echo  htmlspecialchars ( $shifr -> password ) ; echo '"';       */
         }
       $shifr -> message = $_REQUEST [ 'message' ] ; }
@@ -77,17 +78,21 @@ echo  '<br>$shifr -> password('.strlen($shifr -> password).') = "' ; echo  htmls
       $fpw = fopen ( $uploadfile . '.shi' , 'wb'  ) ;
       $shifr -> password = $_REQUEST  [ 'password'  ] ;
       if ( $shifr -> key_mode == 45 )
-        shifr_password_load4  ( $shifr , shifr_string_to_password4  ( $shifr ,
+        shifr_password_load4  ( $shifr , shifr_string_to_password  ( $shifr ,
           $shifr -> password ) ) ;
       else
-        shifr_password_load6  ( $shifr , shifr_string_to_password4  ( $shifr ,
+        shifr_password_load6  ( $shifr , shifr_string_to_password  ( $shifr ,
           $shifr -> password ) ) ;
+      $sh ->  in_bufbitsize = 0 ;
+      $sh ->  in_buf = 0 ;
+      $sh ->  out_bufbitsize = 0 ;
+      $sh ->  out_buf = 0 ;
       while ( ! feof  ( $fp ) ) {
         $shifr -> message = fread ( $fp , 0x1000 ) ;
-        shifr_encode4 ( $shifr ) ;
+        if ( $shifr -> key_mode == 45 ) shifr_encode4 ( $shifr ) ;
+        else  shifr_encode6 ( $shifr ) ;
         fwrite  ( $fpw , $shifr -> message ) ; }
-      if ( $shifr -> flagtext and $shifr -> bytecount > 0 )
-        fwrite  ( $fpw , "\n" ) ;
+      streambuf_writeflushzerofile ( $shifr , $fpw ) ;
       fclose  ( $fpw  ) ;
       fclose  ( $fp ) ;
       if  ( $shifr -> localerus )
@@ -110,14 +115,15 @@ echo  '<br>$shifr -> password('.strlen($shifr -> password).') = "' ; echo  htmls
       $fpw = fopen ( $uploadfile2 , 'wb'  ) ;
       $shifr -> password = $_REQUEST  [ 'password'  ] ;
       if ( $shifr -> key_mode == 45 )
-        shifr_password_load4  ( $shifr , shifr_string_to_password4  ( $shifr ,
+        shifr_password_load4  ( $shifr , shifr_string_to_password  ( $shifr ,
           $shifr -> password ) ) ;
       else
-        shifr_password_load6  ( $shifr , shifr_string_to_password4  ( $shifr ,
+        shifr_password_load6  ( $shifr , shifr_string_to_password  ( $shifr ,
           $shifr -> password ) ) ;
       while ( ! feof  ( $fp ) ) {
         $shifr -> message = fread ( $fp , 0x1000 ) ;
-        shifr_decode4 ( $shifr ) ;
+        if ( $shifr -> key_mode == 45 ) shifr_decode4 ( $shifr ) ;
+        else  shifr_decode6 ( $shifr ) ;
         fwrite  ( $fpw , $shifr -> message ) ; }
       fclose  ( $fpw  ) ;
       fclose  ( $fp ) ;
