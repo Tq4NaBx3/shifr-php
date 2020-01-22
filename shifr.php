@@ -190,6 +190,9 @@ class shifr {
   public  $out_bufbitsize ; // размер буфера в битах
   public  $decode_read_index  ; // индекс чтения для расшифровки
   public  $bitscount  ;
+  // encode6
+  // 0-2 бит буфер чтения
+  public  $bufin  ; // 0-2 bits buffer reading
 }
     
 function  shifr_encode4 ( shifr & $sh ) {
@@ -256,12 +259,22 @@ function  shifr_write_array ( shifr & $sh , array $secret_data  ) {
     $secret_data_sole ) ;
   $encrypteddata = shifr_crypt_decrypt ( $secret_data_sole , $sh -> shifra )  ;
   if ( $sh -> flagtext ) {
+  
+    foreach ( $encrypteddata as $ed ) {
+      $sh -> message  .=  chr ( ord ( ';' ) + $ed ) ;
+      ++ $sh -> bytecount ;
+      if ( $sh -> bytecount >= 60 ) {
+        $sh -> message .= "\n" ;
+        $sh -> bytecount = 0 ; } }
+  /*
     foreach ( $encrypteddata as $ed )
       $sh -> message  .=  chr ( ord ( ';' ) + $ed ) ;
     $sh -> bytecount += count ( $encrypteddata ) ;
     if ( $sh -> bytecount >= 60 ) {
       $sh -> message .= "\n" ;
-      $sh -> bytecount = 0 ; } }
+      $sh -> bytecount = 0 ; }
+      */
+    }
   else
     foreach ( $encrypteddata as $ed ) {
       if  ( $sh ->  out_bufbitsize  < 2 ) {
@@ -279,13 +292,16 @@ function  shifr_write_array ( shifr & $sh , array $secret_data  ) {
 function  shifr_encode6 ( shifr & $sh ) {
   $message_array = str_split  ( $sh -> message  ) ;
   $sh -> message =  ''  ;
-  $bufin = 0 ;
+  //$bufin = 0 ;
   //$bufout = array ( ) ;
   //$sh -> bitscount  = 0 ;
   foreach ( $message_array as $char ) 
-    shifr_write_array ( $sh , shifr_byte_to_array6 ( $sh , ord ( $char ) , $bufin
-      ) ) ;
-  if ( $sh -> bitscount ) shifr_write_array ( $sh , array ( $bufin )  ) ; }
+    shifr_write_array ( $sh , shifr_byte_to_array6 ( $sh , ord ( $char ) ,
+      $sh -> bufin ) ) ;
+  /*if ( $sh -> bitscount ) {
+echo '$sh -> bitscount=';var_dump($sh -> bitscount);echo '<br>';
+echo '$bufin=';var_dump($bufin);echo '<br>';
+    shifr_write_array ( $sh , array ( $bufin )  ) ; }*/ }
 
 function  streambuf_writeflushzero  ( shifr & $sh ) {
   if  ( $sh ->  out_bufbitsize ) {

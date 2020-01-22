@@ -25,6 +25,7 @@ if  ( $_POST  ) {
       $shifr -> password = $_REQUEST  [ 'password'  ] ;
       $shifr -> message = $_REQUEST  [ 'message' ] ;
       $shifr -> flagtext = true  ;
+      $shifr -> bufin  = 0 ;
       if ( $shifr -> key_mode == 45 ) {
         shifr_password_load4  ( $shifr , shifr_string_to_password  ( $shifr ,
           $shifr -> password ) ) ;
@@ -32,7 +33,7 @@ if  ( $_POST  ) {
       else {
         shifr_password_load6  ( $shifr , shifr_string_to_password  ( $shifr ,
           $shifr -> password ) ) ;
-        $sh -> bitscount  = 0 ;
+        $shifr -> bitscount  = 0 ;
         shifr_encode6 ( $shifr ) ; 
         streambuf_writeflushzero ( $shifr ) ; }
       if ( $shifr -> bytecount > 0 ) $shifr -> message .= "\n" ; }
@@ -49,8 +50,8 @@ if  ( $_POST  ) {
           $shifr -> password ) ;
 //echo 'shifr_string_to_password : ' ; var_dump ( $st_to_psw ) ;
         shifr_password_load6 ( $shifr , $st_to_psw ) ;
-//echo '$sh -> shifra = ' ; var_dump ( $shifr -> shifra ) ;
-//echo '$sh -> deshia = ' ; var_dump ( $shifr -> deshia ) ;
+//echo '$shifr -> shifra = ' ; var_dump ( $shifr -> shifra ) ;
+//echo '$shifr -> deshia = ' ; var_dump ( $shifr -> deshia ) ;
         shifr_decode6 ( $shifr ) ; } }
   else  if  ( $_POST  [ 'submit'] == 'генерировать' or 
       $_POST  [ 'submit'  ] == 'generate'  ) {
@@ -84,13 +85,23 @@ echo  '<br>$shifr -> password('.strlen($shifr -> password).') = "' ; echo  htmls
       else
         shifr_password_load6  ( $shifr , shifr_string_to_password  ( $shifr ,
           $shifr -> password ) ) ;
-      $sh ->  in_bufbitsize = 0 ;
-      $sh ->  in_buf = 0 ;
-      $sh ->  out_bufbitsize = 0 ;
-      $sh ->  out_buf = 0 ;
-      $sh -> bitscount  = 0 ;
+      $shifr ->  in_bufbitsize = 0 ;
+      $shifr ->  in_buf = 0 ;
+      $shifr ->  out_bufbitsize = 0 ;
+      $shifr ->  out_buf = 0 ;
+      $shifr -> bitscount  = 0 ;
+      $shifr -> bufin  = 0 ;
       while ( ! feof  ( $fp ) ) {
         $shifr -> message = fread ( $fp , 0x1000 ) ;
+        if ( $shifr -> key_mode == 45 ) shifr_encode4 ( $shifr ) ;
+        else  shifr_encode6 ( $shifr ) ;
+        fwrite  ( $fpw , $shifr -> message ) ; }
+      if ( $shifr -> bitscount ) {
+        $shifr -> message = ''  ;
+//echo '$shifr -> bitscount=';var_dump($shifr -> bitscount);echo '<br>';
+//echo '$shifr -> bufin=';var_dump($shifr -> bufin);echo '<br>';
+        shifr_write_array ( $shifr , array ( $shifr -> bufin )  ) ;
+        $shifr -> bitscount = 0 ;
         if ( $shifr -> key_mode == 45 ) shifr_encode4 ( $shifr ) ;
         else  shifr_encode6 ( $shifr ) ;
         fwrite  ( $fpw , $shifr -> message ) ; }
@@ -123,7 +134,7 @@ echo  '<br>$shifr -> password('.strlen($shifr -> password).') = "' ; echo  htmls
         shifr_password_load6  ( $shifr , shifr_string_to_password  ( $shifr ,
           $shifr -> password ) ) ;
       while ( ! feof  ( $fp ) ) {
-        $shifr -> message = fread ( $fp , 0x100 ) ;
+        $shifr -> message = fread ( $fp , 0x1000 ) ;
 //echo 'in=';var_dump($shifr -> message);        
         if ( $shifr -> key_mode == 45 ) shifr_decode4 ( $shifr ) ;
         else  shifr_decode6 ( $shifr ) ;
