@@ -224,26 +224,27 @@ function  shifr_encode4 ( shifr & $sh ) {
           $sh -> message .=  chr ( ( $encrypteddata [ 2 ] & 0xf ) |
             ( ( $encrypteddata [ 3 ] & 0xf ) << 4 ) ) ; } } }   
         
-function shifr_byte_to_array6 ( shifr & $sh , int $charcode , int & $bufin )
+function shifr_byte_to_array6 ( shifr & $sh , int $charcode )
   : array {
+//echo  'shifr_byte_to_array6 : $charcode = ' ; var_dump ( $charcode ) ;
   switch  ( $sh -> bitscount  ) {
   case  0 :
     // <= [ [1 0] [2 1 0] [2 1 0] ]
     $secret_data = array ( $charcode & 0x7 , ( $charcode >>  3 ) & 0x7 ) ;
-    $bufin = $charcode >>  6 ;
+    $sh -> bufin = $charcode >>  6 ;
     $sh -> bitscount  = 2 ;  // 0 + 8 - 6
     break ;
   case  1 :
     // <= [ [2 1 0] [2 1 0] [2 1] ] <= [ [0]
-    $secret_data = array ( $bufin | ( ( $charcode & 0x3 ) << 1 ) ,
+    $secret_data = array ( $sh -> bufin | ( ( $charcode & 0x3 ) << 1 ) ,
       ( $charcode >> 2 ) & 0x7 , $charcode >>  5 ) ;
     $sh -> bitscount  = 0 ;  // 1 + 8 - 9
     break ;
   case  2 :
     // <= [ [0] [2 1 0] [2 1 0] [2] ] <= [ [1 0] ..
-    $secret_data = array ( $bufin | ( ( $charcode & 0x1 ) << 2 ) ,
+    $secret_data = array ( $sh -> bufin | ( ( $charcode & 0x1 ) << 2 ) ,
       ( $charcode >> 1 ) & 0x7 , ( $charcode >>  4 ) & 0x7 ) ;
-    $bufin = $charcode >>  7 ;
+    $sh -> bufin = $charcode >>  7 ;
     $sh -> bitscount  = 1 ;  // 2 + 8 - 9
     break ;
   default :
@@ -251,30 +252,24 @@ function shifr_byte_to_array6 ( shifr & $sh , int $charcode , int & $bufin )
       echo 'неожиданное значение bitscount = '  . $sh -> bitscount  ;
     else
       echo 'unexpected value bitscount = '  . $sh -> bitscount ; }
+//echo  'shifr_byte_to_array6 : $secret_data = ' ; var_dump ( $secret_data ) ;echo '<br>';      
   return  $secret_data  ; }
     
 function  shifr_write_array ( shifr & $sh , array $secret_data  ) {
+//echo  'shifr_write_array : $secret_data = ' ; var_dump ( $secret_data ) ;echo '<br>';
   $secret_data_sole = shifr_data_sole6 ( $secret_data ) ;
   shifr_data_xor6 ( $sh -> old_last_data , $sh -> old_last_sole ,
     $secret_data_sole ) ;
   $encrypteddata = shifr_crypt_decrypt ( $secret_data_sole , $sh -> shifra )  ;
   if ( $sh -> flagtext ) {
-  
     foreach ( $encrypteddata as $ed ) {
       $sh -> message  .=  chr ( ord ( ';' ) + $ed ) ;
       ++ $sh -> bytecount ;
       if ( $sh -> bytecount >= 60 ) {
         $sh -> message .= "\n" ;
         $sh -> bytecount = 0 ; } }
-  /*
-    foreach ( $encrypteddata as $ed )
-      $sh -> message  .=  chr ( ord ( ';' ) + $ed ) ;
-    $sh -> bytecount += count ( $encrypteddata ) ;
-    if ( $sh -> bytecount >= 60 ) {
-      $sh -> message .= "\n" ;
-      $sh -> bytecount = 0 ; }
-      */
-    }
+//echo  'shifr_write_array : $sh -> message = ' ; var_dump ( $sh -> message ) ;echo '<br>';        
+        }
   else
     foreach ( $encrypteddata as $ed ) {
       if  ( $sh ->  out_bufbitsize  < 2 ) {
@@ -292,16 +287,8 @@ function  shifr_write_array ( shifr & $sh , array $secret_data  ) {
 function  shifr_encode6 ( shifr & $sh ) {
   $message_array = str_split  ( $sh -> message  ) ;
   $sh -> message =  ''  ;
-  //$bufin = 0 ;
-  //$bufout = array ( ) ;
-  //$sh -> bitscount  = 0 ;
   foreach ( $message_array as $char ) 
-    shifr_write_array ( $sh , shifr_byte_to_array6 ( $sh , ord ( $char ) ,
-      $sh -> bufin ) ) ;
-  /*if ( $sh -> bitscount ) {
-echo '$sh -> bitscount=';var_dump($sh -> bitscount);echo '<br>';
-echo '$bufin=';var_dump($bufin);echo '<br>';
-    shifr_write_array ( $sh , array ( $bufin )  ) ; }*/ }
+    shifr_write_array ( $sh , shifr_byte_to_array6 ( $sh , ord ( $char ) ) ) ; }
 
 function  streambuf_writeflushzero  ( shifr & $sh ) {
   if  ( $sh ->  out_bufbitsize ) {
@@ -655,7 +642,8 @@ function  shifr_init ( shifr & $sh ) {
   for ( $i = ord  ( 'a' ) ; $i <= ord ( 'z' ) ; ++ $i )
     $sh ->  letters [ ] = chr ( $i ) ; 
   $sh ->  letters_mode = 62 ;
-  $sh ->  key_mode = 45 ;
+  //$sh ->  key_mode = 45 ;
+  $sh ->  key_mode = 296 ;
   $sh ->  old_last_data  = 0 ;
   $sh ->  old_last_sole  = 0 ;
   $sh ->  bytecount  = 0 ;
@@ -667,6 +655,7 @@ function  shifr_init ( shifr & $sh ) {
   $sh ->  in_bufbitsize = 0 ;
   $sh ->  decode_read_index = 0 ;
   $sh ->  messageout = '' ;
-  $sh -> bitscount  = 0 ; }
+  $sh ->  bitscount  = 0 ;
+  $sh ->  bufin = 0 ; }
 ?>
 

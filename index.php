@@ -85,25 +85,20 @@ echo  '<br>$shifr -> password('.strlen($shifr -> password).') = "' ; echo  htmls
       else
         shifr_password_load6  ( $shifr , shifr_string_to_password  ( $shifr ,
           $shifr -> password ) ) ;
-      $shifr ->  in_bufbitsize = 0 ;
-      $shifr ->  in_buf = 0 ;
-      $shifr ->  out_bufbitsize = 0 ;
-      $shifr ->  out_buf = 0 ;
-      $shifr -> bitscount  = 0 ;
-      $shifr -> bufin  = 0 ;
       while ( ! feof  ( $fp ) ) {
         $shifr -> message = fread ( $fp , 0x1000 ) ;
         if ( $shifr -> key_mode == 45 ) shifr_encode4 ( $shifr ) ;
         else  shifr_encode6 ( $shifr ) ;
         fwrite  ( $fpw , $shifr -> message ) ; }
+//echo '$shifr -> bitscount=';var_dump($shifr -> bitscount);echo '<br>';
       if ( $shifr -> bitscount ) {
         $shifr -> message = ''  ;
 //echo '$shifr -> bitscount=';var_dump($shifr -> bitscount);echo '<br>';
 //echo '$shifr -> bufin=';var_dump($shifr -> bufin);echo '<br>';
         shifr_write_array ( $shifr , array ( $shifr -> bufin )  ) ;
         $shifr -> bitscount = 0 ;
-        if ( $shifr -> key_mode == 45 ) shifr_encode4 ( $shifr ) ;
-        else  shifr_encode6 ( $shifr ) ;
+        /*if ( $shifr -> key_mode == 45 ) shifr_encode4 ( $shifr ) ;
+        else  shifr_encode6 ( $shifr ) ;*/
         fwrite  ( $fpw , $shifr -> message ) ; }
       streambuf_writeflushzerofile ( $shifr , $fpw ) ;
       fclose  ( $fpw  ) ;
@@ -225,6 +220,7 @@ else {
   echo '<br>Encryption in text mode : <input type="checkbox" class="largerCheckbox" name="Encryption_in_text_mode" value="1" id="SText" ';
   if($shifr -> flagtext)echo 'checked'; echo ' />' ;
     }
+//phpinfo();    
 ?>
 </p>
 </form>
