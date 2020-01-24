@@ -37,6 +37,11 @@ if  ( $_POST  ) {
           $shifr -> password ) ) ;
         $shifr -> bitscount  = 0 ;
         shifr_encode6 ( $shifr ) ; 
+        if ( $shifr -> bitscount ) {
+//echo '$shifr -> bitscount=';var_dump($shifr -> bitscount);echo '<br>';
+//echo '$shifr -> bufin=';var_dump($shifr -> bufin);echo '<br>';
+          shifr_write_array ( $shifr , array ( $shifr -> bufin )  ) ;
+          $shifr -> bitscount = 0 ; }
         streambuf_writeflushzero ( $shifr ) ; }
       if ( $shifr -> bytecount > 0 ) $shifr -> message .= "\n" ; }
   else if  ( $_POST  [ 'submit'] == 'расшифровать' or 
@@ -91,8 +96,11 @@ echo  '<br>$shifr -> password('.strlen($shifr -> password).') = "' ; echo  htmls
         shifr_password_load6  ( $shifr , shifr_string_to_password  ( $shifr ,
           $shifr -> password ) ) ;
       while ( ! feof  ( $fp ) ) {
-        //set_time_limit  ( 30  ) ;
-        $shifr -> message = fread ( $fp , 0x1000 ) ;
+        set_time_limit  ( 60  ) ;
+        $shifr -> message = fread ( $fp , 0x1000/*13*/ ) ;
+/*echo  '$shifr -> message = ' ; var_dump ( $shifr -> message ) ; echo '<br>' ;
+if ( $shifr -> message ) echo '(true)<br>' ; else echo '(false)<br>' ;*/
+        if ( ! $shifr -> message ) break ;
         if ( $shifr -> key_mode == 45 ) shifr_encode4 ( $shifr ) ;
         else  shifr_encode6 ( $shifr ) ;
         fwrite  ( $fpw , $shifr -> message ) ; }
@@ -144,8 +152,12 @@ echo  '<br>$shifr -> password('.strlen($shifr -> password).') = "' ; echo  htmls
         shifr_password_load6  ( $shifr , shifr_string_to_password  ( $shifr ,
           $shifr -> password ) ) ;
       while ( ! feof  ( $fp ) ) {
-        $shifr -> message = fread ( $fp , 0x1000 ) ;
+        set_time_limit  ( 60  ) ;
+        $shifr -> message = fread ( $fp , 0x1000/*13*/ ) ;
 //echo 'in=';var_dump($shifr -> message);        
+/*echo  '$shifr -> message = ' ; var_dump ( $shifr -> message ) ; echo '<br>' ;
+if ( $shifr -> message ) echo '(true)<br>' ; else echo '(false)<br>' ;*/
+        if ( ! $shifr -> message ) break ;
         if ( $shifr -> key_mode == 45 ) shifr_decode4 ( $shifr ) ;
         else  shifr_decode6 ( $shifr ) ;
 //echo 'out=';var_dump($shifr -> message);        
