@@ -1,0 +1,9 @@
+Symmetric stream encryption with 'salt'.
+'Salt' is constantly generated, which gives good durability.
+Data size doubles in binary mode. Tripled in text mode.
+There is no diagnosis of the wrong password.
+The encryption key size is 296 bits ( 45 - 50 letters ) .
+Or light key with 45 bits ( 6 - 8 lettters ) .
+The fast version on the command line writen in C.
+The PHP version compatible with C.
+
