@@ -189,7 +189,8 @@ class shifr {
   public  $in_bufbitsize ; // размер буфера в битах
   public  $out_bufbitsize ; // размер буфера в битах
   public  $decode_read_index  ; // индекс чтения для расшифровки
-  public  $bitscount  ;
+  // Размер битового буфера чтения
+  public  $bitscount  ; // reading buffer bit size
   // encode6
   // 0-2 бит буфер чтения
   public  $bufin  ; // 0-2 bits buffer reading
@@ -285,7 +286,10 @@ function  shifr_encode6 ( shifr & $sh ) {
   foreach ( $message_array as $char ) 
     shifr_write_array ( $sh , shifr_byte_to_array6 ( $sh , ord ( $char ) ) ) ; }
 
-function  streambuf_writeflushzero  ( shifr & $sh ) {
+function  shifr_flush ( shifr & $sh ) {
+  if ( $sh  -> bitscount ) {
+    shifr_write_array ( $sh , array ( $sh -> bufin ) ) ;
+    $sh -> bitscount = 0 ; }
   if  ( $sh ->  out_bufbitsize ) {
     $sh -> message .= $sh ->  out_buf ;
     $sh ->  out_bufbitsize = 0 ; }
@@ -293,14 +297,19 @@ function  streambuf_writeflushzero  ( shifr & $sh ) {
     $sh -> bytecount = 0 ;
     $sh -> message .= "\n"  ; } }
 
-function  streambuf_writeflushzerofile  ( shifr & $sh , & $fpw ) {
+function  shifr_flush_file  ( shifr & $sh , & $fpw ) {
+  if ( $sh  -> bitscount ) {
+    $sh -> message = ''  ;
+    shifr_write_array ( $sh , array ( $sh -> bufin ) ) ;
+    $sh -> bitscount = 0 ;
+    fwrite  ( $fpw , $sh  -> message ) ; }
   if  ( $sh ->  out_bufbitsize ) {
     fwrite  ( $fpw , $sh ->  out_buf ) ;
     $sh ->  out_bufbitsize = 0 ; }
   if ( $sh  ->  flagtext and $sh -> bytecount )  {
     $sh -> bytecount = 0 ;
     fwrite  ( $fpw , "\n" ) ; } }
-
+    
 // читаю 6 бит
 // 6 bits reads
 function  isEOFstreambuf_read6bits ( shifr & $sh , array & $encrypteddata ) : bool {
@@ -574,7 +583,15 @@ function  shifr_password_load6  ( shifr & $sh , array $password ) {
     ++ $inde  ;
   } while ( $inde < 64 ) ; }
   
-function  shifr_string_to_password  ( shifr & $sh , string & $str ) {
+function  shifr_password_load_4 ( shifr & $sh ) {
+  return  shifr_password_load4  ( $sh , shifr_string_to_key_array ( $sh ,
+    $sh ->  password  ) ) ; }
+
+function  shifr_password_load_6 ( shifr & $sh ) {
+  return  shifr_password_load6  ( $sh , shifr_string_to_key_array ( $sh ,
+    $sh ->  password  ) ) ; }
+    
+function  shifr_string_to_key_array  ( shifr & $sh , string & $str ) {
   $strn = strlen  ( $str  ) ;
   $passarr = array ( ) ;
   number_set_zero ( $passarr ) ;
@@ -603,6 +620,7 @@ found :
     number_mul_byte ( $mult , $letters_count ) ;
     ++  $stringi ;
   } while ( ord ( $str [ $stringi ] ) ) ;
+//echo  '$passarr = ' ; var_dump ( $passarr ) ; echo '<br>' ;
   return  $passarr ; }  
   
 function  shifr_init ( shifr & $sh ) {
@@ -631,6 +649,8 @@ function  shifr_init ( shifr & $sh ) {
   $sh ->  decode_read_index = 0 ;
   $sh ->  messageout = '' ;
   $sh ->  bitscount  = 0 ;
-  $sh ->  bufin = 0 ; }
+  $sh ->  bufin = 0 ;
+  $sh ->  localerus = false ;
+  $sh ->  flagtext  = true  ; }
 ?>
 
