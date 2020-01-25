@@ -43,11 +43,9 @@ if  ( $_POST  ) {
   else  if  ( $_POST  [ 'submit'] == 'генерировать' or 
       $_POST  [ 'submit'  ] == 'generate'  ) {
       if ( $shifr -> key_mode == 45 )
-        $shifr -> password = shifr_password_to_string ( $shifr ,
-          shifr_pass_to_array4 ( shifr_generate_pass4 ( ) ) ) ;
-      else {
-        $shifr -> password = shifr_password_to_string ( $shifr ,
-          shifr_pass_to_array6 ( shifr_generate_pass6 ( ) ) ) ; }
+        shifr_generate_password_4 ( $shifr  ) ;
+      else
+        shifr_generate_password_6 ( $shifr  ) ;
       $shifr -> message = $_REQUEST [ 'message' ] ; }
    else
    if ( ( $_POST  [ 'submit'] == 'Зашифровать файл' or 

@@ -443,6 +443,14 @@ function  number_dec  ( array & $number ) {
 function  number_not_zero ( array & $number ) {
   return  count  ( $number ) >  0 ; }
   
+function  shifr_generate_password_4 ( shifr & $sh ) {
+  $sh ->  password  = shifr_password_to_string (  $sh ,
+    shifr_pass_to_array4  ( shifr_generate_pass4  ( ) ) ) ; }
+
+function  shifr_generate_password_6 ( shifr & $sh ) {
+  $sh ->  password  = shifr_password_to_string (  $sh ,
+    shifr_pass_to_array6  ( shifr_generate_pass6  ( ) ) ) ; }
+
 function  shifr_password_to_string ( shifr & $sh , array $passworda ) : string {
   if ( $sh  ->  letters_mode ==  95 ) $letters  = $sh ->  letters95  ;
   else  $letters  = $sh ->  letters  ;
