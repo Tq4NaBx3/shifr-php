@@ -627,8 +627,7 @@ found :
     number_add ( $passarr , $tmp ) ;
     number_mul_byte ( $mult , $letters_count ) ;
     ++  $stringi ;
-  } while ( ord ( $str [ $stringi ] ) ) ;
-//echo  '$passarr = ' ; var_dump ( $passarr ) ; echo '<br>' ;
+  } while ( $stringi  < strlen  ( $str  ) ) ;
   return  $passarr ; }  
   
 function  shifr_init ( shifr & $sh ) {

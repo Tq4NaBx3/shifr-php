@@ -6,9 +6,6 @@ The encryption key size is 296 bits ( 45 - 50 letters ) .
 Or light key with 45 bits ( 6 - 8 lettters ) .
 The fast version on the command line written in C.
 The PHP version compatible with C.
-
-Пароль зашифрованный × паролем = может служить хеш функцией.
-
- Хеш ÷ расшифровать( пароль ) == пароль
-
-Если расшифрованный хеш с паролем даёт этот пароль значит пароль верен.
+Password encrypted × password = can serve as a hash function.
+Hash ÷ decrypt (password) == password
+If the decrypted hash with the password gives this password, then the password is correct.

@@ -1,4 +1,11 @@
 <?php
+
+if  ( isset ( $_POST  )  )  {
+	if ( isset ( $_POST  [ 'files' ] ) and ( $_POST  [ 'files' ] == 'файлы' or
+    $_POST  [ 'files' ] == 'files') ) {
+   	header  ( "Location: ./uploads/"  ) ;
+   	die ( ) ; } }
+
 require ( 'shifr.php' ) ;
 $shifr  = new shifr ( ) ;
 shifr_init ( $shifr  ) ;
@@ -9,6 +16,12 @@ if ( $local == 'ru_RU.UTF-8' ) $shifr -> localerus = true ;
 if ( ( ! isset ( $_REQUEST [ 'Шифрование_в_текстовом_режиме' ] ) ) and
   ( ! isset ( $_REQUEST [ 'Encryption_in_text_mode' ] ) ) )
   $shifr -> flagtext = false  ;
+  
+if ( isset ( $_REQUEST  [ 'password'  ] ) )
+  $shifr -> password = $_REQUEST  [ 'password'  ] ;        
+
+if ( isset ( $_REQUEST  [ 'message'  ] ) )
+  $shifr -> message = $_REQUEST  [ 'message'  ] ;        
         
 if  ( $_POST  ) {
   if  ( isset ( $_POST  [ 'submit'  ] ) ) {
@@ -20,8 +33,6 @@ if  ( $_POST  ) {
       else  $shifr -> key_mode = 45 ; }
     if  ( $_POST  [ 'submit'] == 'зашифровать' or 
       $_POST  [ 'submit'  ] == 'encrypt'  ) {
-      $shifr -> password = $_REQUEST  [ 'password'  ] ;
-      $shifr -> message = $_REQUEST  [ 'message' ] ;
       $shifr -> flagtext = true  ;
       if ( $shifr -> key_mode == 45 ) {
         shifr_password_load_4  ( $shifr ) ;
@@ -32,8 +43,6 @@ if  ( $_POST  ) {
       shifr_flush ( $shifr  ) ; }
   else if  ( $_POST  [ 'submit'] == 'расшифровать' or 
       $_POST  [ 'submit'  ] == 'decrypt'  ) {
-      $shifr -> password = $_REQUEST  [ 'password'  ] ;
-      $shifr -> message = $_REQUEST [ 'message' ] ;
       if ( $shifr -> key_mode == 45 ) {
         shifr_password_load_4 ( $shifr ) ;
         shifr_decode4 ( $shifr ) ; }
@@ -45,8 +54,7 @@ if  ( $_POST  ) {
       if ( $shifr -> key_mode == 45 )
         shifr_generate_password_4 ( $shifr  ) ;
       else
-        shifr_generate_password_6 ( $shifr  ) ;
-      $shifr -> message = $_REQUEST [ 'message' ] ; }
+        shifr_generate_password_6 ( $shifr  ) ; }
    else
    if ( ( $_POST  [ 'submit'] == 'Зашифровать файл' or 
         $_POST  [ 'submit'  ] == 'Encrypt file'  ) and
@@ -57,7 +65,6 @@ if  ( $_POST  ) {
       $uploadfile = $uploaddir  . basename  (
         $_FILES [ 'uploadfile'  ] [ 'name'  ] ) ;
       $fpw = fopen ( $uploadfile . '.shi' , 'wb'  ) ;
-      $shifr -> password = $_REQUEST  [ 'password'  ] ;
       if ( $shifr -> key_mode == 45 )
         shifr_password_load_4  ( $shifr ) ;
       else
@@ -96,7 +103,6 @@ if  ( $_POST  ) {
         $uploadfile2 = substr ( $uploadfile , 0 , -4 ) ;
       else  $uploadfile2 = $uploadfile  . '.des' ;
       $fpw = fopen ( $uploadfile2 , 'wb'  ) ;
-      $shifr -> password = $_REQUEST  [ 'password'  ] ;
       if ( $shifr -> key_mode == 45 )
         shifr_password_load_4  ( $shifr ) ;
       else
@@ -118,11 +124,26 @@ if  ( $_POST  ) {
 ?>
 <style> p { font-size: 36px; }  textarea { font-size: 36px; }
 input { font-size: 36px; } input.largerCheckbox { transform : scale(2); }
+.menu {
+    position: fixed; /* Фиксированное положение */
+    right: 10px; /* Расстояние от правого края окна браузера */
+    top: 10%; /* Расстояние сверху */
+    padding: 10px; /* Поля вокруг текста */ 
+    background: #eef; /* Цвет фона */ 
+    border: 1px solid #333; /* Параметры рамки */ 
+  }
 </style>
 <html>
 <body>
-<form action="<?php echo $_SERVER['PHP_SELF'] ; ?>" method=post enctype=multipart/form-data>
+<form action="<?php echo $_SERVER['PHP_SELF'] ; ?>" method=post 
+  enctype=multipart/form-data>
 <input type="hidden" name="MAX_FILE_SIZE" value="1024000000">
+
+<div class="menu">
+<input type="submit" value="<?php if  ( $shifr -> localerus ) echo 'файлы' ;
+  else echo 'files' ;?>" name="files"/><br>
+</div>
+
 <?php
 
 if  ( $shifr -> localerus )
@@ -132,15 +153,21 @@ if  ( $shifr -> localerus )
 
 ?>
   <br />
-  <textarea name="message" rows="12" cols="61"><?php echo htmlspecialchars($shifr -> message) ; ?></textarea><br />
+  <textarea name="message" rows="12" cols="61"><?php
+  echo htmlspecialchars($shifr -> message) ; ?></textarea><br />
 <p>
 
 <?php
   if  ( $shifr -> localerus ) echo 'Алфавит знаков в пароле :' ;
   else echo 'Alphabet of characters in a password :' ;
 ?>
-<input type="radio" name="radio" value="ASCII" <?php if ( $shifr -> letters_mode == 95 ) echo 'checked' ?> >ASCII <?php if  ( $shifr -> localerus ) echo 'буквы цифры знаки пробел'; else echo 'letters digits signs space'; ?>
-<input type="radio" name="radio" value="LettDigit" <?php if ( $shifr -> letters_mode == 62 ) echo 'checked' ?> ><?php if  ( $shifr -> localerus ) echo 'цифры и буквы'; else echo 'digits and letters'; ?>
+<input type="radio" name="radio" value="ASCII" <?php 
+if ( $shifr -> letters_mode == 95 ) echo 'checked' ?> >ASCII <?php 
+if  ( $shifr -> localerus ) echo 'буквы цифры знаки пробел'; else
+echo 'letters digits signs space'; ?>
+<input type="radio" name="radio" value="LettDigit" <?php
+if ( $shifr -> letters_mode == 62 ) echo 'checked' ?> ><?php 
+if  ( $shifr -> localerus ) echo 'цифры и буквы'; else echo 'digits and letters'; ?>
 <br>
 <?php
   if  ( $shifr -> localerus )
@@ -148,8 +175,13 @@ if  ( $shifr -> localerus )
   else
     echo 'Key size : ' ;
 ?>
-<input type="radio" name="radiokey" value="Key45" <?php if ( $shifr -> key_mode == 45 ) echo 'checked' ?> >45 <?php if  ( $shifr -> localerus ) echo 'бит , 6-8 букв'; else echo 'bits , 6-8 letters'; ?>
-<input type="radio" name="radiokey" value="Key296" <?php if ( $shifr -> key_mode == 296 ) echo 'checked' ?> >296 <?php if  ( $shifr -> localerus ) echo 'бит , 45-50 букв'; else echo 'bits , 45-50 letters'; ?>
+<input type="radio" name="radiokey" value="Key45" <?php 
+if ( $shifr -> key_mode == 45 ) echo 'checked' ?> >45 <?php
+if  ( $shifr -> localerus ) echo 'бит , 6-8 букв'; else echo 'bits , 6-8 letters'; ?>
+<input type="radio" name="radiokey" value="Key296" <?php 
+if ( $shifr -> key_mode == 296 ) echo 'checked' ?> >296 <?php 
+if  ( $shifr -> localerus ) echo 'бит , 45-50 букв'; else
+echo 'bits , 45-50 letters'; ?>
 <br>
 <?php
   if  ( $shifr -> localerus ) {
@@ -160,7 +192,8 @@ if  ( $shifr -> localerus )
     echo '<input type="submit" name="submit" value="generate" />' ; }
 ?>
 <br>
-<input name="password" type="text" value="<?php echo htmlspecialchars ( $shifr -> password ) ; ?>" size ="51" />
+<input name="password" type="text" value="<?php 
+echo htmlspecialchars ( $shifr -> password ) ; ?>" size ="51" />
 </p>
 <?php
   if  ( $shifr -> localerus ) {
@@ -183,9 +216,12 @@ if  ( $shifr -> localerus )
 else
   echo '<input type=submit name="submit" value="Decrypt file" ><br>'.PHP_EOL  ;
 if  ( $shifr -> localerus )    {
-  echo '<br>Шифрование в текстовом режиме : <input type="checkbox" class="largerCheckbox" name="Шифрование_в_текстовом_режиме" value="1" id="SText" '; if($shifr -> flagtext)echo 'checked'; echo ' />' ; }
+  echo '<br>Шифрование в текстовом режиме : <input type="checkbox" '.
+  ' class="largerCheckbox" name="Шифрование_в_текстовом_режиме" value="1"'.
+  ' id="SText" '; if($shifr -> flagtext)echo 'checked'; echo ' />' ; }
 else {
-  echo '<br>Encryption in text mode : <input type="checkbox" class="largerCheckbox" name="Encryption_in_text_mode" value="1" id="SText" ';
+  echo '<br>Encryption in text mode : <input type="checkbox"' .
+  ' class="largerCheckbox" name="Encryption_in_text_mode" value="1" id="SText" ';
   if($shifr -> flagtext)echo 'checked'; echo ' />' ; }
 ?>
 </p>
