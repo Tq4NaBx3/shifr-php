@@ -10,7 +10,7 @@ require ( 'shifr.php' ) ;
 $shifr  = new shifr ( ) ;
 shifr_init ( $shifr  ) ;
 
-$local = setlocale ( LC_ALL  , ''  ) ;
+$local = setlocale ( LC_ALL  , 'ru_RU.UTF-8'  ) ;
 if ( $local == 'ru_RU.UTF-8' ) $shifr -> localerus = true ;
   
 if ( ( ! isset ( $_REQUEST [ 'Шифрование_в_текстовом_режиме' ] ) ) and
