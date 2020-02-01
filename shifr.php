@@ -77,6 +77,11 @@ Both data and salt have secrecy apart from the first zero salt.
 Function Shifr(of pair: data+salt)should be randomly disordered.
 
 */
+/*
+Password encrypted × password = can serve as a hash function.
+Hash ÷ decrypt (password) == password
+If the decrypted hash with the password gives this password, then the password is correct.
+*/
 
 // returns [ 0..15 , 0..14 , ... , 0..2 , 0..1 ]
 function shifr_generate_pass4 ( ) : array {
