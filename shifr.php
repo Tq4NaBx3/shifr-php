@@ -78,9 +78,32 @@ Function Shifr(of pair: data+salt)should be randomly disordered.
 
 */
 /*
+Пароль зашированный × паролем = может служить как хеш функция.
+Хеш ÷ расшифровать (паролем) == пароль
+Если расшифрованный хеш с паролем даёт тот-же пароль, то пароль правильный.
+
+Двойное шифрование известных данных паролем может служить подписью.
+Например Sha1Sum(данные) × пароль × пароль = Подпись
+Если подпись расшифрованная два раза даёт контрольную сумму, то это даёт 
+повод доверять подписаным данным.
+
+Двойная расшифровка данных тоже может служить подписью.
+Данные ÷ расшифр ÷ расшифр = подпись
+Данные два раза расшифровываются и сверяются с подписью.
+*/
+/*
 Password encrypted × password = can serve as a hash function.
 Hash ÷ decrypt (password) == password
 If the decrypted hash with the password gives this password, then the password is correct.
+
+Double encryption of known data with a password can serve as a signature.
+For example Sha1Sum(data) × password × password = Signature
+If the signature decrypted twice gives the checksum, then this gives
+reason to trust the signed data.
+
+Double data decryption can also serve as a signature.
+Data ÷ decryption ÷ decryption = signature
+The data is decrypted twice and verified with the signature.
 */
 
 // returns [ 0..15 , 0..14 , ... , 0..2 , 0..1 ]
