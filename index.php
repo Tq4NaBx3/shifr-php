@@ -29,12 +29,12 @@ if  ( $_POST  ) {
       if (  $_POST  [ 'radio' ] == 'ASCII' )  $shifr -> letters_mode = 95 ;  
       else  $shifr -> letters_mode = 62 ; }
     if  ( isset ( $_POST  [ 'radiokey' ] ) ) {
-      if (  $_POST  [ 'radiokey' ] == 'Key296' )  $shifr -> key_mode = 296 ;  
-      else  $shifr -> key_mode = 45 ; }
+      if (  $_POST  [ 'radiokey' ] == 'Key296' )  shifr_set_version ( $shifr ,  6 ) ;  
+      else  shifr_set_version ( $shifr  , 4 ) ; }
     if  ( $_POST  [ 'submit'] == 'зашифровать' or 
       $_POST  [ 'submit'  ] == 'encrypt'  ) {
       $shifr -> flagtext = true  ;
-      if ( $shifr -> key_mode == 45 ) {
+      if ( shifr_version  ( $shifr  ) == 4 ) {
         shifr_password_load_4  ( $shifr ) ;
         shifr_encode4 ( $shifr ) ; }
       else {
@@ -43,7 +43,7 @@ if  ( $_POST  ) {
       shifr_flush ( $shifr  ) ; }
   else if  ( $_POST  [ 'submit'] == 'расшифровать' or 
       $_POST  [ 'submit'  ] == 'decrypt'  ) {
-      if ( $shifr -> key_mode == 45 ) {
+      if ( shifr_version  ( $shifr  ) == 4 ) {
         shifr_password_load_4 ( $shifr ) ;
         shifr_decode4 ( $shifr ) ; }
       else {
@@ -51,7 +51,7 @@ if  ( $_POST  ) {
         shifr_decode6 ( $shifr ) ; } }
   else  if  ( $_POST  [ 'submit'] == 'генерировать' or 
       $_POST  [ 'submit'  ] == 'generate'  ) {
-      if ( $shifr -> key_mode == 45 )
+      if ( shifr_version  ( $shifr  ) == 4 )
         shifr_generate_password_4 ( $shifr  ) ;
       else
         shifr_generate_password_6 ( $shifr  ) ; }
@@ -65,7 +65,7 @@ if  ( $_POST  ) {
       $uploadfile = $uploaddir  . basename  (
         $_FILES [ 'uploadfile'  ] [ 'name'  ] ) ;
       $fpw = fopen ( $uploadfile . '.shi' , 'wb'  ) ;
-      if ( $shifr -> key_mode == 45 )
+      if ( shifr_version  ( $shifr  ) == 4 )
         shifr_password_load_4  ( $shifr ) ;
       else
         shifr_password_load_6  ( $shifr ) ;
@@ -73,7 +73,7 @@ if  ( $_POST  ) {
         set_time_limit  ( 60  ) ;
         $shifr -> message = fread ( $fp , 0x1000 ) ;
         if ( ! $shifr -> message ) break ;
-        if ( $shifr -> key_mode == 45 ) shifr_encode4 ( $shifr ) ;
+        if ( shifr_version  ( $shifr  ) == 4 ) shifr_encode4 ( $shifr ) ;
         else  shifr_encode6 ( $shifr ) ;
         fwrite  ( $fpw , $shifr -> message ) ; }
       shifr_flush_file  ( $shifr , $fpw ) ;
@@ -103,7 +103,7 @@ if  ( $_POST  ) {
         $uploadfile2 = substr ( $uploadfile , 0 , -4 ) ;
       else  $uploadfile2 = $uploadfile  . '.des' ;
       $fpw = fopen ( $uploadfile2 , 'wb'  ) ;
-      if ( $shifr -> key_mode == 45 )
+      if ( shifr_version  ( $shifr  ) == 4 )
         shifr_password_load_4  ( $shifr ) ;
       else
         shifr_password_load_6  ( $shifr ) ;
@@ -111,7 +111,7 @@ if  ( $_POST  ) {
         set_time_limit  ( 60  ) ;
         $shifr -> message = fread ( $fp , 0x1000 ) ;
         if ( ! $shifr -> message ) break ;
-        if ( $shifr -> key_mode == 45 ) shifr_decode4 ( $shifr ) ;
+        if ( shifr_version  ( $shifr  ) == 4 ) shifr_decode4 ( $shifr ) ;
         else  shifr_decode6 ( $shifr ) ;
         fwrite  ( $fpw , $shifr -> message ) ; }
       fclose  ( $fpw  ) ;
@@ -176,10 +176,10 @@ if  ( $shifr -> localerus ) echo 'цифры и буквы'; else echo 'digits a
     echo 'Key size : ' ;
 ?>
 <input type="radio" name="radiokey" value="Key45" <?php 
-if ( $shifr -> key_mode == 45 ) echo 'checked' ?> >45 <?php
+if ( shifr_version  ( $shifr  ) == 4 ) echo 'checked' ?> >45 <?php
 if  ( $shifr -> localerus ) echo 'бит , 6-8 букв'; else echo 'bits , 6-8 letters'; ?>
 <input type="radio" name="radiokey" value="Key296" <?php 
-if ( $shifr -> key_mode == 296 ) echo 'checked' ?> >296 <?php 
+if ( shifr_version  ( $shifr  ) == 6 ) echo 'checked' ?> >296 <?php 
 if  ( $shifr -> localerus ) echo 'бит , 45-50 букв'; else
 echo 'bits , 45-50 letters'; ?>
 <br>

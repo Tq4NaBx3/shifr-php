@@ -2,7 +2,28 @@
 /*
  Шифр ©2020 Глебов А.Н.
  Shifr ©2020 Glebe A.N.
-
+ 
+ $shifr  = new shifr ( ) ;
+ shifr_init ( shifr & $shifr );
+ $shifr -> localerus = true or false ;
+ $shifr -> flagtext = false  or true ;
+ $shifr -> password = string ; to load , generate
+ $shifr -> message = string ; to encode , decode
+ $shifr -> letters_mode = 95 or 62 ;
+ shifr_set_version ( shifr & $sh , $ver  ) ; $ver == 4 or 6
+ shifr_version ( shifr & $sh ) ; returns 4 or 6
+ shifr_password_load_4  ( $shifr ) ;
+ shifr_password_load_6  ( $shifr ) ;
+ shifr_encode4 ( $shifr ) ;
+ shifr_encode6 ( $shifr ) ;
+ shifr_flush ( $shifr  ) ; after last encode to clear buffer
+ shifr_decode4 ( $shifr ) ;
+ shifr_decode6 ( $shifr ) ;
+ shifr_generate_password_4 ( $shifr  ) ;
+ shifr_generate_password_6 ( $shifr  ) ;
+ 
+*/
+/*
  RUS
 2 бит соль
 2 бит инфо
@@ -76,34 +97,6 @@ If all elements are of the same value, then all encrypted
 Both data and salt have secrecy apart from the first zero salt.
 Function Shifr(of pair: data+salt)should be randomly disordered.
 
-*/
-/*
-Пароль зашированный × паролем = может служить как хеш функция.
-Хеш ÷ расшифровать (паролем) == пароль
-Если расшифрованный хеш с паролем даёт тот-же пароль, то пароль правильный.
-
-Двойное шифрование известных данных паролем может служить подписью.
-Например Sha1Sum(данные) × пароль × пароль = Подпись
-Если подпись расшифрованная два раза даёт контрольную сумму, то это даёт 
-повод доверять подписаным данным.
-
-Двойная расшифровка данных тоже может служить подписью.
-Данные ÷ расшифр ÷ расшифр = подпись
-Данные два раза расшифровываются и сверяются с подписью.
-*/
-/*
-Password encrypted × password = can serve as a hash function.
-Hash ÷ decrypt (password) == password
-If the decrypted hash with the password gives this password, then the password is correct.
-
-Double encryption of known data with a password can serve as a signature.
-For example Sha1Sum(data) × password × password = Signature
-If the signature decrypted twice gives the checksum, then this gives
-reason to trust the signed data.
-
-Double data decryption can also serve as a signature.
-Data ÷ decryption ÷ decryption = signature
-The data is decrypted twice and verified with the signature.
 */
 
 // returns [ 0..15 , 0..14 , ... , 0..2 , 0..1 ]
@@ -658,6 +651,14 @@ found :
   } while ( $stringi  < strlen  ( $str  ) ) ;
   return  $passarr ; }  
   
+function  shifr_set_version ( shifr & $sh , $ver  ) {
+  if  ( $ver  ==  4 ) $sh ->  key_mode = 45 ;
+  else  $sh ->  key_mode = 296 ;  }
+
+function  shifr_version ( shifr & $sh ) {
+  if  ( $sh ->  key_mode == 45 ) return 4 ;
+  return  6 ; }
+
 function  shifr_init ( shifr & $sh ) {
   $sh ->  letters95 = array ( ) ;
   for ( $i = ord  ( ' ' ) ; $i <= ord ( '~' ) ; ++ $i )
@@ -670,8 +671,7 @@ function  shifr_init ( shifr & $sh ) {
   for ( $i = ord  ( 'a' ) ; $i <= ord ( 'z' ) ; ++ $i )
     $sh ->  letters [ ] = chr ( $i ) ; 
   $sh ->  letters_mode = 62 ;
-  //$sh ->  key_mode = 45 ;
-  $sh ->  key_mode = 296 ;
+  shifr_set_version ( $sh , 6 ) ;
   $sh ->  old_last_data  = 0 ;
   $sh ->  old_last_sole  = 0 ;
   $sh ->  bytecount  = 0 ;
