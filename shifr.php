@@ -10,17 +10,14 @@
  $shifr -> password = string ; to load , generate
  $shifr -> message = string ; to encode , decode
  $shifr -> letters_mode = 95 or 62 ;
- shifr_set_version ( shifr & $sh , $ver  ) ; $ver == 4 or 6
- shifr_version ( shifr & $sh ) ; returns 4 or 6
- shifr_password_load_4  ( $shifr ) ;
- shifr_password_load_6  ( $shifr ) ;
- shifr_encode4 ( $shifr ) ;
- shifr_encode6 ( $shifr ) ;
+ shifr_set_version ( shifr & $sh , $ver  ) ; $ver == 2 or 3
+ shifr_version ( shifr & $sh ) ; returns 2 or 3
+ shifr_password_load  ( $shifr ) ;
+ shifr_encode  ( shifr & $shifr ) ;
  shifr_flush ( $shifr  ) ; after last encode to clear buffer
- shifr_decode4 ( $shifr ) ;
- shifr_decode6 ( $shifr ) ;
- shifr_generate_password_4 ( $shifr  ) ;
- shifr_generate_password_6 ( $shifr  ) ;
+ shifr_flush_file  ( $shifr , $fpw ) ;
+ shifr_decode ( $shifr ) ;
+ shifr_generate_password ( $shifr  ) ;
  
 */
 /*
@@ -679,12 +676,12 @@ found :
   return  $passarr ; }  
   
 function  shifr_set_version ( shifr & $sh , $ver  ) {
-  if  ( $ver  ==  4 ) $sh ->  key_mode = 45 ;
+  if  ( $ver  ==  2 ) $sh ->  key_mode = 45 ;
   else  $sh ->  key_mode = 296 ;  }
 
 function  shifr_version ( shifr & $sh ) {
-  if  ( $sh ->  key_mode == 45 ) return 4 ;
-  return  6 ; }
+  if  ( $sh ->  key_mode == 45 ) return 2 ;
+  return  3 ; }
 
 function  shifr_init ( shifr & $sh ) {
   $sh ->  letters95 = array ( ) ;
@@ -698,7 +695,7 @@ function  shifr_init ( shifr & $sh ) {
   for ( $i = ord  ( 'a' ) ; $i <= ord ( 'z' ) ; ++ $i )
     $sh ->  letters [ ] = chr ( $i ) ; 
   $sh ->  letters_mode = 62 ;
-  shifr_set_version ( $sh , 6 ) ;
+  shifr_set_version ( $sh , 3 ) ;
   $sh ->  old_last_data  = 0 ;
   $sh ->  old_last_sole  = 0 ;
   $sh ->  bytecount  = 0 ;
@@ -714,5 +711,22 @@ function  shifr_init ( shifr & $sh ) {
   $sh ->  bufin = 0 ;
   $sh ->  localerus = false ;
   $sh ->  flagtext  = true  ; }
+
+function  shifr_password_load ( shifr & $shifr ) {
+  if ( shifr_version  ( $shifr  ) == 2 ) shifr_password_load_4 ( $shifr ) ;
+  else shifr_password_load_6 ( $shifr ) ; }
+
+function  shifr_encode  ( shifr & $shifr ) {
+  if ( shifr_version  ( $shifr  ) == 2 ) shifr_encode4 ( $shifr ) ; 
+  else shifr_encode6 ( $shifr  ) ; }
+
+function  shifr_decode  ( shifr & $shifr ) {
+  if ( shifr_version  ( $shifr  ) == 2 ) shifr_decode4 ( $shifr ) ; 
+  else shifr_decode6 ( $shifr ) ; }
+
+function  shifr_generate_password  ( shifr & $shifr ) {
+  if ( shifr_version  ( $shifr  ) == 2 ) shifr_generate_password_4 ( $shifr  ) ;
+  else shifr_generate_password_6 ( $shifr  ) ; }
+
 ?>
 

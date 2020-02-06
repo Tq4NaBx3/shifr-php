@@ -29,32 +29,21 @@ if  ( $_POST  ) {
       if (  $_POST  [ 'radio' ] == 'ASCII' )  $shifr -> letters_mode = 95 ;  
       else  $shifr -> letters_mode = 62 ; }
     if  ( isset ( $_POST  [ 'radiokey' ] ) ) {
-      if (  $_POST  [ 'radiokey' ] == 'Key296' )  shifr_set_version ( $shifr ,  6 ) ;  
-      else  shifr_set_version ( $shifr  , 4 ) ; }
+      if (  $_POST  [ 'radiokey' ] == 'Key296' )  shifr_set_version ( $shifr ,  3 ) ;  
+      else  shifr_set_version ( $shifr  , 2 ) ; }
     if  ( $_POST  [ 'submit'] == 'зашифровать' or 
       $_POST  [ 'submit'  ] == 'encrypt'  ) {
       $shifr -> flagtext = true  ;
-      if ( shifr_version  ( $shifr  ) == 4 ) {
-        shifr_password_load_4  ( $shifr ) ;
-        shifr_encode4 ( $shifr ) ; }
-      else {
-        shifr_password_load_6 ( $shifr ) ;
-        shifr_encode6 ( $shifr  ) ; }
+      shifr_password_load ( $shifr ) ;
+      shifr_encode ( $shifr ) ; 
       shifr_flush ( $shifr  ) ; }
   else if  ( $_POST  [ 'submit'] == 'расшифровать' or 
       $_POST  [ 'submit'  ] == 'decrypt'  ) {
-      if ( shifr_version  ( $shifr  ) == 4 ) {
-        shifr_password_load_4 ( $shifr ) ;
-        shifr_decode4 ( $shifr ) ; }
-      else {
-        shifr_password_load_6 ( $shifr ) ;
-        shifr_decode6 ( $shifr ) ; } }
+      shifr_password_load ( $shifr ) ;
+      shifr_decode ( $shifr ) ; }
   else  if  ( $_POST  [ 'submit'] == 'генерировать' or 
-      $_POST  [ 'submit'  ] == 'generate'  ) {
-      if ( shifr_version  ( $shifr  ) == 4 )
-        shifr_generate_password_4 ( $shifr  ) ;
-      else
-        shifr_generate_password_6 ( $shifr  ) ; }
+      $_POST  [ 'submit'  ] == 'generate'  ) 
+      shifr_generate_password ( $shifr  ) ; 
    else
    if ( ( $_POST  [ 'submit'] == 'Зашифровать файл' or 
         $_POST  [ 'submit'  ] == 'Encrypt file'  ) and
@@ -65,16 +54,12 @@ if  ( $_POST  ) {
       $uploadfile = $uploaddir  . basename  (
         $_FILES [ 'uploadfile'  ] [ 'name'  ] ) ;
       $fpw = fopen ( $uploadfile . '.shi' , 'wb'  ) ;
-      if ( shifr_version  ( $shifr  ) == 4 )
-        shifr_password_load_4  ( $shifr ) ;
-      else
-        shifr_password_load_6  ( $shifr ) ;
+      shifr_password_load ( $shifr ) ;
       while ( ! feof  ( $fp ) ) {
         set_time_limit  ( 60  ) ;
         $shifr -> message = fread ( $fp , 0x1000 ) ;
         if ( ! $shifr -> message ) break ;
-        if ( shifr_version  ( $shifr  ) == 4 ) shifr_encode4 ( $shifr ) ;
-        else  shifr_encode6 ( $shifr ) ;
+        shifr_encode ( $shifr ) ; 
         fwrite  ( $fpw , $shifr -> message ) ; }
       shifr_flush_file  ( $shifr , $fpw ) ;
       fclose  ( $fpw  ) ;
@@ -103,16 +88,12 @@ if  ( $_POST  ) {
         $uploadfile2 = substr ( $uploadfile , 0 , -4 ) ;
       else  $uploadfile2 = $uploadfile  . '.des' ;
       $fpw = fopen ( $uploadfile2 , 'wb'  ) ;
-      if ( shifr_version  ( $shifr  ) == 4 )
-        shifr_password_load_4  ( $shifr ) ;
-      else
-        shifr_password_load_6  ( $shifr ) ;
+      shifr_password_load ( $shifr ) ;
       while ( ! feof  ( $fp ) ) {
         set_time_limit  ( 60  ) ;
         $shifr -> message = fread ( $fp , 0x1000 ) ;
         if ( ! $shifr -> message ) break ;
-        if ( shifr_version  ( $shifr  ) == 4 ) shifr_decode4 ( $shifr ) ;
-        else  shifr_decode6 ( $shifr ) ;
+        shifr_decode ( $shifr ) ; 
         fwrite  ( $fpw , $shifr -> message ) ; }
       fclose  ( $fpw  ) ;
       fclose  ( $fp ) ;
@@ -176,10 +157,10 @@ if  ( $shifr -> localerus ) echo 'цифры и буквы'; else echo 'digits a
     echo 'Key size : ' ;
 ?>
 <input type="radio" name="radiokey" value="Key45" <?php 
-if ( shifr_version  ( $shifr  ) == 4 ) echo 'checked' ?> >45 <?php
+if ( shifr_version  ( $shifr  ) == 2 ) echo 'checked' ?> >45 <?php
 if  ( $shifr -> localerus ) echo 'бит , 6-8 букв'; else echo 'bits , 6-8 letters'; ?>
 <input type="radio" name="radiokey" value="Key296" <?php 
-if ( shifr_version  ( $shifr  ) == 6 ) echo 'checked' ?> >296 <?php 
+if ( shifr_version  ( $shifr  ) == 3 ) echo 'checked' ?> >296 <?php 
 if  ( $shifr -> localerus ) echo 'бит , 45-50 букв'; else
 echo 'bits , 45-50 letters'; ?>
 <br>
