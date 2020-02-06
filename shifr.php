@@ -12,7 +12,7 @@
  $shifr -> letters_mode = 95 or 62 ;
  shifr_set_version ( shifr & $sh , $ver  ) ; $ver == 2 or 3
  shifr_version ( shifr & $sh ) ; returns 2 or 3
- shifr_password_load  ( $shifr ) ;
+ shifr_password_load  ( $shifr ) ; from message string
  shifr_encode  ( shifr & $shifr ) ;
  shifr_flush ( $shifr  ) ; after last encode to clear buffer
  shifr_flush_file  ( $shifr , $fpw ) ;
