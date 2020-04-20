@@ -43,7 +43,10 @@ if  ( $_POST  ) {
       shifr_decode ( $shifr ) ; }
   else  if  ( $_POST  [ 'submit'] == 'генерировать' or 
       $_POST  [ 'submit'  ] == 'generate'  ) 
-      shifr_generate_password ( $shifr  ) ; 
+      shifr_generate_password ( $shifr  ) ;
+  else  if  ( $_POST  [ 'submit'] == 'загрузить' or 
+      $_POST  [ 'submit'  ] == 'load'  ) 
+      {   }
    else
    if ( ( $_POST  [ 'submit'] == 'Зашифровать файл' or 
         $_POST  [ 'submit'  ] == 'Encrypt file'  ) and
@@ -179,10 +182,12 @@ echo htmlspecialchars ( $shifr -> password ) ; ?>" size ="51" />
 <?php
   if  ( $shifr -> localerus ) {
     echo ' <input type="submit" name="submit" value="зашифровать" />'  ;
-    echo ' <input type="submit" name="submit" value="расшифровать" />'  ; }
+    echo ' <input type="submit" name="submit" value="расшифровать" />'  ;
+    /*echo ' <input type="submit" name="submit" value="загрузить" />'  ;*/ }
   else {
     echo ' <input type="submit" name="submit" value="encrypt" />' ;
-    echo ' <input type="submit" name="submit" value="decrypt" />' ; }      
+    echo ' <input type="submit" name="submit" value="decrypt" />' ; 
+    /*echo ' <input type="submit" name="submit" value="load" />'  ;*/ }
 ?>
 <hr>
 <input type=file name=uploadfile>
