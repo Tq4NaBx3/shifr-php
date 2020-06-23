@@ -25,6 +25,7 @@ if ( isset ( $_REQUEST  [ 'message'  ] ) )
         
 if  ( $_POST  ) {
   if  ( isset ( $_POST  [ 'submit'  ] ) ) {
+//$err = '$_POST  [ \'submit\' ] ='.$_POST  [ 'submit' ];
     if  ( isset ( $_POST  [ 'radio' ] ) ) {
       if (  $_POST  [ 'radio' ] == 'ASCII' )  $shifr -> letters_mode = 95 ;  
       else  $shifr -> letters_mode = 62 ; }
@@ -35,12 +36,12 @@ if  ( $_POST  ) {
       $_POST  [ 'submit'  ] == 'encrypt'  ) {
       $shifr -> flagtext = true  ;
       shifr_password_load ( $shifr ) ;
-      shifr_encode ( $shifr ) ; 
+      shifr_encrypt ( $shifr ) ; 
       shifr_flush ( $shifr  ) ; }
   else if  ( $_POST  [ 'submit'] == 'расшифровать' or 
       $_POST  [ 'submit'  ] == 'decrypt'  ) {
       shifr_password_load ( $shifr ) ;
-      shifr_decode ( $shifr ) ; }
+      shifr_decrypt ( $shifr ) ; }
   else  if  ( $_POST  [ 'submit'] == 'генерировать' or 
       $_POST  [ 'submit'  ] == 'generate'  ) 
       shifr_generate_password ( $shifr  ) ;
@@ -62,7 +63,7 @@ if  ( $_POST  ) {
         set_time_limit  ( 60  ) ;
         $shifr -> message = fread ( $fp , 0x1000 ) ;
         if ( ! $shifr -> message ) break ;
-        shifr_encode ( $shifr ) ; 
+        shifr_encrypt ( $shifr ) ; 
         fwrite  ( $fpw , $shifr -> message ) ; }
       shifr_flush_file  ( $shifr , $fpw ) ;
       fclose  ( $fpw  ) ;
@@ -81,6 +82,7 @@ if  ( $_POST  ) {
    else
    if  ( ( $_POST  [ 'submit' ] == 'Расшифровать файл' or 
         $_POST  [ 'submit'  ] == 'Decrypt file' ) ) {
+//$err = '$_POST  [ \'submit\' ] == \'Расшифровать файл\'' ;
       if ( $_FILES [ 'uploadfile'  ] [ 'size' ] > 0 ) {
       $fp = fopen ( $_FILES [ 'uploadfile'  ] [ 'tmp_name'  ] , 'rb'  ) ;
       $uploaddir = './uploads/' ;
@@ -96,7 +98,7 @@ if  ( $_POST  ) {
         set_time_limit  ( 60  ) ;
         $shifr -> message = fread ( $fp , 0x1000 ) ;
         if ( ! $shifr -> message ) break ;
-        shifr_decode ( $shifr ) ; 
+        shifr_decrypt ( $shifr ) ; 
         fwrite  ( $fpw , $shifr -> message ) ; }
       fclose  ( $fpw  ) ;
       fclose  ( $fp ) ;
@@ -104,7 +106,10 @@ if  ( $_POST  ) {
         $shifr -> message = 'расшифрованный файл сохранён с именем : ' ;
       else
         $shifr -> message = 'decrypted file saved with name : ' ;
-      $shifr -> message .= "'". $uploadfile2 ."'\n" ;  } } } }
+      $shifr -> message .= "'". $uploadfile2 ."'\n" ;  }
+    else {
+//$err =  '$_FILES [ \'uploadfile\'  ] [ \'size\' ] <= 0' ;
+      }} } }
 ?>
 <style> p { font-size: 36px; }  textarea { font-size: 36px; }
 input { font-size: 36px; } input.largerCheckbox { transform : scale(2); }
@@ -119,6 +124,10 @@ input { font-size: 36px; } input.largerCheckbox { transform : scale(2); }
 </style>
 <html>
 <body>
+<?php
+if (isset($err))
+  echo '<p>err = \''.$err.'\'</p>' ;
+?>
 <form action="<?php echo $_SERVER['PHP_SELF'] ; ?>" method=post 
   enctype=multipart/form-data>
 <input type="hidden" name="MAX_FILE_SIZE" value="1024000000">
