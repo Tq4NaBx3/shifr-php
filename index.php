@@ -11,7 +11,8 @@ $shifr  = new shifr ( ) ;
 shifr_init ( $shifr  ) ;
 
 $local = setlocale ( LC_ALL  , 'ru_RU.UTF-8'  ) ;
-if ( $local == 'ru_RU.UTF-8' ) $shifr -> localerus = true ;
+if ( $local == 'ru_RU.UTF-8' )
+  $shifr -> localerus = true ;
   
 if ( ( ! isset ( $_REQUEST [ 'Шифрование_в_текстовом_режиме' ] ) ) and
   ( ! isset ( $_REQUEST [ 'Encryption_in_text_mode' ] ) ) )
@@ -27,11 +28,15 @@ if  ( $_POST  ) {
   if  ( isset ( $_POST  [ 'submit'  ] ) ) {
 //$err = '$_POST  [ \'submit\' ] ='.$_POST  [ 'submit' ];
     if  ( isset ( $_POST  [ 'radio' ] ) ) {
-      if (  $_POST  [ 'radio' ] == 'ASCII' )  $shifr -> letters_mode = 95 ;  
-      else  $shifr -> letters_mode = 62 ; }
+      if (  $_POST  [ 'radio' ] == 'ASCII' ) 
+        $shifr -> letters_mode = 95 ;  
+      else
+        $shifr -> letters_mode = 62 ; }
     if  ( isset ( $_POST  [ 'radiokey' ] ) ) {
-      if (  $_POST  [ 'radiokey' ] == 'Key296' )  shifr_set_version ( $shifr ,  3 ) ;  
-      else  shifr_set_version ( $shifr  , 2 ) ; }
+      if (  $_POST  [ 'radiokey' ] == 'Key296' ) 
+        shifr_set_version ( $shifr ,  3 ) ;  
+      else 
+        shifr_set_version ( $shifr  , 2 ) ; }
     if  ( $_POST  [ 'submit'] == 'зашифровать' or 
       $_POST  [ 'submit'  ] == 'encrypt'  ) {
       $shifr -> flagtext = true  ;
@@ -62,7 +67,8 @@ if  ( $_POST  ) {
       while ( ! feof  ( $fp ) ) {
         set_time_limit  ( 60  ) ;
         $shifr -> message = fread ( $fp , 0x1000 ) ;
-        if ( ! $shifr -> message ) break ;
+        if ( ! $shifr -> message )
+          break ;
         shifr_encrypt ( $shifr ) ; 
         fwrite  ( $fpw , $shifr -> message ) ; }
       shifr_flush_file  ( $shifr , $fpw ) ;
@@ -97,7 +103,8 @@ if  ( $_POST  ) {
       while ( ! feof  ( $fp ) ) {
         set_time_limit  ( 60  ) ;
         $shifr -> message = fread ( $fp , 0x1000 ) ;
-        if ( ! $shifr -> message ) break ;
+        if ( ! $shifr -> message )
+          break ;
         shifr_decrypt ( $shifr ) ; 
         fwrite  ( $fpw , $shifr -> message ) ; }
       fclose  ( $fpw  ) ;
