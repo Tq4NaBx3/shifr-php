@@ -26,12 +26,20 @@ if ( isset ( $_REQUEST  [ 'message'  ] ) )
         
 if  ( $_POST  ) {
   if  ( isset ( $_POST  [ 'submit'  ] ) ) {
-//$err = '$_POST  [ \'submit\' ] ='.$_POST  [ 'submit' ];
     if  ( isset ( $_POST  [ 'radio' ] ) ) {
-      if (  $_POST  [ 'radio' ] == 'ASCII' ) 
-        $shifr -> letters_mode = 95 ;  
-      else
-        $shifr -> letters_mode = 62 ; }
+      switch  ( $_POST  [ 'radio' ] ) {
+      case  'ASCII' :
+        $shifr -> letters_mode = 95 ;
+        break ;
+      case  'LettDigit' :
+        $shifr -> letters_mode = 62 ;
+        break ;
+      case  'Digit' :
+        $shifr -> letters_mode = 10 ;
+        break ;
+      default :
+        echo  "\$_POST  [ 'radio' ] = " . $_POST  [ 'radio' ] ;
+        die ( ) ; } }
     if  ( isset ( $_POST  [ 'radiokey' ] ) ) {
       if (  $_POST  [ 'radiokey' ] == 'Key296' ) 
         shifr_set_version ( $shifr ,  3 ) ;  
@@ -88,7 +96,6 @@ if  ( $_POST  ) {
    else
    if  ( ( $_POST  [ 'submit' ] == 'Расшифровать файл' or 
         $_POST  [ 'submit'  ] == 'Decrypt file' ) ) {
-//$err = '$_POST  [ \'submit\' ] == \'Расшифровать файл\'' ;
       if ( $_FILES [ 'uploadfile'  ] [ 'size' ] > 0 ) {
       $fp = fopen ( $_FILES [ 'uploadfile'  ] [ 'tmp_name'  ] , 'rb'  ) ;
       $uploaddir = './uploads/' ;
@@ -97,7 +104,8 @@ if  ( $_POST  ) {
       $len_uploadfile = strlen ( $uploadfile ) ;
       if ( $len_uploadfile > 4 and substr ( $uploadfile , -4 ) == '.shi' )
         $uploadfile2 = substr ( $uploadfile , 0 , -4 ) ;
-      else  $uploadfile2 = $uploadfile  . '.des' ;
+      else 
+        $uploadfile2 = $uploadfile  . '.des' ;
       $fpw = fopen ( $uploadfile2 , 'wb'  ) ;
       shifr_password_load ( $shifr ) ;
       while ( ! feof  ( $fp ) ) {
@@ -114,9 +122,7 @@ if  ( $_POST  ) {
       else
         $shifr -> message = 'decrypted file saved with name : ' ;
       $shifr -> message .= "'". $uploadfile2 ."'\n" ;  }
-    else {
-//$err =  '$_FILES [ \'uploadfile\'  ] [ \'size\' ] <= 0' ;
-      }} } }
+    else { }} } }
 ?>
 <style> p { font-size: 36px; }  textarea { font-size: 36px; }
 input { font-size: 36px; } input.largerCheckbox { transform : scale(2); }
@@ -158,8 +164,10 @@ if  ( $shifr -> localerus )
 <p>
 
 <?php
-  if  ( $shifr -> localerus ) echo 'Алфавит знаков в пароле :' ;
-  else echo 'Alphabet of characters in a password :' ;
+  if  ( $shifr -> localerus )
+    echo 'Алфавит знаков в пароле :' ;
+  else
+    echo 'Alphabet of characters in a password :' ;
 ?>
 <input type="radio" name="radio" value="ASCII" <?php 
 if ( $shifr -> letters_mode == 95 ) echo 'checked' ?> >ASCII <?php 
@@ -168,6 +176,9 @@ echo 'letters digits signs space'; ?>
 <input type="radio" name="radio" value="LettDigit" <?php
 if ( $shifr -> letters_mode == 62 ) echo 'checked' ?> ><?php 
 if  ( $shifr -> localerus ) echo 'цифры и буквы'; else echo 'digits and letters'; ?>
+<input type="radio" name="radio" value="Digit" <?php
+if ( $shifr -> letters_mode == 10 ) echo 'checked' ?> ><?php 
+if  ( $shifr -> localerus ) echo 'цифры'; else echo 'digits'; ?>
 <br>
 <?php
   if  ( $shifr -> localerus )
@@ -177,11 +188,11 @@ if  ( $shifr -> localerus ) echo 'цифры и буквы'; else echo 'digits a
 ?>
 <input type="radio" name="radiokey" value="Key45" <?php 
 if ( shifr_version  ( $shifr  ) == 2 ) echo 'checked' ?> >45 <?php
-if  ( $shifr -> localerus ) echo 'бит , 6-8 букв'; else echo 'bits , 6-8 letters'; ?>
+if  ( $shifr -> localerus ) echo 'бит , 6-14 букв'; else echo 'bits , 6-14 letters'; ?>
 <input type="radio" name="radiokey" value="Key296" <?php 
 if ( shifr_version  ( $shifr  ) == 3 ) echo 'checked' ?> >296 <?php 
-if  ( $shifr -> localerus ) echo 'бит , 45-50 букв'; else
-echo 'bits , 45-50 letters'; ?>
+if  ( $shifr -> localerus ) echo 'бит , 45-90 букв'; else
+echo 'bits , 45-90 letters'; ?>
 <br>
 <?php
   if  ( $shifr -> localerus ) {
@@ -193,7 +204,7 @@ echo 'bits , 45-50 letters'; ?>
 ?>
 <br>
 <input name="password" type="text" value="<?php 
-echo htmlspecialchars ( $shifr -> password ) ; ?>" size ="51" />
+echo htmlspecialchars ( $shifr -> password ) ; ?>" size ="46" /> <!-- 91 -->
 </p>
 <?php
   if  ( $shifr -> localerus ) {

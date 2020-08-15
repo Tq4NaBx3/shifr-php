@@ -9,7 +9,7 @@
  $shifr -> flagtext = false  or true ;
  $shifr -> password = string ; to load , generate
  $shifr -> message = string ; to encode , decode
- $shifr -> letters_mode = 95 or 62 ;
+ $shifr -> letters_mode = 95 or 62 or 10 ;
  shifr_set_version ( shifr & $sh , $ver  ) ; $ver == 2 or 3
  shifr_version ( shifr & $sh ) ; returns 2 or 3
  shifr_password_load  ( $shifr ) ; from message string
@@ -39,6 +39,7 @@ b00 может быть зашифрован четырьмя способами
  ascii буквы 126-32+1 = 95 шт
  длина буквенного пароля : log ( 95 , 20922789888000 ) ≈ 6.735 букв <= 7 букв
   log ( 62 , 20922789888000 ) ≈ 7.432 буквы <= 8 букв
+  log ( 10 , 20922789888000 ) ≈ 13.32 цифр <= 14 цифр
 
 OrigData   : 01 11 11
 RandomSalt : 10 11 10
@@ -77,6 +78,7 @@ Secr xxxx      xxxx            yyyy
 // ascii letters 126-32+1 = 95 pcs
 // letter password length : log ( 95 , 20922789888000 ) ≈ 6.735 letters <= 7 letters
 //  log ( 62 , 20922789888000 ) ≈ 7.432 letters <= 8 letters
+//  log ( 10 , 20922789888000 ) ≈ 13.32 цифр <= 14 цифр
 
 /*
 OrigData   : 01 11 11
@@ -122,24 +124,31 @@ Function Shifr(of pair: data+salt)should be randomly disordered.
 // ascii буквы 126-32+1 = 95 шт
 // длина буквенного пароля : log ( 95 , 1.26886932186e89 ) ≈ 45.05 букв <= 46 букв
 //  log ( 62 , 1.26886932186e89 ) ≈ 49.71 буквы <= 50 букв
+//  log ( 10 , 1.26886932186e89 ) ≈ 89.1 цифр <= 90 цифр
 
 // returns [ 0..15 , 0..14 , ... , 0..2 , 0..1 ]
 function shifr_generate_pass2 ( ) : array {
   $dice = array ( ) ;
-  for ( $i  = 15 ; $i  > 0 ; -- $i ) {
+  $i  = 15 ;
+  do  {
     $r = rand  ( 0 , $i )  ;
-    $dice [ ] = $r ; }
+    $dice [ ] = $r ;
+    --  $i  ;
+  } while ( $i  > 0 ) ;
   return  $dice ; }
 
 // returns [ 0..63 , 0..62 , ... , 0..2 , 0..1 ]
 function shifr_generate_pass3 ( ) : array {
   $dice = array ( ) ;
-  for ( $i  = 63 ; $i  > 0 ; -- $i ) {
+  $i  = 63 ;
+  do  {
     $r = rand  ( 0 , $i )  ;
-    $dice [ ] = $r ; }
+    $dice [ ] = $r ;
+    --  $i  ;
+  } while ( $i  > 0 ) ;
   return  $dice ; }
   
-function  shifr_data_sole2 ( array $secret_data ) : array {
+function  shifr_data_sole2 ( array & $secret_data ) : array {
   $secret_data_sole = array ( ) ;
   $ra = rand ( 0 , 0xff ) ; // 4*2 = 8 bits
   foreach ( $secret_data as $da ) {
@@ -147,7 +156,7 @@ function  shifr_data_sole2 ( array $secret_data ) : array {
     $ra >>= 2 ; }
   return  $secret_data_sole ; }
 
-function  shifr_data_sole3 ( array $secret_data ) : array {
+function  shifr_data_sole3 ( array & $secret_data ) : array {
   $secret_data_sole = array ( ) ;
   $ra = rand ( 0 , 0x1ff ) ; // 3*3 = 9 bits
   foreach ( $secret_data as $da ) {
@@ -157,9 +166,12 @@ function  shifr_data_sole3 ( array $secret_data ) : array {
   
 function  shifr_byte_to_array2 ( int $byte ) : array {
   $arr = array ( ) ;
-  for ( $i = 0 ; $i < 8 ; $i += 2 ) {
+  $i = 0 ;
+  do  {
     $arr [ ] = $byte & 0x3 ;
-    $byte >>= 2 ; }
+    $byte >>= 2 ;
+    $i += 2 ;
+  } while ( $i < 8  ) ;
   return  $arr ; }
 
 function  shifr_data_xor2 ( int & $old_last_data , int & $old_last_sole ,
@@ -182,7 +194,7 @@ function  shifr_data_xor3 ( int & $old_last_data , int & $old_last_sole ,
     $old_last_data = $cur_data ;
     $old_last_sole  = $cur_sole ; } }
     
-function  shifr_crypt_decrypt ( array $datap , array & $tablep ) : array {
+function  shifr_crypt_decrypt ( array & $datap , array & $tablep ) : array {
   $encrp = array ( ) ;
   foreach ( $datap as $id )
     $encrp [ ] = $tablep [ $id ] ;
@@ -209,9 +221,10 @@ function  shifr_decrypt_sole3 ( array & $datap , array & $tablep ,
 class shifr {
   // alphabet ascii // алфавит ascii
   public  $letters95  ; // 0x20 пробел - 0x7e ~ тильда // 0x20 space - 0x7e ~ tilde
-  public  $letters  ; // alphabet 62 letters digits // палфавит 62 буквы цифры
-  // password alphabet mode 62 or 95 
-  // режим алфавит пароля 62 или 95
+  public  $letters  ; // alphabet 62 letters digits // алфавит 62 буквы цифры
+  public  $letters10  ; // alphabet 10 digits // алфавит 10 цифры
+  // password alphabet mode 10 or 62 or 95 
+  // режим алфавит пароля 10 или 62 или 95
   public  $letters_mode ;
   public  $localerus  ; // false or true // русская локаль false или true
   public  $flagtext ; // true or false // флаг текст true или false
@@ -425,9 +438,11 @@ function  shifr_decrypt2 ( shifr & $sh ) {
           break ; 
         $sh ->  buf3 [ ] = ord ( $message_array [ $i ] ) - ord ( 'R' ) ;
         ++  $sh -> buf3_index ;
-        if ( $sh -> buf3_index < 3 )  ++  $i  ;
+        if ( $sh -> buf3_index < 3 )
+          ++  $i  ;
       } while ( $sh -> buf3_index < 3 ) ;
-      if ( $i >= count  (  $message_array  ) ) break ; 
+      if ( $i >= count  (  $message_array  ) )
+        break ; 
       $sh -> buf3_index = 0 ;
       $u16 = $sh  ->  buf3 [ 0 ] + 40 * ( $sh ->  buf3 [ 1 ] +
         40 * $sh  ->  buf3 [ 2 ] ) ;
@@ -465,12 +480,14 @@ function  shifr_decrypt2 ( shifr & $sh ) {
 // number /= div , number := floor [ деление ] , return := остаток
 function  number_div8_mod ( array & $number , int $div ) : int {
   $modi = 0 ;
-  for ( $i = count  ( $number ) ; $i > 0 ; )  {
+  $i = count  ( $number ) ;
+  while ( $i > 0 )  {
     -- $i ;
     $x = ( $modi << 8 ) | ( $number [ $i  ] ) ;
     $modi = $x % $div  ;
     $number [ $i  ] = intdiv  ( $x , $div  ) ;  }
-  for ( $i = count  ( $number ) ; $i > 0 ; )  {
+  $i = count  ( $number ) ;
+  while ( $i > 0 )  {
     -- $i ;
     if ( $number [ $i  ] != 0 )
       break ;
@@ -486,7 +503,8 @@ function  number_dec  ( array & $number ) {
   if ( $i == count  ( $number ) ) {
     echo  'number_dec:$i == count  ( $number )' ;
     return  ; }
-  for ( $i = count  ( $number ) ; $i > 0 ; )  {
+  $i = count  ( $number ) ;
+  while ( $i > 0 )  {
     -- $i ;
     if ( $number [ $i  ] != 0 ) 
       break ;
@@ -504,10 +522,18 @@ function  shifr_generate_password_3 ( shifr & $sh ) {
     shifr_pass_to_array3  ( shifr_generate_pass3  ( ) ) ) ; }
 
 function  shifr_password_to_string ( shifr & $sh , array $passworda ) : string {
-  if ( $sh  ->  letters_mode ==  95 )
+  switch  ( $sh  ->  letters_mode ) {
+  case  95  :
     $letters  = $sh ->  letters95  ;
-  else  
+    break ;
+  case  62  :
     $letters  = $sh ->  letters  ;
+    break ;
+  case  10  :
+    $letters  = $sh ->  letters10  ;
+    break ;
+  default :
+    return  ''  ; }
   $letters_count  = count ( $letters  ) ;
   $str = '' ;
   if ( number_not_zero ( $passworda ) ) {
@@ -523,10 +549,10 @@ function  number_set_zero ( array & $number ) {
 function  number_set_byte ( array & $number , int $byte ) {
   if ( $byte != 0 ) {
     if ( $byte < 0 ) {
-      echo 'number_set_byte:$byte < 0' ;
+      // echo 'number_set_byte:$byte < 0' ;
       return  ; }
     if ( $byte >= 0x100 ) {
-      echo 'number_set_byte:$byte >= 0x100' ;
+      // echo 'number_set_byte:$byte >= 0x100' ;
       return  ; }
     $number = array ( $byte ) ; }
   else
@@ -572,10 +598,10 @@ function  number_mul_byte ( array & $number , int $byte ) {
   if ( $byte == 1 )
     return ;
   if ( $byte < 0 ) {
-    echo 'number_mul_byte: $byte < 0' ;
+    //echo 'number_mul_byte: $byte < 0' ;
     return  ; }
   if ( $byte >= 0x100 ) {
-    echo 'number_mul_byte: $byte >= 0x100' ;
+    //echo 'number_mul_byte: $byte >= 0x100' ;
     return  ; }
   $per = 0 ;
   for ( $i = 0 ; $i < count  ( $number ) ; ++ $i )  {
@@ -665,10 +691,18 @@ function  shifr_string_to_key_array  ( shifr & $sh , string & $str ) {
   number_set_zero ( $passarr ) ;
   if ( $strn == 0 ) 
     return $passarr ;
-  if  ( $sh ->  letters_mode ==  95  )
+  switch  ( $sh ->  letters_mode ) {
+  case  95  :
     $letters  = $sh ->  letters95  ;
-  else
+    break ;
+  case  62  :
     $letters  = $sh ->  letters  ;
+    break ;
+  case  10  :
+    $letters  = $sh ->  letters10  ;
+    break ;
+  default :
+    return  ; }
   $letters_count  = count ( $letters  ) ;
   $mult = array ( ) ;
   number_set_byte ( $mult , 1 ) ;
@@ -706,9 +740,11 @@ function  shifr_version ( shifr & $sh ) {
   return  3 ; }
 
 function  shifr_init ( shifr & $sh ) {
+  //  ascii ' ' => '~'
   $sh ->  letters95 = array ( ) ;
   for ( $i = ord  ( ' ' ) ; $i <= ord ( '~' ) ; ++ $i )
     $sh ->  letters95 [ ] = chr ( $i ) ;
+  // '0' - '9' , 'A' - 'Z' , 'a' - 'z'  
   $sh ->  letters = array ( ) ;
   for ( $i = ord  ( '0' ) ; $i <= ord ( '9' ) ; ++ $i )
     $sh ->  letters [ ] = chr ( $i ) ;
@@ -716,6 +752,11 @@ function  shifr_init ( shifr & $sh ) {
     $sh ->  letters [ ] = chr ( $i ) ;
   for ( $i = ord  ( 'a' ) ; $i <= ord ( 'z' ) ; ++ $i )
     $sh ->  letters [ ] = chr ( $i ) ; 
+  // '0' - '9'
+  $sh ->  letters10 = array ( ) ;
+  for ( $i = ord  ( '0' ) ; $i <= ord ( '9' ) ; ++ $i )
+    $sh ->  letters10 [ ] = chr ( $i ) ;
+  // default is digits and letters
   $sh ->  letters_mode = 62 ;
   shifr_set_version ( $sh , 3 ) ;
   $sh ->  old_last_data  = 0 ;
