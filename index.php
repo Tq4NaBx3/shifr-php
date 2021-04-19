@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <?php
 
 if  ( isset ( $_POST  )  )  {
@@ -124,8 +125,13 @@ if  ( $_POST  ) {
       $shifr -> message .= "'". $uploadfile2 ."'\n" ;  }
     else { }} } }
 ?>
+<script src="shifr.js"></script>
 <style> p { font-size: 36px; }  textarea { font-size: 36px; }
-input { font-size: 36px; } input.largerCheckbox { transform : scale(2); }
+input { font-size: 36px; border-radius: 10px; }
+input.largerCheckbox { transform : scale(2); }
+label { font-size: 24px; }
+legend { font-size: 24px; }
+fieldset { font-size: 36px; border-radius: 10px; }
 .menu {
     position: fixed; /* Фиксированное положение */
     right: 10px; /* Расстояние от правого края окна браузера */
@@ -142,69 +148,119 @@ if (isset($err))
   echo '<p>err = \''.$err.'\'</p>' ;
 ?>
 <form action="<?php echo $_SERVER['PHP_SELF'] ; ?>" method=post 
-  enctype=multipart/form-data>
+  enctype=multipart/form-data id="form" >
 <input type="hidden" name="MAX_FILE_SIZE" value="1024000000">
 
 <div class="menu">
 <input type="submit" value="<?php if  ( $shifr -> localerus ) echo 'файлы' ;
   else echo 'files' ;?>" name="files"/><br>
 </div>
-
+<label>
 <?php
-
-if  ( $shifr -> localerus )
+  if  ( $shifr -> localerus )
     echo 'Сообщение:'  ;
   else
     echo 'Message:' ;
-
 ?>
   <br />
-  <textarea name="message" rows="12" cols="61"><?php
-  echo htmlspecialchars($shifr -> message) ; ?></textarea><br />
+  <textarea name="message" rows="12" cols="61" id="message"><?php
+  echo htmlspecialchars($shifr -> message) ; ?></textarea>
+</label><br />
 <p>
-
+<fieldset>
+<legend>
 <?php
   if  ( $shifr -> localerus )
-    echo 'Алфавит знаков в пароле :' ;
+    echo 'Алфавит знаков в пароле' ;
   else
-    echo 'Alphabet of characters in a password :' ;
+    echo 'Alphabet of characters in a password' ;
 ?>
-<input type="radio" name="radio" value="ASCII" <?php 
+</legend>
+<input type="radio" name="radio" value="ASCII" id="passalpha" <?php 
 if ( $shifr -> letters_mode == 95 ) echo 'checked' ?> >ASCII <?php 
 if  ( $shifr -> localerus ) echo 'буквы цифры знаки пробел'; else
-echo 'letters digits signs space'; ?>
+echo 'letters digits signs space'; ?><br>
 <input type="radio" name="radio" value="LettDigit" <?php
 if ( $shifr -> letters_mode == 62 ) echo 'checked' ?> ><?php 
-if  ( $shifr -> localerus ) echo 'цифры и буквы'; else echo 'digits and letters'; ?>
+if  ( $shifr -> localerus ) echo 'цифры и буквы'; else echo 'digits and letters'; ?><br>
 <input type="radio" name="radio" value="Digit" <?php
 if ( $shifr -> letters_mode == 10 ) echo 'checked' ?> ><?php 
 if  ( $shifr -> localerus ) echo 'цифры'; else echo 'digits'; ?>
+</fieldset>
 <br>
+<fieldset>
+<legend>
 <?php
   if  ( $shifr -> localerus )
-    echo 'Размер ключа : '  ;
+    echo 'Размер ключа'  ;
   else
-    echo 'Key size : ' ;
+    echo 'Key size' ;
 ?>
-<input type="radio" name="radiokey" value="Key45" <?php 
+</legend>
+<input type="radio" name="radiokey" value="Key45" id="keysize" <?php 
 if ( shifr_version  ( $shifr  ) == 2 ) echo 'checked' ?> >45 <?php
-if  ( $shifr -> localerus ) echo 'бит , 6-14 букв'; else echo 'bits , 6-14 letters'; ?>
+if  ( $shifr -> localerus )
+  echo 'бит , 6-14 букв';
+else
+  echo 'bits , 6-14 letters'; ?><br>
 <input type="radio" name="radiokey" value="Key296" <?php 
 if ( shifr_version  ( $shifr  ) == 3 ) echo 'checked' ?> >296 <?php 
 if  ( $shifr -> localerus ) echo 'бит , 45-90 букв'; else
 echo 'bits , 45-90 letters'; ?>
+</fieldset>
 <br>
+<label>
 <?php
   if  ( $shifr -> localerus ) {
     echo 'Ваш пароль : '  ;
-    echo '<input type="submit" name="submit" value="генерировать" />'  ; }
+    echo '<fieldset><legend><i>PHP</i></legend>' ;
+    echo '<input type="submit" name="submit" value="генерировать" id="generate" /></fieldset>'  ;
+    echo '<fieldset><legend><i>JavaScript</i></legend>' ;
+    echo '<input type="button" name="submit2" value="генерировать" id="generate2" /></fieldset>'  ; }
   else {
     echo 'Your password : ' ;
-    echo '<input type="submit" name="submit" value="generate" />' ; }
+    echo '<fieldset><legend><i>PHP</i></legend>' ;
+    echo '<input type="submit" name="submit" value="generate" id="generate" /></fieldset>' ;
+    echo '<fieldset><legend><i>JavaScript</i></legend>' ;
+    echo '<input type="button" name="submit2" value="generate" id="generate2" /></fieldset>'  ; }
 ?>
+</label>
 <br>
-<input name="password" type="text" value="<?php 
-echo htmlspecialchars ( $shifr -> password ) ; ?>" size ="46" /> <!-- 91 -->
+<input name="password" type="password" value="<?php 
+    echo htmlspecialchars ( $shifr -> password ) ; ?>" size ="47" id="password" />
+<script>
+let fgenerate = function () {
+  let pbox = document.getElementById('password') ;
+  if ( pbox.value  === "12345" )
+    pbox.value  = "abcde"  ;
+  else
+    pbox.value = "12345"  ;
+  /*alert("pbox.value  = \"" + pbox.value + "\"");*/ }
+let chboxg = document.getElementById('generate2');
+chboxg.addEventListener('click', fgenerate ) ;
+let fshowpassword = function () {
+  let chbox = document.getElementById('showpassword');
+	if (chbox.checked) {
+    form [ "password" ] . type  = "text"  ;
+    chbox.setAttribute("checked", "checked" );
+    //chbox . attr  ( 'checked' , '' )  ;
+    form [ 'showpassword' ] . value  = "1"  ; }
+	else {
+    form [ "password" ] . type  = "password" ;
+    chbox.removeAttribute("checked");
+    form [ 'showpassword' ] . value  = "0"  ; } }
+</script>
+<br>
+<?php
+if  ( $shifr -> localerus ) {
+  echo 'Показать пароль : <input type="checkbox" '.
+  ' class="largerCheckbox" name="Показать_пароль" value="0"'.
+  ' id="showpassword" onchange="fshowpassword()" />' ; }
+else {
+  echo 'Show password : <input type="checkbox"' .
+  ' class="largerCheckbox" name="Show_password" value="0" id="showpassword" '.
+  ' onchange="fshowpassword()" />' ; }
+?>
 </p>
 <?php
   if  ( $shifr -> localerus ) {
@@ -238,6 +294,40 @@ else {
   if($shifr -> flagtext)echo 'checked'; echo ' />' ; }
 ?>
 </p>
+<script>
+let pass2 = js_shifr_generate_pass2 ( ) ;
+console . log ( 'js_shifr_generate_pass2 = [ '  + pass2 + ' ]' ) ;
+let pass3 = js_shifr_generate_pass3 ( ) ;
+console . log ( 'js_shifr_generate_pass3 = [ '  + pass3 + ' ]' ) ;
+let data  = [ 0 , 1 , 2 , 3 ] ;
+let datasole  = js_shifr_data_sole2 ( data  ) ;
+let dss = new String ( 'datasole = [ ' ) ;
+for ( let ds  of  datasole ) {
+  dss += ds . toString ( 2 ) ;
+  dss += ' , ' ; }
+dss += ' ]' ;
+console . log ( dss ) ;
+for ( let data3 of [ [ 0 , 1 , 2 ] , [ 3 , 4 , 5 ] , [ 6 , 7 ] ] ) {
+  let datasole3  = js_shifr_data_sole3 ( data3  ) ;
+  let dss3 = new String ( 'datasole3 = [ ' ) ;
+  for ( let ds  of  datasole3 ) {
+    dss3 += ds . toString ( 2 ) ;
+    dss3 += ' , ' ; }
+  dss3 += ' ]' ;
+  console . log ( dss3 ) ; }
+let byte = Math . floor ( Math . random ( ) * 0x100 ) ;
+let bytes = new String ( 'byte = [ ' ) ;
+bytes += byte . toString ( 2 ) ;
+bytes += ' ]' ;
+console . log ( bytes ) ;  
+let arrbyte = shifr_byte_to_array2  ( byte  ) ;
+let dssba = new String ( 'arrbyte = [ ' ) ;
+for ( let ds  of  arrbyte ) {
+  dssba += ds . toString ( 2 ) ;
+  dssba += ' , ' ; }
+dssba += ' ]' ;
+console . log ( dssba ) ;  
+</script>
 </form>
 </body>
 </html>

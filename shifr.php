@@ -148,30 +148,39 @@ function shifr_generate_pass3 ( ) : array {
   } while ( $i  > 0 ) ;
   return  $dice ; }
   
+// get 4*2 bits => push 4*4 bits
 function  shifr_data_sole2 ( array & $secret_data ) : array {
   $secret_data_sole = array ( ) ;
+  /*if  ( count ( $secret_data  ) > 4 ) // debug
+    return  $secret_data_sole ;*/
   $ra = rand ( 0 , 0xff ) ; // 4*2 = 8 bits
   foreach ( $secret_data as $da ) {
     $secret_data_sole [ ] = ( $da << 2 ) | ( $ra & 0x3 ) ;
     $ra >>= 2 ; }
   return  $secret_data_sole ; }
 
+// get 2*3 bits => push 2*6 bits
+// get 3*3 bits => push 3*6 bits
 function  shifr_data_sole3 ( array & $secret_data ) : array {
   $secret_data_sole = array ( ) ;
+  /*if  ( count ( $secret_data  ) > 3 ) // debug
+    return  $secret_data_sole ;*/
   $ra = rand ( 0 , 0x1ff ) ; // 3*3 = 9 bits
   foreach ( $secret_data as $da ) {
     $secret_data_sole [ ] = ( $da << 3 ) | ( $ra & 0x7 ) ;
     $ra >>= 3 ; }
   return  $secret_data_sole ; }
   
+// byte = 76543210b to array
+// [ 0 ] = 10 ; [ 1 ] = 32 ; [ 2 ] = 54 ; [ 3 ] = 76
 function  shifr_byte_to_array2 ( int $byte ) : array {
   $arr = array ( ) ;
   $i = 0 ;
   do  {
     $arr [ ] = $byte & 0x3 ;
     $byte >>= 2 ;
-    $i += 2 ;
-  } while ( $i < 8  ) ;
+    ++  $i  ;
+  } while ( $i < 4  ) ;
   return  $arr ; }
 
 function  shifr_data_xor2 ( int & $old_last_data , int & $old_last_sole ,
