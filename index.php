@@ -300,7 +300,7 @@ else {
 ?>
 </p>
 <script>
-
+/*
 let data  = [ 0 , 1 , 2 , 3 ] ;
 let datasole  = js_shifr_data_sole2 ( data  ) ;
 let dss = new String ( 'datasole = [ ' ) ;
@@ -360,7 +360,7 @@ let data2  = [ 0 , 1 , 2 , 3 ] ;
 let table = [ 3 , 2 , 1 , 0 ] ;
 let datas = js_shifr_crypt_decrypt  ( data2  , table ) ;
 console . log ( 'datas = [ ' + datas + ' ]' ) ;
-
+*/
 </script>
 </form>
 </body>
