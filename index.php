@@ -126,6 +126,10 @@ if  ( $_POST  ) {
     else { }} } }
 ?>
 <script src="shifr.js"></script>
+<script>
+let js_shifr  = { } ;
+js_shifr_init ( js_shifr ) ;
+</script>
 <style> p { font-size: 36px; }  textarea { font-size: 36px; }
 input { font-size: 36px; border-radius: 10px; }
 input.largerCheckbox { transform : scale(2); }
@@ -197,13 +201,13 @@ if  ( $shifr -> localerus ) echo 'цифры'; else echo 'digits'; ?>
     echo 'Key size' ;
 ?>
 </legend>
-<input type="radio" name="radiokey" value="Key45" id="keysize" <?php 
+<input type="radio" name="radiokey" value="Key45" id="keysize45" <?php 
 if ( shifr_version  ( $shifr  ) == 2 ) echo 'checked' ?> >45 <?php
 if  ( $shifr -> localerus )
   echo 'бит , 6-14 букв';
 else
   echo 'bits , 6-14 letters'; ?><br>
-<input type="radio" name="radiokey" value="Key296" <?php 
+<input type="radio" name="radiokey" value="Key296" id="keysize296" <?php 
 if ( shifr_version  ( $shifr  ) == 3 ) echo 'checked' ?> >296 <?php 
 if  ( $shifr -> localerus ) echo 'бит , 45-90 букв'; else
 echo 'bits , 45-90 letters'; ?>
@@ -213,29 +217,30 @@ echo 'bits , 45-90 letters'; ?>
 <?php
   if  ( $shifr -> localerus ) {
     echo 'Ваш пароль : '  ;
-    echo '<fieldset><legend><i>PHP</i></legend>' ;
-    echo '<input type="submit" name="submit" value="генерировать" id="generate" /></fieldset>'  ;
-    echo '<fieldset><legend><i>JavaScript</i></legend>' ;
-    echo '<input type="button" name="submit2" value="генерировать" id="generate2" /></fieldset>'  ; }
+    echo '<table><tr><td><fieldset><legend><i>PHP</i></legend>' ;
+    echo '<input type="submit" name="submit" value="генерировать" id="generate" /></fieldset></td>'  ;
+    echo '<td><fieldset><legend><i>JavaScript</i></legend>' ;
+    echo '<input type="button" name="submit2" value="генерировать" id="generate2" /></fieldset></td></tr></table>'  ; }
   else {
     echo 'Your password : ' ;
-    echo '<fieldset><legend><i>PHP</i></legend>' ;
-    echo '<input type="submit" name="submit" value="generate" id="generate" /></fieldset>' ;
-    echo '<fieldset><legend><i>JavaScript</i></legend>' ;
-    echo '<input type="button" name="submit2" value="generate" id="generate2" /></fieldset>'  ; }
+    echo '<table><tr><td><fieldset><legend><i>PHP</i></legend>' ;
+    echo '<input type="submit" name="submit" value="generate" id="generate" /></fieldset></td>' ;
+    echo '<td><fieldset><legend><i>JavaScript</i></legend>' ;
+    echo '<input type="button" name="submit2" value="generate" id="generate2" /></fieldset></td></tr></table>'  ; }
 ?>
 </label>
 <br>
 <input name="password" type="password" value="<?php 
     echo htmlspecialchars ( $shifr -> password ) ; ?>" size ="47" id="password" />
 <script>
-let fgenerate = function () {
-  let pbox = document.getElementById('password') ;
-  if ( pbox.value  === "12345" )
-    pbox.value  = "abcde"  ;
+let fgenerate = function ( ) {
+  let key45 = document . getElementById ( 'keysize45' ) ;
+  if ( key45 . checked )
+    js_shifr_generate_password_2 ( js_shifr ) ;
   else
-    pbox.value = "12345"  ;
-  /*alert("pbox.value  = \"" + pbox.value + "\"");*/ }
+    js_shifr_generate_password_3 ( js_shifr ) ;
+  let pbox = document . getElementById ( 'password' ) ;
+  pbox . value  = js_shifr . password ; }
 let chboxg = document.getElementById('generate2');
 chboxg.addEventListener('click', fgenerate ) ;
 let fshowpassword = function () {
@@ -295,10 +300,7 @@ else {
 ?>
 </p>
 <script>
-let pass2 = js_shifr_generate_pass2 ( ) ;
-console . log ( 'js_shifr_generate_pass2 = [ '  + pass2 + ' ]' ) ;
-let pass3 = js_shifr_generate_pass3 ( ) ;
-console . log ( 'js_shifr_generate_pass3 = [ '  + pass3 + ' ]' ) ;
+
 let data  = [ 0 , 1 , 2 , 3 ] ;
 let datasole  = js_shifr_data_sole2 ( data  ) ;
 let dss = new String ( 'datasole = [ ' ) ;
@@ -307,6 +309,7 @@ for ( let ds  of  datasole ) {
   dss += ' , ' ; }
 dss += ' ]' ;
 console . log ( dss ) ;
+
 for ( let data3 of [ [ 0 , 1 , 2 ] , [ 3 , 4 , 5 ] , [ 6 , 7 ] ] ) {
   let datasole3  = js_shifr_data_sole3 ( data3  ) ;
   let dss3 = new String ( 'datasole3 = [ ' ) ;
@@ -315,18 +318,49 @@ for ( let data3 of [ [ 0 , 1 , 2 ] , [ 3 , 4 , 5 ] , [ 6 , 7 ] ] ) {
     dss3 += ' , ' ; }
   dss3 += ' ]' ;
   console . log ( dss3 ) ; }
+  
 let byte = Math . floor ( Math . random ( ) * 0x100 ) ;
 let bytes = new String ( 'byte = [ ' ) ;
 bytes += byte . toString ( 2 ) ;
 bytes += ' ]' ;
 console . log ( bytes ) ;  
-let arrbyte = shifr_byte_to_array2  ( byte  ) ;
+let arrbyte = js_shifr_byte_to_array2  ( byte  ) ;
 let dssba = new String ( 'arrbyte = [ ' ) ;
 for ( let ds  of  arrbyte ) {
   dssba += ds . toString ( 2 ) ;
   dssba += ' , ' ; }
 dssba += ' ]' ;
 console . log ( dssba ) ;  
+
+let old_last_data = { n : 0 } ;
+let old_last_sole = { n : 0 } ;
+let secret_data_sole  = [ 0b0000 , 0b0101 , 0b1010 , 0b1111 ] ;
+js_shifr_data_xor2 ( old_last_data , old_last_sole , secret_data_sole  ) ;
+let dssba2 = new String ( 'secret_data_sole = [ ' ) ;
+for ( let sd  of  secret_data_sole ) {
+  dssba2 += sd . toString ( 2 ) ;
+  dssba2 += ' , ' ; }
+dssba2 += ' ] , old_last_data = ' + old_last_data . n + ' , old_last_sole = ' +
+  old_last_sole . n ;
+console . log ( dssba2 ) ;  
+
+let old_last_data3 = { n : 0 } ;
+let old_last_sole3 = { n : 0 } ;
+let secret_data_sole3  = [ 0b000000 , 0b001001 , 0b010010 , 0b011011 ] ;
+js_shifr_data_xor3 ( old_last_data3 , old_last_sole3 , secret_data_sole3  ) ;
+let dssba3 = new String ( 'secret_data_sole3 = [ ' ) ;
+for ( let sd3  of  secret_data_sole3 ) {
+  dssba3 += sd3 . toString ( 2 ) ;
+  dssba3 += ' , ' ; }
+dssba3 += ' ] , old_last_data3 = ' + old_last_data3 . n + ' , old_last_sole3 = ' +
+  old_last_sole3 . n ;
+console . log ( dssba3 ) ;
+
+let data2  = [ 0 , 1 , 2 , 3 ] ;
+let table = [ 3 , 2 , 1 , 0 ] ;
+let datas = js_shifr_crypt_decrypt  ( data2  , table ) ;
+console . log ( 'datas = [ ' + datas + ' ]' ) ;
+
 </script>
 </form>
 </body>
