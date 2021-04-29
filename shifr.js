@@ -463,3 +463,14 @@ let js_shifr_init = function ( sh ) {
   sh . bufin = 0 ;
   sh . localerus = false ;
   sh . flagtext  = true  ; }
+
+let js_shifr_version = function ( sh ) {
+  if  ( sh . key_mode == 45 )
+    return 2 ;
+  return  3 ; }
+  
+let js_shifr_password_load = function ( shifr ) {
+  if ( js_shifr_version  ( shifr  ) == 2 ) 
+    js_shifr_password_load_2 ( shifr ) ;
+  else 
+    js_shifr_password_load_3 ( shifr ) ; }

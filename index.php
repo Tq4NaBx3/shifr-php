@@ -184,10 +184,10 @@ if (isset($err))
 if ( $shifr -> letters_mode == 95 ) echo 'checked' ?> >ASCII <?php 
 if  ( $shifr -> localerus ) echo 'буквы цифры знаки пробел'; else
 echo 'letters digits signs space'; ?><br>
-<input type="radio" name="radio" value="LettDigit" <?php
+<input type="radio" name="radio" value="LettDigit" id="passlettersdigits" <?php
 if ( $shifr -> letters_mode == 62 ) echo 'checked' ?> ><?php 
 if  ( $shifr -> localerus ) echo 'цифры и буквы'; else echo 'digits and letters'; ?><br>
-<input type="radio" name="radio" value="Digit" <?php
+<input type="radio" name="radio" value="Digit" id="passdigits" <?php
 if ( $shifr -> letters_mode == 10 ) echo 'checked' ?> ><?php 
 if  ( $shifr -> localerus ) echo 'цифры'; else echo 'digits'; ?>
 </fieldset>
@@ -212,6 +212,27 @@ if ( shifr_version  ( $shifr  ) == 3 ) echo 'checked' ?> >296 <?php
 if  ( $shifr -> localerus ) echo 'бит , 45-90 букв'; else
 echo 'bits , 45-90 letters'; ?>
 </fieldset>
+<script>
+
+  if ( document . getElementById ( 'keysize45' ) . checked ) {
+    //console . log ( 'ks45') ;
+    js_shifr . key_mode = 45 ; }
+  if ( document . getElementById ( 'keysize296' ) . checked ) {
+    //console . log ( 'ks296') ;
+    js_shifr . key_mode = 296 ; }
+
+let fkeysize45  = function ( ) {
+  //console . log ( 'ks45') ;
+  js_shifr . key_mode = 45 ; }
+let chboxg_keys45 = document  . getElementById ( 'keysize45' ) ;
+chboxg_keys45 . addEventListener  ( 'click' , fkeysize45 ) ;
+let fkeysize296  = function ( ) {
+  //console . log ( 'ks296') ;
+  js_shifr . key_mode = 296 ; }
+let chboxg_keys296 = document  . getElementById ( 'keysize296' ) ;
+chboxg_keys296 . addEventListener  ( 'click' , fkeysize296 ) ;
+
+</script>
 <br>
 <label>
 <?php
@@ -233,27 +254,42 @@ echo 'bits , 45-90 letters'; ?>
 <input name="password" type="password" value="<?php 
     echo htmlspecialchars ( $shifr -> password ) ; ?>" size ="47" id="password" />
 <script>
+
+  if ( document . getElementById ( 'passlettersdigits' ) . checked ) {
+    //console . log ( 'al62') ;
+    js_shifr . letters_mode = 62 ; }
+  if ( document . getElementById ( 'passalpha' ) . checked ) {
+    //console . log ( 'al95') ;
+    js_shifr . letters_mode = 95 ; }
+  if ( document . getElementById ( 'passdigits' ) . checked ) {
+    //console . log ( 'al10') ;
+    js_shifr . letters_mode = 10 ; }
+
+let falpha95  = function ( ) {
+  //console . log ( 'al95') ;
+  js_shifr . letters_mode = 95 ; }
+document  . getElementById ( 'passalpha' ) . addEventListener  ( 'click' , falpha95 ) ;
+
+let falpha62  = function ( ) {
+  //console . log ( 'al62') ;
+  js_shifr . letters_mode = 62 ; }
+document  . getElementById ( 'passlettersdigits' ) . addEventListener  ( 'click' , falpha62 ) ;
+
+let falpha10  = function ( ) {
+  //console . log ( 'al10') ;
+  js_shifr . letters_mode = 10 ; }
+document  . getElementById ( 'passdigits' ) . addEventListener  ( 'click' , falpha10 ) ;
+    
 let fgenerate = function ( ) {
-  let key45 = document . getElementById ( 'keysize45' ) ;
-  if ( key45 . checked )
+  if ( js_shifr . key_mode == 45 )
     js_shifr_generate_password_2 ( js_shifr ) ;
   else
     js_shifr_generate_password_3 ( js_shifr ) ;
-  let pbox = document . getElementById ( 'password' ) ;
-  pbox . value  = js_shifr . password ; }
+  document . getElementById ( 'password' ) . value  = js_shifr . password ; }
+  
 let chboxg = document.getElementById('generate2');
 chboxg.addEventListener('click', fgenerate ) ;
-let fshowpassword = function () {
-  let chbox = document.getElementById('showpassword');
-	if (chbox.checked) {
-    form [ "password" ] . type  = "text"  ;
-    chbox.setAttribute("checked", "checked" );
-    //chbox . attr  ( 'checked' , '' )  ;
-    form [ 'showpassword' ] . value  = "1"  ; }
-	else {
-    form [ "password" ] . type  = "password" ;
-    chbox.removeAttribute("checked");
-    form [ 'showpassword' ] . value  = "0"  ; } }
+
 </script>
 <br>
 <?php
@@ -266,17 +302,57 @@ else {
   ' class="largerCheckbox" name="Show_password" value="0" id="showpassword" '.
   ' onchange="fshowpassword()" />' ; }
 ?>
+<script>
+  if ( document.getElementById('showpassword') . checked ) {
+    //console . log ( 'shpa') ;
+    form [ "password" ] . type  = "text"  ; }
+  else {
+    //console . log ( 'hipa') ;
+    form [ "password" ] . type  = "password" ; }
+
+let fshowpassword = function ( ) {
+  let chbox = document.getElementById('showpassword');
+	if (chbox.checked) {
+    form [ "password" ] . type  = "text"  ;
+    chbox.setAttribute("checked", "checked" );
+    //chbox . attr  ( 'checked' , '' )  ;
+    form [ 'showpassword' ] . value  = "1"  ; }
+	else {
+    form [ "password" ] . type  = "password" ;
+    chbox.removeAttribute("checked");
+    form [ 'showpassword' ] . value  = "0"  ; } }
+</script>
 </p>
 <?php
+  echo '<table><tr><td><fieldset><legend><i>PHP</i></legend>' ;
   if  ( $shifr -> localerus ) {
     echo ' <input type="submit" name="submit" value="зашифровать" />'  ;
-    echo ' <input type="submit" name="submit" value="расшифровать" />'  ;
-    /*echo ' <input type="submit" name="submit" value="загрузить" />'  ;*/ }
+    echo ' <input type="submit" name="submit" value="расшифровать" />'  ; }
   else {
     echo ' <input type="submit" name="submit" value="encrypt" />' ;
-    echo ' <input type="submit" name="submit" value="decrypt" />' ; 
-    /*echo ' <input type="submit" name="submit" value="load" />'  ;*/ }
+    echo ' <input type="submit" name="submit" value="decrypt" />' ; }
+  echo  '</fieldset></td>'  ;
+  /*
+  echo '<td><fieldset><legend><i>JavaScript</i></legend>' ;
+  if  ( $shifr -> localerus ) {
+    echo ' <input type="button" name="submit2" value="зашифровать" id="encrypt2" />'  ;
+    echo ' <input type="button" name="submit2" value="расшифровать" id="decrypt2" />'  ; }
+  else {
+    echo ' <input type="button" name="submit2" value="encrypt"  id="encrypt2" />' ;
+    echo ' <input type="button" name="submit2" value="decrypt"  id="decrypt2" />' ; }
+  echo  '</fieldset></td>'  ;
+  */
+  echo '</tr></table>' ;
 ?>
+<script>/*
+let fencrypt = function ( ) {
+  js_shifr . flagtext = true  ;
+  js_shifr_password_load ( js_shifr ) ;
+  js_shifr_encrypt ( js_shifr ) ; 
+  js_shifr_flush ( js_shifr  ) ; }
+let chbox_enc = document  . getElementById  ( 'encrypt2'  ) ;
+chbox_enc . addEventListener  ( 'click' , fencrypt ) ;*/
+</script>
 <hr>
 <input type=file name=uploadfile>
 <p>
@@ -301,15 +377,6 @@ else {
 </p>
 <script>
 /*
-let data  = [ 0 , 1 , 2 , 3 ] ;
-let datasole  = js_shifr_data_sole2 ( data  ) ;
-let dss = new String ( 'datasole = [ ' ) ;
-for ( let ds  of  datasole ) {
-  dss += ds . toString ( 2 ) ;
-  dss += ' , ' ; }
-dss += ' ]' ;
-console . log ( dss ) ;
-
 for ( let data3 of [ [ 0 , 1 , 2 ] , [ 3 , 4 , 5 ] , [ 6 , 7 ] ] ) {
   let datasole3  = js_shifr_data_sole3 ( data3  ) ;
   let dss3 = new String ( 'datasole3 = [ ' ) ;
