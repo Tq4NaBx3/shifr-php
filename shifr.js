@@ -144,7 +144,7 @@ class shifr {
 
 let js_toUTF8Array = function ( str ) {
     let utf8 = [];
-    for (let i = 0; i < str.length; i++) {
+    for ( let i = 0 ; i < str . length  ; ++  i ) {
         let charcode = str.charCodeAt(i);
         if (charcode < 0x80)
           utf8.push(charcode);
@@ -170,13 +170,16 @@ let js_toUTF8Array = function ( str ) {
     return utf8; }
 
 let js_shifr_encrypt2 = function ( sh ) {
-  let message_array = js_toUTF8Array ( sh . message ) ;
-  if ( sh . flagtext )
-    sh . message =  '' ;
-  else
-    sh . message =  [ ] ;
+  let message_array ;
+  if ( sh . flagtext ) {
+    message_array = js_toUTF8Array ( sh . message ) ;
+    sh . message =  '' ; }
+  else {
+    message_array = sh . message  ;
+    sh . message =  [ ] ; }
+//console . log ( 'message_array = `' + message_array + '` ' + Object.prototype.toString.call(message_array) ) ;
   for ( let char of message_array ) {
-    let secret_data = js_shifr_byte_to_array2 ( char . charCodeAt ( 0 ) ) ;
+    let secret_data = js_shifr_byte_to_array2 ( char ) ;
     let secret_data_sole = js_shifr_data_sole2 ( secret_data ) ;
     js_shifr_data_xor2 ( sh . old_last_data , sh . old_last_sole ,
       secret_data_sole ) ;
@@ -188,10 +191,10 @@ let js_shifr_encrypt2 = function ( sh ) {
         ( ( encrypteddata [ 3 ] & 0b1111 ) << 12 ) ;
       sh . message +=  String.fromCharCode (
         ( 'R' . charCodeAt ( 0 ) ) + ( buf16 % 40 ) ) ;
-      buf16 = Math . floor ( buf16  / 40 )  ;
+      buf16 = Math . floor ( ( buf16 + 0.5 ) / 40 )  ;      
       sh . message += String.fromCharCode (
         ( 'R' . charCodeAt ( 0 ) ) + ( buf16 % 40 ) ) ;
-      buf16 = Math . floor ( buf16  / 40 )  ;
+      buf16 = Math . floor ( ( buf16 + 0.5 )  / 40 )  ;            
       sh . message +=  String.fromCharCode ( ( 'R' . charCodeAt ( 0 ) ) + buf16 ) ;
       sh . bytecount += 3 ;
       if ( sh . bytecount >= 60 ) {
@@ -262,8 +265,7 @@ let js_shifr_encrypt3 = function ( sh ) {
   let message_array = js_toUTF8Array ( sh . message  ) ;
   sh . message =  ''  ;
   for ( let char of message_array )
-    js_shifr_write_array ( sh , js_shifr_byte_to_array3 ( sh ,
-      char . charCodeAt ( 0 ) ) ) ; }
+    js_shifr_write_array ( sh , js_shifr_byte_to_array3 ( sh , char ) ) ; }
 
 let js_shifr_generate_password_2 = function ( sh ) {
   sh . password  = js_shifr_password_to_string ( sh ,
@@ -272,6 +274,19 @@ let js_shifr_generate_password_2 = function ( sh ) {
 let js_shifr_generate_password_3 = function ( sh ) {
   sh . password  = js_shifr_password_to_string ( sh ,
     js_shifr_pass_to_array3  ( js_shifr_generate_pass3  ( ) ) ) ; }
+    
+let js_shifr_flush  = function  ( sh ) {
+  if ( sh . bitscount ) {
+    js_shifr_write_array ( sh , [ sh . bufin ] ) ;
+    sh . bitscount = 0 ; }
+  if  ( sh . out_bufbitsize ) {
+    sh . message += sh . out_buf ;
+    sh . out_bufbitsize = 0 ; }
+  if ( sh . flagtext && sh . bytecount )  {
+    sh . bytecount = 0 ;
+    sh . message += "\n"  ; }
+  sh . old_last_data  = { n : 0 } ;
+  sh . old_last_sole  = { n : 0 } ; }
     
 let js_number_dec = function  ( number ) {
   let i = 0 ;
@@ -292,6 +307,22 @@ let js_number_dec = function  ( number ) {
 
 let js_number_not_zero  = function ( number ) {
   return  ( number . length ) >  0 ; }
+
+let js_number_set_zero = function  ( number ) {
+  number = [ ] ; }
+  
+let js_number_set_byte  = function  ( number , byte ) {
+  if ( byte != 0 ) {
+    if ( byte < 0 ) {
+      alert ( 'js_number_set_byte:byte < 0' ) ;
+      return  ; }
+    if ( byte >= 0x100 ) {
+      alert ( 'js_number_set_byte:byte >= 0x100' ) ;
+      return  ; }
+    number . length = 1 ;
+    number [ 0 ] = byte ; }
+  else
+    number . length = 0 ; }
 
 // number /= div , number := floor [ деление ] , return := остаток (remainder)
 let js_number_div8_mod = function  ( number , div ) {
@@ -448,8 +479,8 @@ let js_shifr_init = function ( sh ) {
   // default is digits and letters
   sh . letters_mode = 62 ;
   js_shifr_set_version ( sh , 3 ) ;
-  sh . old_last_data  = 0 ;
-  sh . old_last_sole  = 0 ;
+  sh . old_last_data  = { n : 0 } ;
+  sh . old_last_sole  = { n : 0 } ;
   sh . bytecount  = 0 ;
   sh . buf3_index = 0 ;
   sh . buf3 = [ ] ;
@@ -474,3 +505,112 @@ let js_shifr_password_load = function ( shifr ) {
     js_shifr_password_load_2 ( shifr ) ;
   else 
     js_shifr_password_load_3 ( shifr ) ; }
+    
+let js_shifr_password_load_2 = function ( sh ) {
+  return  js_shifr_password_load2  ( sh , js_shifr_string_to_key_array ( sh ,
+    sh . password  ) ) ; }
+
+let js_shifr_password_load_3 = function ( sh ) {
+  return  js_shifr_password_load3  ( sh , js_shifr_string_to_key_array ( sh ,
+    sh . password  ) ) ; }
+
+let js_shifr_password_load2 = function ( sh , password0 ) {
+  sh . shifra = Array ( 0x10  ) . fill  ( 0xff  ) ;
+  sh . deshia = Array ( 0x10  ) . fill  ( 0xff  ) ;
+  let arrind = [ ] ;
+  for ( let i = 0 ; i < 0x10 ; ++ i ) 
+    arrind . push ( i ) ;
+  let inde = 0 ;
+  let password = password0 . slice ( ) ;
+  do {
+    let cindex = js_number_div8_mod ( password , 0x10 - inde ) ;
+    sh . shifra [ inde ] = arrind [ cindex ] ;
+    sh . deshia [ arrind [ cindex ] ] = inde ;
+    arrind  . splice  ( cindex  , 1 ) ;
+    ++ inde  ;
+  } while ( inde < 0x10 ) ; }
+
+let js_shifr_password_load3 = function ( sh , password0 ) {
+  sh . shifra = Array ( 0x40 ) . fill ( 0xff ) ;
+  sh . deshia = Array ( 0x40 ) . fill ( 0xff ) ;
+  let arrind = [ ] ;
+  for ( let i = 0 ; i < 0x40 ; ++ i ) 
+    arrind . push ( i ) ;
+  let inde = 0 ;
+  let password = password0 . slice ( ) ;
+  do {
+    let cindex = js_number_div8_mod ( password , 0x40 - inde ) ;
+    sh . shifra [ inde ] = arrind [ cindex ] ;
+    sh . deshia [ arrind [ cindex ] ] = inde ;
+    arrind  . splice  ( cindex  , 1 ) ;
+    ++ inde  ;
+  } while ( inde < 0x40 ) ; }
+
+let js_shifr_string_to_key_array  = function ( sh , str ) {
+  let strn = str . length ;
+  let passarr = [ ] ;
+  js_number_set_zero ( passarr ) ;
+  if ( strn == 0 ) 
+    return passarr ;
+  let letters ;
+  switch  ( sh . letters_mode ) {
+  case  95  :
+    letters  = sh . letters95  ;
+    break ;
+  case  62  :
+    letters  = sh . letters  ;
+    break ;
+  case  10  :
+    letters  = sh . letters10  ;
+    break ;
+  default :
+    alert ( 'sh . letters_mode = ' + sh . letters_mode ) ;
+    return  ; }
+  let letters_count  = letters . length ;
+  let mult = [ ] ;
+  js_number_set_byte ( mult , 1 ) ;
+  let stringi  = 0 ;
+  do  {
+    let i = letters_count ;
+search : {
+      do {
+        -- i ;
+        if ( str [ stringi ] == letters [ i ] ) 
+          break search ;
+      } while ( i ) ;
+      if  ( sh . localerus ) 
+        alert ( 'неправильная буква в пароле' ) ;
+      else 
+        alert ( 'wrong letter in password' ) ;
+      return ; }
+    let tmp = mult . slice ( ) ;
+    js_number_mul_byte ( tmp , i + 1 ) ;
+    js_number_add ( passarr , tmp ) ;
+    js_number_mul_byte ( mult , letters_count ) ;
+    ++  stringi ;
+  } while ( stringi  < str . length ) ;
+  return  passarr ; }
+
+let js_shifr_encrypt  = function  ( shifr ) {
+  if ( js_shifr_version  ( shifr  ) == 2 ) 
+    js_shifr_encrypt2 ( shifr ) ; 
+  else 
+    js_shifr_encrypt3 ( shifr  ) ; }
+
+let js_ShowShifrFull = function ( ) {
+  console . log ( "js_shifr = {" ) ;
+for ( let name in js_shifr ) {
+  if(js_shifr.hasOwnProperty(name)){
+    if( Array.isArray(js_shifr [ name ]))
+      console .log ( name + ' = [ ' + js_shifr [ name ] + ' ]' ) ;
+    else
+  if ( typeof ( js_shifr [ name ] ) === 'object' && js_shifr [ name ] !== null ) {
+    console . log ( name + " = {" ) ;
+    for ( let vari in js_shifr [ name ] )
+      if(js_shifr [ name ].hasOwnProperty(vari))
+        console . log ( vari + " : " + js_shifr [ name ] [ vari ] + " ,") ;
+    console . log ( "}" ) ; }
+  else
+    console . log ( name + " : " + js_shifr [ name ] + " ,") ; } }
+console . log ( "}" ) ;
+}

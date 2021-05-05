@@ -363,7 +363,9 @@ function  shifr_flush ( shifr & $sh ) {
     $sh ->  out_bufbitsize = 0 ; }
   if ( $sh  ->  flagtext and $sh -> bytecount )  {
     $sh -> bytecount = 0 ;
-    $sh -> message .= "\n"  ; } }
+    $sh -> message .= "\n"  ; }
+  $sh ->  old_last_data  = 0 ;
+  $sh ->  old_last_sole  = 0 ; }
 
 function  shifr_flush_file  ( shifr & $sh , & $fpw ) {
   if ( $sh  -> bitscount ) {
@@ -655,36 +657,36 @@ function  shifr_pass_to_array3 ( array & $password ) : array {
   return  $re ; }
   
 function  shifr_password_load2  ( shifr & $sh , array $password ) {
-  $sh -> shifra = array_fill  ( 0 , 16 , 0xff  ) ;
-  $sh -> deshia = array_fill  ( 0 , 16 , 0xff  ) ;
+  $sh -> shifra = array_fill  ( 0 , 0x10 , 0xff  ) ;
+  $sh -> deshia = array_fill  ( 0 , 0x10 , 0xff  ) ;
   $arrind = array ( ) ;
-  for ( $i = 0 ; $i < 16 ; ++ $i ) 
+  for ( $i = 0 ; $i < 0x10 ; ++ $i ) 
     $arrind [ ] = $i ;
   $inde = 0 ;
   do {
-    $cindex = number_div8_mod ( $password , 16 - $inde ) ;
+    $cindex = number_div8_mod ( $password , 0x10 - $inde ) ;
     $sh -> shifra [ $inde ] = $arrind [ $cindex ] ;
     $sh -> deshia [ $arrind [ $cindex ] ] = $inde ;
     unset ( $arrind [ $cindex ] ) ;
     $arrind = array_values ( $arrind ) ;
     ++ $inde  ;
-  } while ( $inde < 16 ) ; }
+  } while ( $inde < 0x10 ) ; }
 
 function  shifr_password_load3  ( shifr & $sh , array $password ) {
-  $sh -> shifra = array_fill  ( 0 , 64 , 0xff  ) ;
-  $sh -> deshia = array_fill  ( 0 , 64 , 0xff  ) ;
+  $sh -> shifra = array_fill  ( 0 , 0x40 , 0xff  ) ;
+  $sh -> deshia = array_fill  ( 0 , 0x40 , 0xff  ) ;
   $arrind = array ( ) ;
-  for ( $i = 0 ; $i < 64 ; ++ $i ) 
+  for ( $i = 0 ; $i < 0x40 ; ++ $i ) 
     $arrind [ ] = $i ;
   $inde = 0 ;
   do {
-    $cindex = number_div8_mod ( $password , 64 - $inde ) ;
+    $cindex = number_div8_mod ( $password , 0x40 - $inde ) ;
     $sh -> shifra [ $inde ] = $arrind [ $cindex ] ;
     $sh -> deshia [ $arrind [ $cindex ] ] = $inde ;
     unset ( $arrind [ $cindex ] ) ;
     $arrind = array_values ( $arrind ) ;
     ++ $inde  ;
-  } while ( $inde < 64 ) ; }
+  } while ( $inde < 0x40 ) ; }
   
 function  shifr_password_load_2 ( shifr & $sh ) {
   return  shifr_password_load2  ( $sh , shifr_string_to_key_array ( $sh ,

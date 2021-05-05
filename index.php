@@ -14,18 +14,23 @@ shifr_init ( $shifr  ) ;
 $local = setlocale ( LC_ALL  , 'ru_RU.UTF-8'  ) ;
 if ( $local == 'ru_RU.UTF-8' )
   $shifr -> localerus = true ;
-  
-if ( ( ! isset ( $_REQUEST [ 'Шифрование_в_текстовом_режиме' ] ) ) and
-  ( ! isset ( $_REQUEST [ 'Encryption_in_text_mode' ] ) ) )
-  $shifr -> flagtext = false  ;
-  
-if ( isset ( $_REQUEST  [ 'password'  ] ) )
-  $shifr -> password = $_REQUEST  [ 'password'  ] ;        
 
-if ( isset ( $_REQUEST  [ 'message'  ] ) )
-  $shifr -> message = $_REQUEST  [ 'message'  ] ;        
-        
 if  ( $_POST  ) {
+
+  if ( ( ( isset ( $_POST [ 'Шифрование_в_текстовом_режиме' ] ) ) and
+        $_POST [ 'Шифрование_в_текстовом_режиме' ] ) or
+    ( ( isset ( $_POST [ 'Encryption_in_text_mode' ] ) ) and 
+       $_POST [ 'Encryption_in_text_mode' ] ) )
+    $shifr -> flagtext = true  ;
+  else
+    $shifr -> flagtext = false ;
+
+  if ( isset ( $_POST [ 'password'  ] ) )
+    $shifr -> password = $_POST [ 'password'  ] ;
+
+  if ( isset ( $_POST [ 'message'  ] ) )
+    $shifr -> message = $_POST  [ 'message'  ] ;
+  
   if  ( isset ( $_POST  [ 'submit'  ] ) ) {
     if  ( isset ( $_POST  [ 'radio' ] ) ) {
       switch  ( $_POST  [ 'radio' ] ) {
@@ -129,6 +134,11 @@ if  ( $_POST  ) {
 <script>
 let js_shifr  = { } ;
 js_shifr_init ( js_shifr ) ;
+js_shifr . localerus = <?php
+  if ( $shifr -> localerus )
+    echo 'true' ;
+  else
+    echo 'false' ; ?> ;
 </script>
 <style> p { font-size: 36px; }  textarea { font-size: 36px; }
 input { font-size: 36px; border-radius: 10px; }
@@ -215,19 +225,15 @@ echo 'bits , 45-90 letters'; ?>
 <script>
 
   if ( document . getElementById ( 'keysize45' ) . checked ) {
-    //console . log ( 'ks45') ;
     js_shifr . key_mode = 45 ; }
   if ( document . getElementById ( 'keysize296' ) . checked ) {
-    //console . log ( 'ks296') ;
     js_shifr . key_mode = 296 ; }
 
 let fkeysize45  = function ( ) {
-  //console . log ( 'ks45') ;
   js_shifr . key_mode = 45 ; }
 let chboxg_keys45 = document  . getElementById ( 'keysize45' ) ;
 chboxg_keys45 . addEventListener  ( 'click' , fkeysize45 ) ;
 let fkeysize296  = function ( ) {
-  //console . log ( 'ks296') ;
   js_shifr . key_mode = 296 ; }
 let chboxg_keys296 = document  . getElementById ( 'keysize296' ) ;
 chboxg_keys296 . addEventListener  ( 'click' , fkeysize296 ) ;
@@ -256,27 +262,21 @@ chboxg_keys296 . addEventListener  ( 'click' , fkeysize296 ) ;
 <script>
 
   if ( document . getElementById ( 'passlettersdigits' ) . checked ) {
-    //console . log ( 'al62') ;
     js_shifr . letters_mode = 62 ; }
   if ( document . getElementById ( 'passalpha' ) . checked ) {
-    //console . log ( 'al95') ;
     js_shifr . letters_mode = 95 ; }
   if ( document . getElementById ( 'passdigits' ) . checked ) {
-    //console . log ( 'al10') ;
     js_shifr . letters_mode = 10 ; }
 
 let falpha95  = function ( ) {
-  //console . log ( 'al95') ;
   js_shifr . letters_mode = 95 ; }
 document  . getElementById ( 'passalpha' ) . addEventListener  ( 'click' , falpha95 ) ;
 
 let falpha62  = function ( ) {
-  //console . log ( 'al62') ;
   js_shifr . letters_mode = 62 ; }
 document  . getElementById ( 'passlettersdigits' ) . addEventListener  ( 'click' , falpha62 ) ;
 
 let falpha10  = function ( ) {
-  //console . log ( 'al10') ;
   js_shifr . letters_mode = 10 ; }
 document  . getElementById ( 'passdigits' ) . addEventListener  ( 'click' , falpha10 ) ;
     
@@ -304,10 +304,8 @@ else {
 ?>
 <script>
   if ( document.getElementById('showpassword') . checked ) {
-    //console . log ( 'shpa') ;
     form [ "password" ] . type  = "text"  ; }
   else {
-    //console . log ( 'hipa') ;
     form [ "password" ] . type  = "password" ; }
 
 let fshowpassword = function ( ) {
@@ -315,7 +313,6 @@ let fshowpassword = function ( ) {
 	if (chbox.checked) {
     form [ "password" ] . type  = "text"  ;
     chbox.setAttribute("checked", "checked" );
-    //chbox . attr  ( 'checked' , '' )  ;
     form [ 'showpassword' ] . value  = "1"  ; }
 	else {
     form [ "password" ] . type  = "password" ;
@@ -332,27 +329,20 @@ let fshowpassword = function ( ) {
     echo ' <input type="submit" name="submit" value="encrypt" />' ;
     echo ' <input type="submit" name="submit" value="decrypt" />' ; }
   echo  '</fieldset></td>'  ;
-  /*
+  
   echo '<td><fieldset><legend><i>JavaScript</i></legend>' ;
   if  ( $shifr -> localerus ) {
     echo ' <input type="button" name="submit2" value="зашифровать" id="encrypt2" />'  ;
-    echo ' <input type="button" name="submit2" value="расшифровать" id="decrypt2" />'  ; }
+    //echo ' <input type="button" name="submit2" value="расшифровать" id="decrypt2" />' ;
+    }
   else {
     echo ' <input type="button" name="submit2" value="encrypt"  id="encrypt2" />' ;
-    echo ' <input type="button" name="submit2" value="decrypt"  id="decrypt2" />' ; }
+    //echo ' <input type="button" name="submit2" value="decrypt"  id="decrypt2" />' ;
+    }
   echo  '</fieldset></td>'  ;
-  */
+  
   echo '</tr></table>' ;
 ?>
-<script>/*
-let fencrypt = function ( ) {
-  js_shifr . flagtext = true  ;
-  js_shifr_password_load ( js_shifr ) ;
-  js_shifr_encrypt ( js_shifr ) ; 
-  js_shifr_flush ( js_shifr  ) ; }
-let chbox_enc = document  . getElementById  ( 'encrypt2'  ) ;
-chbox_enc . addEventListener  ( 'click' , fencrypt ) ;*/
-</script>
 <hr>
 <input type=file name=uploadfile>
 <p>
@@ -376,58 +366,27 @@ else {
 ?>
 </p>
 <script>
-/*
-for ( let data3 of [ [ 0 , 1 , 2 ] , [ 3 , 4 , 5 ] , [ 6 , 7 ] ] ) {
-  let datasole3  = js_shifr_data_sole3 ( data3  ) ;
-  let dss3 = new String ( 'datasole3 = [ ' ) ;
-  for ( let ds  of  datasole3 ) {
-    dss3 += ds . toString ( 2 ) ;
-    dss3 += ' , ' ; }
-  dss3 += ' ]' ;
-  console . log ( dss3 ) ; }
+
+js_shifr  . password  = document . getElementById ( 'password' ) . value ;
+js_shifr  . message = document . getElementById ( 'message' ) . value ;
+js_shifr  . flagtext  = document . getElementById ( 'SText' ) . checked ; 
+let fencrypt = function ( ) {
+
+  document . getElementById ( 'SText' ) . checked = true ;
+  js_shifr  . flagtext  = true  ;
+  js_shifr  . password  = document . getElementById ( 'password' ) . value ;
+  js_shifr  . message = document . getElementById ( 'message' ) . value ;
   
-let byte = Math . floor ( Math . random ( ) * 0x100 ) ;
-let bytes = new String ( 'byte = [ ' ) ;
-bytes += byte . toString ( 2 ) ;
-bytes += ' ]' ;
-console . log ( bytes ) ;  
-let arrbyte = js_shifr_byte_to_array2  ( byte  ) ;
-let dssba = new String ( 'arrbyte = [ ' ) ;
-for ( let ds  of  arrbyte ) {
-  dssba += ds . toString ( 2 ) ;
-  dssba += ' , ' ; }
-dssba += ' ]' ;
-console . log ( dssba ) ;  
+  js_shifr_password_load ( js_shifr ) ;
+  js_shifr_encrypt ( js_shifr ) ; 
+  js_shifr_flush ( js_shifr  ) ;
+  
+  document . getElementById ( 'message' ) . value  = js_shifr  . message ;
+  
+  }
+let chbox_enc = document  . getElementById  ( 'encrypt2'  ) ;
+chbox_enc . addEventListener  ( 'click' , fencrypt ) ;
 
-let old_last_data = { n : 0 } ;
-let old_last_sole = { n : 0 } ;
-let secret_data_sole  = [ 0b0000 , 0b0101 , 0b1010 , 0b1111 ] ;
-js_shifr_data_xor2 ( old_last_data , old_last_sole , secret_data_sole  ) ;
-let dssba2 = new String ( 'secret_data_sole = [ ' ) ;
-for ( let sd  of  secret_data_sole ) {
-  dssba2 += sd . toString ( 2 ) ;
-  dssba2 += ' , ' ; }
-dssba2 += ' ] , old_last_data = ' + old_last_data . n + ' , old_last_sole = ' +
-  old_last_sole . n ;
-console . log ( dssba2 ) ;  
-
-let old_last_data3 = { n : 0 } ;
-let old_last_sole3 = { n : 0 } ;
-let secret_data_sole3  = [ 0b000000 , 0b001001 , 0b010010 , 0b011011 ] ;
-js_shifr_data_xor3 ( old_last_data3 , old_last_sole3 , secret_data_sole3  ) ;
-let dssba3 = new String ( 'secret_data_sole3 = [ ' ) ;
-for ( let sd3  of  secret_data_sole3 ) {
-  dssba3 += sd3 . toString ( 2 ) ;
-  dssba3 += ' , ' ; }
-dssba3 += ' ] , old_last_data3 = ' + old_last_data3 . n + ' , old_last_sole3 = ' +
-  old_last_sole3 . n ;
-console . log ( dssba3 ) ;
-
-let data2  = [ 0 , 1 , 2 , 3 ] ;
-let table = [ 3 , 2 , 1 , 0 ] ;
-let datas = js_shifr_crypt_decrypt  ( data2  , table ) ;
-console . log ( 'datas = [ ' + datas + ' ]' ) ;
-*/
 </script>
 </form>
 </body>
