@@ -169,14 +169,46 @@ let js_toUTF8Array = function ( str ) {
                       0x80 | (charcode & 0x3f)); } }
     return utf8; }
 
+
+let js_Utf8ArrayToStr  = function (  array ) {
+    let out = '' ;
+    let len = array . length  ;
+    let i = 0 ;
+    while ( i < len ) {
+      let c = array [ i ] ;
+      ++  i ;
+      switch  ( c >> 4  ) { 
+      case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+        // 0xxxxxxx
+        out += String . fromCharCode  ( c ) ;
+        break ;
+      case 12: case 13:
+        // 110x xxxx   10xx xxxx
+        { let char2 = array [ i ] ;
+          ++  i ;
+          out += String . fromCharCode  (
+            ( ( c & 0x1F  ) << 6  ) | ( char2 & 0x3F  ) ) ; }
+        break ;
+      case 14:
+        // 1110 xxxx  10xx xxxx  10xx xxxx
+        { let char2 = array [ i ] ;
+          ++  i ;
+          if ( i < len ) {
+            let char3 = array [ i ] ;
+            ++  i ;
+            out += String . fromCharCode  ( ( ( c & 0x0F  ) << 12 ) |
+                       (  ( char2 & 0x3F  ) << 6  ) |
+                       (  ( char3 & 0x3F  ) << 0  ) ) ; } }
+        break ; } }
+    return out  ; }
+    
 let js_shifr_encrypt2 = function ( sh ) {
   let message_array ;
-  if ( sh . flagtext ) {
+  if ( sh . flagtext )
     message_array = js_toUTF8Array ( sh . message ) ;
-    sh . message =  '' ; }
-  else {
+  else 
     message_array = sh . message  ;
-    sh . message =  [ ] ; }
+  sh . message =  '' ;
 //console . log ( 'message_array = `' + message_array + '` ' + Object.prototype.toString.call(message_array) ) ;
   for ( let char of message_array ) {
     let secret_data = js_shifr_byte_to_array2 ( char ) ;
@@ -614,3 +646,63 @@ for ( let name in js_shifr ) {
     console . log ( name + " : " + js_shifr [ name ] + " ,") ; } }
 console . log ( "}" ) ;
 }
+
+let js_shifr_decrypt  = function  ( shifr ) {
+  if ( js_shifr_version  ( shifr  ) == 2 ) 
+    js_shifr_decrypt2 ( shifr ) ; 
+  else 
+    js_shifr_decrypt3 ( shifr ) ; }
+
+// message_array -> message ( decrypted array )
+let js_shifr_decrypt2 = function  ( sh ) {
+  sh  . message = [ ] ;
+  if ( sh . flagtext ) {
+    for ( let i = 0 ; i < sh . message_array . length ; ++ i ) {
+      do  {
+        while ( ( sh . message_array [ i ] ) < ( 'R' . charCodeAt ( 0 ) ) ||
+          ( sh . message_array [ i ] ) > ( 'z' . charCodeAt ( 0 ) ) )  {
+          ++  i  ;
+          if ( i >= ( sh . message_array . length ) )
+            break ; }
+        if ( i >= ( sh . message_array . length ) )
+          break ;
+        sh . buf3 . push ( sh . message_array [ i ] - 'R' . charCodeAt ( 0 ) ) ;
+        ++  sh . buf3_index ;
+        if ( sh . buf3_index < 3 )
+          ++  i  ;
+      } while ( sh . buf3_index < 3 ) ;
+      if ( i >= ( sh . message_array . length ) )
+        break ;
+      sh . buf3_index = 0 ;
+      let u16 = sh  . buf3 [ 0 ] + 40 * ( sh . buf3 [ 1 ] +
+        40 * sh  . buf3 [ 2 ] ) ;
+      sh . buf3 = [ ] ;
+        let buf = [ u16 & 0xff , u16 >> 8 ] ;
+        let secretdata = [
+          buf [ 0 ] & 0b1111 ,
+          ( buf [ 0 ] >> 4 ) & 0b1111 ,
+          buf [ 1 ] & 0b1111 ,
+          ( buf [ 1 ] >> 4 ) & 0b1111 ] ;
+        let decrypteddata = [ ] ;
+        js_shifr_decrypt_sole2 ( secretdata , sh . deshia , decrypteddata ,
+          sh . old_last_sole , sh . old_last_data ) ;
+        sh  . message . push ( ( decrypteddata [ 0 ] & 0b11  ) |
+          ( ( decrypteddata [ 1 ] & 0b11  ) << 2  ) |
+          ( ( decrypteddata [ 2 ] & 0b11  ) <<  4 ) |
+          ( ( decrypteddata [ 3 ] & 0b11  ) << 6  ) ) ; } // for $i    
+    }
+  else {
+    // binary
+    for ( let i = 0 ; i < sh . message_array . length - 1 ; i += 2 ) {
+      let secretdata = [
+        ( sh . message_array [ i ] ) & 0xf ,
+        ( ( sh . message_array [ i ] ) >> 4 ) & 0xf ,
+        ( sh . message_array [ i + 1 ] ) & 0xf ,
+        ( ( sh . message_array [ i + 1 ] ) >> 4 ) & 0xf ] ;
+      let decrypteddata = [ ] ;
+      js_shifr_decrypt_sole2 ( secretdata , sh . deshia , decrypteddata ,
+        sh . old_last_sole , sh . old_last_data ) ;
+      sh . message . push ( ( decrypteddata [ 0 ] & 0b11 ) |
+          ( ( decrypteddata [ 1 ] & 0b11 ) << 2  ) |
+          ( ( decrypteddata [ 2 ] & 0b11 ) <<  4 ) |
+          ( ( decrypteddata [ 3 ] & 0b11 ) << 6  ) ) ; } } }

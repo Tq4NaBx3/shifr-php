@@ -333,11 +333,11 @@ let fshowpassword = function ( ) {
   echo '<td><fieldset><legend><i>JavaScript</i></legend>' ;
   if  ( $shifr -> localerus ) {
     echo ' <input type="button" name="submit2" value="зашифровать" id="encrypt2" />'  ;
-    //echo ' <input type="button" name="submit2" value="расшифровать" id="decrypt2" />' ;
+    echo ' <input type="button" name="submit2" value="расшифровать" id="decrypt2" />' ;
     }
   else {
     echo ' <input type="button" name="submit2" value="encrypt"  id="encrypt2" />' ;
-    //echo ' <input type="button" name="submit2" value="decrypt"  id="decrypt2" />' ;
+    echo ' <input type="button" name="submit2" value="decrypt"  id="decrypt2" />' ;
     }
   echo  '</fieldset></td>'  ;
   
@@ -376,6 +376,7 @@ let fencrypt = function ( ) {
   js_shifr  . flagtext  = true  ;
   js_shifr  . password  = document . getElementById ( 'password' ) . value ;
   js_shifr  . message = document . getElementById ( 'message' ) . value ;
+  js_shifr  . message_array = js_toUTF8Array ( js_shifr . message ) ;
   
   js_shifr_password_load ( js_shifr ) ;
   js_shifr_encrypt ( js_shifr ) ; 
@@ -384,9 +385,28 @@ let fencrypt = function ( ) {
   document . getElementById ( 'message' ) . value  = js_shifr  . message ;
   
   }
+let fdecrypt = function ( ) {
+
+  document . getElementById ( 'SText' ) . checked = true ;
+  js_shifr  . flagtext  = true  ;
+  js_shifr  . password  = document . getElementById ( 'password' ) . value ;
+  js_shifr  . message = document . getElementById ( 'message' ) . value ;
+  js_shifr  . message_array = js_toUTF8Array ( js_shifr . message ) ;
+  
+  js_shifr_password_load ( js_shifr ) ;
+  js_shifr_decrypt ( js_shifr ) ; 
+  js_shifr . message  = js_Utf8ArrayToStr ( js_shifr  . message ) ; 
+  
+  js_shifr . old_last_data  = { n : 0 } ;
+  js_shifr . old_last_sole  = { n : 0 } ;
+  
+  document . getElementById ( 'message' ) . value  = js_shifr  . message ;
+  
+  }
 let chbox_enc = document  . getElementById  ( 'encrypt2'  ) ;
 chbox_enc . addEventListener  ( 'click' , fencrypt ) ;
-
+let chbox_dec = document  . getElementById  ( 'decrypt2'  ) ;
+chbox_dec . addEventListener  ( 'click' , fdecrypt ) ;
 </script>
 </form>
 </body>
