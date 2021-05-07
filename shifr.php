@@ -400,7 +400,7 @@ function  isEOFstreambuf_read6bits ( shifr & $sh , array & $encrypteddata ) : bo
         return true ;
       $reads = ord ( $sh -> message [ $sh -> decode_read_index ] ) ;
       ++  $sh -> decode_read_index  ; }
-    $encrypteddata [ ] = $reads - ord ( ';' ) ; }
+    $encrypteddata [ ] = $reads - ord ( ';' ) ; } // flagtext
   else  {
     $encrypteddata [ ] = ( $sh -> in_buf | 
       ( $reads <<  $sh -> in_bufbitsize ) ) & ( 0x40 - 1 )  ;
@@ -408,8 +408,8 @@ function  isEOFstreambuf_read6bits ( shifr & $sh , array & $encrypteddata ) : bo
     $sh -> in_bufbitsize +=  2 ; } // + 8 - 6
   return  false ; }
     
-// версия 6 пишу три бита для расшифровки
-// version 6 write three bits to decode
+// версия 3 пишу три бита для расшифровки
+// version 3 write three bits to decode
 function  streambuf_write3bits ( shifr & $sh , $decrypteddata ) {
   if  ( $sh -> out_bufbitsize < 5 ) {
     $sh -> out_buf |= ( $decrypteddata << ( $sh -> out_bufbitsize ) ) ;

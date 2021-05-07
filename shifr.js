@@ -703,3 +703,60 @@ let js_shifr_decrypt2 = function  ( sh ) {
           ( ( decrypteddata [ 1 ] & 0b11 ) << 2  ) |
           ( ( decrypteddata [ 2 ] & 0b11 ) <<  4 ) |
           ( ( decrypteddata [ 3 ] & 0b11 ) << 6  ) ) ; } } }
+
+// читаю 6 бит
+// 6 bits reads
+// from sh . message_array to => encrypteddata
+let js_isEOFstreambuf_read6bits   = function  ( sh , encrypteddata ) {
+  if  ( ( ! sh . flagtext ) && ( sh . in_bufbitsize >= 6 ) ) {
+    sh . in_bufbitsize -=  6 ;
+    encrypteddata . push ( sh . in_buf & ( 0x40 - 1 ) ) ;
+    sh . in_buf  >>= 6 ;
+    return  false ; }
+  if ( sh . decode_read_index >= ( sh . message_array . length ) )
+    return true ;
+  let reads = ( sh . message_array [ sh . decode_read_index ] ) ;
+  ++  ( sh . decode_read_index ) ;
+  if  ( sh . flagtext ) {
+    // читаем одну букву ';'-'z' -> декодируем в шесть бит
+    // reads one letter ';'-'z' -> decode to six bits
+    while ( ( reads < ( ';' . charCodeAt ( 0 ) ) ) ||
+      ( reads > ( 'z' . charCodeAt ( 0 ) ) ) ) {
+      if ( sh . decode_read_index >= ( sh . message_array . length ) )
+        return true ;
+      reads = ( sh . message_array [ sh . decode_read_index ] ) ;
+      ++ ( sh . decode_read_index ) ; }
+    encrypteddata . push ( reads - ( ';' . charCodeAt ( 0 ) ) ) ; } // flagtext
+  else  {
+    encrypteddata . push ( ( sh . in_buf | 
+      ( reads <<  sh . in_bufbitsize ) ) & ( 0x40 - 1 ) ) ;
+    sh . in_buf = reads >>  ( 6 - sh . in_bufbitsize ) ;
+    sh . in_bufbitsize +=  2 ; } // + 8 - 6
+  return  false ; }
+
+// версия 3 пишу три бита для расшифровки
+// version 3 write three bits to decode
+let js_streambuf_write3bits = function  ( sh , decrypteddata ) {
+  if  ( sh . out_bufbitsize < 5 ) {
+    sh . out_buf |= ( decrypteddata << ( sh . out_bufbitsize ) ) ;
+    sh . out_bufbitsize +=  3 ; }
+  else  {
+    let to_write  = ( ( decrypteddata << sh . out_bufbitsize ) |
+      ( sh . out_buf ) ) & 0xff ;
+    sh . messageout . push ( to_write ) ;
+    // + 3 - 8
+    sh . out_bufbitsize -= 5 ;
+    sh . out_buf = decrypteddata >> ( 3 - ( sh . out_bufbitsize ) ) ; } }
+  
+// from sh . message_array to => sh . message
+let js_shifr_decrypt3 = function  ( sh  ) {
+  let secretdata = [ ]  ;
+  sh .  messageout = [ ]  ;
+  sh .  decode_read_index  = 0 ;
+  while ( ! js_isEOFstreambuf_read6bits ( sh , secretdata ) ) {
+    let decrypteddata = [ ] ;
+    js_shifr_decrypt_sole3 ( secretdata , sh . deshia , decrypteddata ,
+      sh . old_last_sole ,  sh . old_last_data ) ;
+    secretdata = [ ] ;
+    js_streambuf_write3bits ( sh , decrypteddata [ 0 ] ) ; }
+  sh . message = sh . messageout ; }
