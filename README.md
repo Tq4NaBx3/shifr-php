@@ -2,7 +2,7 @@
 <p>ENG</p>
 <p>
 Symmetric stream encryption with 'salt'.<br>
-'Salt' is constantly generated, which gives good resistance.<br>
+The 'salt' is constantly being produced, which gives good encryption strength.<br>
 Data size doubles in binary mode.<br>
 Will triple in text mode.<br>
 There is no diagnosis of the wrong password.<br>
@@ -24,7 +24,7 @@ The data is decrypted twice and verified with the signature.<br>
 <p>RUS</p>
 <p>
 Симметричное потоковое шифрование с помощью 'соли'.<br>
-'Соль' постоянно вырабатывается, что даёт хорошую устойчивость.<br>
+'Соль' постоянно вырабатывается, что даёт хорошую стойкость шифрования.<br>
 Размер данных удваивается в двоичном режиме.<br>
 Утроится в текстовом режиме.<br>
 Нет никакого диагноза неправильного пароля.<br>
