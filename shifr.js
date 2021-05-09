@@ -204,8 +204,10 @@ let js_Utf8ArrayToStr  = function (  array ) {
     
 // sh . message_array of bytes -> sh . message of bytes
 let js_shifr_encrypt2 = function ( sh ) {
-  sh . message =  '' ;
-//console . log ( 'sh . message_array = `' + sh . message_array + '` ' + Object.prototype.toString.call(sh . message_array) ) ;
+  if ( sh . flagtext )
+    sh . message =  '' ;
+  else
+    sh . message =  [ ] ;
   for ( let char of sh . message_array ) {
     let secret_data = js_shifr_byte_to_array2 ( char ) ;
     let secret_data_sole = js_shifr_data_sole2 ( secret_data ) ;
@@ -295,6 +297,12 @@ let js_shifr_encrypt3 = function ( sh ) {
   for ( let char of sh . message_array )
     js_shifr_write_array ( sh , js_shifr_byte_to_array3 ( sh , char ) ) ; }
 
+let js_shifr_generate_password = function ( sh  ) {
+  if ( sh . key_mode == 45 )
+    js_shifr_generate_password_2 ( sh ) ;
+  else
+    js_shifr_generate_password_3 ( sh ) ; }
+    
 let js_shifr_generate_password_2 = function ( sh ) {
   sh . password  = js_shifr_password_to_string ( sh ,
     js_shifr_pass_to_array2  ( js_shifr_generate_pass2  ( ) ) ) ; }
@@ -315,6 +323,19 @@ let js_shifr_flush  = function  ( sh ) {
     sh . message += "\n"  ; }
   sh . old_last_data  = { n : 0 } ;
   sh . old_last_sole  = { n : 0 } ; }
+    /*
+let js_shifr_flush_file = function  ( sh , fpw ) {
+  if ( sh  . bitscount ) {
+    sh . message = ''  ;
+    js_shifr_write_array ( sh , [ sh . bufin ] ) ;
+    sh . bitscount = 0 ;
+    fwrite  ( fpw . f , sh  . message ) ; }
+  if  ( sh . out_bufbitsize ) {
+    fwrite  ( fpw . f , sh . out_buf ) ;
+    sh . out_bufbitsize = 0 ; }
+  if ( sh  . flagtext && sh . bytecount ) {
+    sh . bytecount = 0 ;
+    fwrite  ( fpw . f , "\n" ) ; } }*/
     
 let js_number_dec = function  ( number ) {
   let i = 0 ;

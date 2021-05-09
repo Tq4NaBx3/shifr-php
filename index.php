@@ -281,10 +281,7 @@ let falpha10  = function ( ) {
 document  . getElementById ( 'passdigits' ) . addEventListener  ( 'click' , falpha10 ) ;
     
 let fgenerate = function ( ) {
-  if ( js_shifr . key_mode == 45 )
-    js_shifr_generate_password_2 ( js_shifr ) ;
-  else
-    js_shifr_generate_password_3 ( js_shifr ) ;
+  js_shifr_generate_password  ( js_shifr  ) ;
   document . getElementById ( 'password' ) . value  = js_shifr . password ; }
   
 let chboxg = document.getElementById('generate2');
@@ -344,17 +341,32 @@ let fshowpassword = function ( ) {
   echo '</tr></table>' ;
 ?>
 <hr>
-<input type=file name=uploadfile>
-<p>
+<table><tr><td><fieldset><legend><i>PHP</i></legend>
+<input type=file name=uploadfile><br>
 <?php
 if  ( $shifr -> localerus )
   echo '<input type=submit name="submit" value="Зашифровать файл" > '.PHP_EOL ;
 else
   echo '<input type=submit name="submit" value="Encrypt file" > '.PHP_EOL  ;
 if  ( $shifr -> localerus )
-  echo '<input type=submit name="submit" value="Расшифровать файл" ><br>'.PHP_EOL ;
+  echo '<input type=submit name="submit" value="Расшифровать файл" >'.PHP_EOL ;
 else
-  echo '<input type=submit name="submit" value="Decrypt file" ><br>'.PHP_EOL  ;
+  echo '<input type=submit name="submit" value="Decrypt file" >'.PHP_EOL  ;
+?>
+</fieldset></td><td><fieldset><legend><i>JavaScript</i></legend>
+<input type=file name=js_uploadfile onchange="js_readFile(this)"><br>
+<?php
+if  ( $shifr -> localerus )
+  echo '<input type="button" name="submit3" value="Зашифровать файл" id="encrypt3" > '.PHP_EOL ;
+else
+  echo '<input type="button" name="submit3" value="Encrypt file" id="encrypt3" > '.PHP_EOL  ;/*
+if  ( $shifr -> localerus )
+  echo '<input type="button" name="submit3" value="Расшифровать файл" id="decrypt3" >'.PHP_EOL ;
+else
+  echo '<input type="button" name="submit3" value="Decrypt file" id="decrypt3" >'.PHP_EOL  ;*/
+?>
+</fieldset></td></tr></table>
+<?php
 if  ( $shifr -> localerus )    {
   echo '<br>Шифрование в текстовом режиме : <input type="checkbox" '.
   ' class="largerCheckbox" name="Шифрование_в_текстовом_режиме" value="1"'.
@@ -364,7 +376,7 @@ else {
   ' class="largerCheckbox" name="Encryption_in_text_mode" value="1" id="SText" ';
   if($shifr -> flagtext)echo 'checked'; echo ' />' ; }
 ?>
-</p>
+
 <script>
 
 js_shifr  . password  = document . getElementById ( 'password' ) . value ;
@@ -407,6 +419,51 @@ let chbox_enc = document  . getElementById  ( 'encrypt2'  ) ;
 chbox_enc . addEventListener  ( 'click' , fencrypt ) ;
 let chbox_dec = document  . getElementById  ( 'decrypt2'  ) ;
 chbox_dec . addEventListener  ( 'click' , fdecrypt ) ;
+
+let js_readFile = function  ( input ) {
+  let file = input.files[0];
+  
+  let reader = new FileReader();
+
+  reader.readAsArrayBuffer(file);
+
+  reader.onload = function() {
+    let buffer  = reader.result ;
+    
+    let view = new Uint8Array(buffer);
+    
+    js_shifr  . message_array = Array . from  ( view ) ;
+
+  };
+
+  reader.onerror = function() {
+    alert(reader.error);
+  };
+
+}
+
+let fencrypt3 = function  ( ) {
+
+  document . getElementById ( 'SText' ) . checked = true ;
+  js_shifr  . flagtext  = true  ;
+
+  js_shifr  . password  = document . getElementById ( 'password' ) . value ;
+  
+  js_shifr_password_load ( js_shifr ) ;
+  js_shifr_encrypt ( js_shifr ) ; 
+  js_shifr_flush ( js_shifr  ) ;
+  
+  document . getElementById ( 'message' ) . value  = js_shifr  . message ;
+
+}
+
+let fdecrypt3 ;
+
+let chbox_fenc = document  . getElementById  ( 'encrypt3'  ) ;
+chbox_fenc . addEventListener  ( 'click' , fencrypt3 ) ;
+/*let chbox_fdec = document  . getElementById  ( 'decrypt3'  ) ;
+chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
+*/
 </script>
 </form>
 </body>
