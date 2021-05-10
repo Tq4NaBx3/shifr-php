@@ -284,7 +284,7 @@ let js_shifr_write_array  = function  ( sh , secret_data  ) {
         sh .  out_buf |=  ( ed << ( sh .  out_bufbitsize ) ) ;
         sh .  out_bufbitsize  +=  6 ; }
       else  {
-        sh . message  +=  String . fromCharCode (
+        sh . message  . push (
           ( ( ed << ( sh .  out_bufbitsize ) ) & 0xff ) | sh .  out_buf ) ;
         // + 6 - 8
         sh . out_bufbitsize -= 2 ;
@@ -293,7 +293,10 @@ let js_shifr_write_array  = function  ( sh , secret_data  ) {
 
 // sh . message_array of bytes -> sh . message of bytes
 let js_shifr_encrypt3 = function ( sh ) {
-  sh . message =  ''  ;
+  if ( sh . flagtext )
+    sh . message =  ''  ;
+  else
+    sh . message =  [ ] ;
   for ( let char of sh . message_array )
     js_shifr_write_array ( sh , js_shifr_byte_to_array3 ( sh , char ) ) ; }
 
@@ -323,19 +326,6 @@ let js_shifr_flush  = function  ( sh ) {
     sh . message += "\n"  ; }
   sh . old_last_data  = { n : 0 } ;
   sh . old_last_sole  = { n : 0 } ; }
-    /*
-let js_shifr_flush_file = function  ( sh , fpw ) {
-  if ( sh  . bitscount ) {
-    sh . message = ''  ;
-    js_shifr_write_array ( sh , [ sh . bufin ] ) ;
-    sh . bitscount = 0 ;
-    fwrite  ( fpw . f , sh  . message ) ; }
-  if  ( sh . out_bufbitsize ) {
-    fwrite  ( fpw . f , sh . out_buf ) ;
-    sh . out_bufbitsize = 0 ; }
-  if ( sh  . flagtext && sh . bytecount ) {
-    sh . bytecount = 0 ;
-    fwrite  ( fpw . f , "\n" ) ; } }*/
     
 let js_number_dec = function  ( number ) {
   let i = 0 ;
@@ -507,7 +497,11 @@ let js_shifr_set_version = function ( sh , ver ) {
     sh . key_mode = 45 ;
   else 
     sh . key_mode = 296 ; }
-  
+
+let js_shifr_sole_init = function ( sh  ) {
+  sh . old_last_data  = { n : 0 } ;
+  sh . old_last_sole  = { n : 0 } ; }
+    
 let js_shifr_init = function ( sh ) {
   //  ascii ' ' => '~'
   sh .  letters95 = [ ] ;
@@ -528,8 +522,7 @@ let js_shifr_init = function ( sh ) {
   // default is digits and letters
   sh . letters_mode = 62 ;
   js_shifr_set_version ( sh , 3 ) ;
-  sh . old_last_data  = { n : 0 } ;
-  sh . old_last_sole  = { n : 0 } ;
+  js_shifr_sole_init  ( sh  ) ;
   sh . bytecount  = 0 ;
   sh . buf3_index = 0 ;
   sh . buf3 = [ ] ;
