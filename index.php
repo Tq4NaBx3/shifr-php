@@ -425,8 +425,6 @@ let js_readFile = function  ( input ) {
   
   let reader = new FileReader();
 
-  reader.readAsArrayBuffer(file);
-
   reader.onload = function() {
     let buffer  = reader.result ;
     
@@ -439,6 +437,8 @@ let js_readFile = function  ( input ) {
   reader.onerror = function() {
     alert(reader.error);
   };
+  
+  reader.readAsArrayBuffer(file);
 
 }
 
