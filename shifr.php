@@ -811,4 +811,3 @@ function  shifr_generate_password  ( shifr & $shifr ) {
     shifr_generate_password_3 ( $shifr  ) ; }
 
 ?>
-
