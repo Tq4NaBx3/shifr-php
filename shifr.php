@@ -624,7 +624,7 @@ function  number_mul_byte ( array & $number , int $byte ) {
   
 // [ 0..15 , 0..14 , 0..13 , ... , 0..2 , 0..1 ] = [ x , y , z , ... , u , v ] =
 // = x + y * 16 + z * 16 * 15 + ... + u * 16! / 2 / 3 + v * 16! / 2 = 0 .. 16!-1
-function  shifr_pass_to_array2 ( array & $password ) : array {
+function  shifr_pass_to_array2 ( array $password ) : array {
   $re = array ( ) ;
   $mu = array ( 1 ) ;
   $in = 0 ;
@@ -641,7 +641,7 @@ function  shifr_pass_to_array2 ( array & $password ) : array {
 
 // [ 0..63 , 0..62 , 0..61 , ... , 0..2 , 0..1 ] = [ x , y , z , ... , u , v ] =
 // = x + y * 64 + z * 64 * 63 + ... + u * 64! / 2 / 3 + v * 64! / 2 = 0 .. 64!-1
-function  shifr_pass_to_array3 ( array & $password ) : array {
+function  shifr_pass_to_array3 ( array $password ) : array {
   $re = array ( ) ;
   $mu = array ( 1 ) ;
   $in = 0 ;

@@ -359,11 +359,11 @@ else
 if  ( $shifr -> localerus )
   echo '<input type="button" name="submit3" value="Зашифровать файл" id="encrypt3" > '.PHP_EOL ;
 else
-  echo '<input type="button" name="submit3" value="Encrypt file" id="encrypt3" > '.PHP_EOL  ;/*
+  echo '<input type="button" name="submit3" value="Encrypt file" id="encrypt3" > '.PHP_EOL  ;
 if  ( $shifr -> localerus )
   echo '<input type="button" name="submit3" value="Расшифровать файл" id="decrypt3" >'.PHP_EOL ;
 else
-  echo '<input type="button" name="submit3" value="Decrypt file" id="decrypt3" >'.PHP_EOL  ;*/
+  echo '<input type="button" name="submit3" value="Decrypt file" id="decrypt3" >'.PHP_EOL  ;
 ?>
 </fieldset></td></tr></table>
 <?php
@@ -390,6 +390,7 @@ let fencrypt = function ( ) {
   js_shifr  . message = document . getElementById ( 'message' ) . value ;
   js_shifr  . message_array = js_toUTF8Array ( js_shifr . message ) ;
   
+  js_shifr_sole_init  ( js_shifr ) ;
   js_shifr_password_load ( js_shifr ) ;
   js_shifr_encrypt ( js_shifr ) ; 
   js_shifr_flush ( js_shifr  ) ;
@@ -405,13 +406,11 @@ let fdecrypt = function ( ) {
   js_shifr  . message = document . getElementById ( 'message' ) . value ;
   js_shifr  . message_array = js_toUTF8Array ( js_shifr . message ) ;
   
+  js_shifr_sole_init  ( js_shifr ) ;
   js_shifr_password_load ( js_shifr ) ;
   js_shifr_decrypt ( js_shifr ) ; 
   js_shifr . message  = js_Utf8ArrayToStr ( js_shifr  . message ) ; 
-  
-  js_shifr . old_last_data  = { n : 0 } ;
-  js_shifr . old_last_sole  = { n : 0 } ;
-  
+    
   document . getElementById ( 'message' ) . value  = js_shifr  . message ;
   
   }
@@ -446,9 +445,9 @@ let fencrypt3 = function  ( ) {
 
   document . getElementById ( 'SText' ) . checked = true ;
   js_shifr  . flagtext  = true  ;
-
   js_shifr  . password  = document . getElementById ( 'password' ) . value ;
   
+  js_shifr_sole_init  ( js_shifr ) ;
   js_shifr_password_load ( js_shifr ) ;
   js_shifr_encrypt ( js_shifr ) ; 
   js_shifr_flush ( js_shifr  ) ;
@@ -457,13 +456,28 @@ let fencrypt3 = function  ( ) {
 
 }
 
-let fdecrypt3 ;
+let fdecrypt3 = function ( ) {
+
+  if ( document . getElementById ( 'SText' ) . checked )
+    js_shifr  . flagtext  = true  ;
+  else
+    js_shifr  . flagtext  = false ;
+  js_shifr  . password  = document . getElementById ( 'password' ) . value ;
+    
+  js_shifr_sole_init  ( js_shifr ) ;
+  js_shifr_password_load ( js_shifr ) ;
+  js_shifr_decrypt ( js_shifr ) ; 
+  js_shifr . message  = js_Utf8ArrayToStr ( js_shifr  . message ) ;
+    
+  document . getElementById ( 'message' ) . value  = js_shifr  . message ;
+  
+  }
 
 let chbox_fenc = document  . getElementById  ( 'encrypt3'  ) ;
 chbox_fenc . addEventListener  ( 'click' , fencrypt3 ) ;
-/*let chbox_fdec = document  . getElementById  ( 'decrypt3'  ) ;
+let chbox_fdec = document  . getElementById  ( 'decrypt3'  ) ;
 chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
-*/
+
 </script>
 </form>
 </body>
