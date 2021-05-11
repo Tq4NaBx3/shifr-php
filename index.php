@@ -1,11 +1,4 @@
 <?php
-
-if  ( isset ( $_POST  )  )  {
-	if ( isset ( $_POST  [ 'files' ] ) and ( $_POST  [ 'files' ] == 'файлы' or
-    $_POST  [ 'files' ] == 'files') ) {
-   	header  ( "Location: ./uploads/"  ) ;
-   	die ( ) ; } }
-
 require ( 'shifr.php' ) ;
 $shifr  = new shifr ( ) ;
 shifr_init ( $shifr  ) ;
