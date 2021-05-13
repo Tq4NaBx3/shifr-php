@@ -22,6 +22,11 @@ if  ( $_POST  ) {
 
   if ( isset ( $_POST [ 'message'  ] ) )
     $shifr -> message = $_POST  [ 'message'  ] ;
+    
+  if ( isset ( $_POST [ 'boxes_info'  ] ) )
+    $shifr -> boxes_info = $_POST  [ 'boxes_info'  ] ;
+  else
+    $shifr -> boxes_info = "" ;
   
   if  ( isset ( $_POST  [ 'submitShifr'  ] ) ) {
     if  ( isset ( $_POST  [ 'radio' ] ) ) {
@@ -375,8 +380,11 @@ let js_readFile = function  ( input ) {
 
 let fencrypt3 = function  ( ) {
 
-  document . getElementById ( 'SText' ) . checked = true ;
-  js_shifr  . flagtext  = true  ;
+  if ( document . getElementById ( 'SText' ) . checked )
+    js_shifr  . flagtext  = true  ;
+  else
+    js_shifr  . flagtext  = false ;
+  
   js_shifr  . password  = document . getElementById ( 'password' ) . value ;
   
   js_shifr_sole_init  ( js_shifr ) ;
@@ -384,8 +392,30 @@ let fencrypt3 = function  ( ) {
   js_shifr_encrypt ( js_shifr ) ; 
   js_shifr_flush ( js_shifr  ) ;
   
-  document . getElementById ( 'message' ) . value  = js_shifr  . message ;
+console . log ( 'js_shifr  . message = ' , js_shifr  . message ) ;  
 
+  //document . getElementById ( 'message' ) . value  = js_shifr  . message ;
+
+  let url = window . location . origin + window . location . pathname ;
+console . log ( 'url = ' , url ) ;
+  let mes = JSON  . stringify ( js_shifr  . message ) ;
+console . log ( 'mes = ' , mes ) ;
+  let boxinfo = document . getElementById ( 'boxes_info' ) ;
+console . log ( 'boxinfo = ' , boxinfo ) ;
+  boxinfo . value = mes ;
+console . log ( 'boxinfo . value = ' , boxinfo . value ) ;
+  let meso = document . getElementById  ( "message" ) ;
+  meso . value = js_shifr  . message ;
+console . log ( 'meso = ' , meso  ) ;
+  form  . submit  ( ) ;
+  /*let pingpong = document . getElementById  ( "ping_pong" ) ;
+  pingpong  . submit  ( ) ;*/
+//console . log ( 'document = ' , document ) ;
+  //document  . forms["message"].submit();
+  //form  [ "message" ] . submit  ( ) ;
+  /*let formm = document  . querySelector ( "#message"  ) ;
+  formm . submit  ( ) ;*/
+  //HTMLFormElement . prototype . submit  . call  ( form ) ;
 }
 
 let fdecrypt3 = function ( ) {
@@ -411,6 +441,12 @@ let chbox_fdec = document  . getElementById  ( 'decrypt3'  ) ;
 chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
 
 </script>
+<input class="attr" type="text" name="boxes_info" value = "" hidden id="boxes_info">
+<p>
+$shifr -> boxes_info = <?php
+  echo $shifr -> boxes_info ;
+?>
+</p>
 </form>
 </body>
 </html>
