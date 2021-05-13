@@ -23,7 +23,7 @@ if  ( $_POST  ) {
   if ( isset ( $_POST [ 'message'  ] ) )
     $shifr -> message = $_POST  [ 'message'  ] ;
   
-  if  ( isset ( $_POST  [ 'submit'  ] ) ) {
+  if  ( isset ( $_POST  [ 'submitShifr'  ] ) ) {
     if  ( isset ( $_POST  [ 'radio' ] ) ) {
       switch  ( $_POST  [ 'radio' ] ) {
       case  'ASCII' :
@@ -43,35 +43,35 @@ if  ( $_POST  ) {
         shifr_set_version ( $shifr ,  3 ) ;  
       else 
         shifr_set_version ( $shifr  , 2 ) ; }
-    if  ( $_POST  [ 'submit'] == 'зашифровать' or 
-      $_POST  [ 'submit'  ] == 'encrypt'  ) {
+    if  ( $_POST  [ 'submitShifr'] == 'зашифровать' or 
+      $_POST  [ 'submitShifr'  ] == 'encrypt'  ) {
       $shifr -> flagtext = true  ;
       shifr_password_load ( $shifr ) ;
       shifr_encrypt ( $shifr ) ; 
       shifr_flush ( $shifr  ) ; }
-  else if  ( $_POST  [ 'submit'] == 'расшифровать' or 
-      $_POST  [ 'submit'  ] == 'decrypt'  ) {
+  else if  ( $_POST  [ 'submitShifr'] == 'расшифровать' or 
+      $_POST  [ 'submitShifr'  ] == 'decrypt'  ) {
       shifr_password_load ( $shifr ) ;
       shifr_decrypt ( $shifr ) ; }
-  else  if  ( $_POST  [ 'submit'] == 'генерировать' or 
-      $_POST  [ 'submit'  ] == 'generate'  ) 
+  else  if  ( $_POST  [ 'submitShifr'] == 'генерировать' or 
+      $_POST  [ 'submitShifr'  ] == 'generate'  ) 
       shifr_generate_password ( $shifr  ) ;
-  else  if  ( $_POST  [ 'submit'] == 'загрузить' or 
-      $_POST  [ 'submit'  ] == 'load'  ) 
+  else  if  ( $_POST  [ 'submitShifr'] == 'загрузить' or 
+      $_POST  [ 'submitShifr'  ] == 'load'  ) 
       {   }
    else
-   if ( ( $_POST  [ 'submit'] == 'Зашифровать файл' or 
-        $_POST  [ 'submit'  ] == 'Encrypt file'  ) and
+   if ( ( $_POST  [ 'submitShifr'] == 'Зашифровать файл' or 
+        $_POST  [ 'submitShifr'  ] == 'Encrypt file'  ) and
       ( $_FILES [ 'uploadfile'  ] [ 'size' ] > 0 ) ) {
       include  ( './encrypt_file.php' ) ;
       die ( ) ; } // Encrypt file
    else
-   if  ( ( $_POST  [ 'submit' ] == 'Расшифровать файл' or 
-        $_POST  [ 'submit'  ] == 'Decrypt file' ) ) {
+   if  ( ( $_POST  [ 'submitShifr' ] == 'Расшифровать файл' or 
+        $_POST  [ 'submitShifr'  ] == 'Decrypt file' ) ) {
       if ( $_FILES [ 'uploadfile'  ] [ 'size' ] > 0 ) {
         include  ( './decrypt_file.php' ) ;
         die ( ) ; } // if ( $_FILES [ 'uploadfile'  ] [ 'size' ] > 0 )
-    }/*Decrypt file*/ } // if  ( isset ( $_POST  [ 'submit'  ] ) )
+    }/*Decrypt file*/ } // if  ( isset ( $_POST  [ 'submitShifr'  ] ) )
   } // if  ( $_POST  )
 ?>
 <!DOCTYPE html>
@@ -177,13 +177,13 @@ chboxg_keys296 . addEventListener  ( 'click' , fkeysize296 ) ;
   if  ( $shifr -> localerus ) {
     echo 'Ваш пароль : '  ;
     echo '<table><tr><td><fieldset><legend><i>PHP</i></legend>' ;
-    echo '<input type="submit" name="submit" value="генерировать" id="generate" /></fieldset></td>'  ;
+    echo '<input type="submit" name="submitShifr" value="генерировать" id="generate" /></fieldset></td>'  ;
     echo '<td><fieldset><legend><i>JavaScript</i></legend>' ;
     echo '<input type="button" name="submit2" value="генерировать" id="generate2" /></fieldset></td></tr></table>'  ; }
   else {
     echo 'Your password : ' ;
     echo '<table><tr><td><fieldset><legend><i>PHP</i></legend>' ;
-    echo '<input type="submit" name="submit" value="generate" id="generate" /></fieldset></td>' ;
+    echo '<input type="submit" name="submitShifr" value="generate" id="generate" /></fieldset></td>' ;
     echo '<td><fieldset><legend><i>JavaScript</i></legend>' ;
     echo '<input type="button" name="submit2" value="generate" id="generate2" /></fieldset></td></tr></table>'  ; }
 ?>
@@ -252,11 +252,11 @@ let fshowpassword = function ( ) {
 <?php
   echo '<table><tr><td><fieldset><legend><i>PHP</i></legend>' ;
   if  ( $shifr -> localerus ) {
-    echo ' <input type="submit" name="submit" value="зашифровать" />'  ;
-    echo ' <input type="submit" name="submit" value="расшифровать" />'  ; }
+    echo ' <input type="submit" name="submitShifr" value="зашифровать" />'  ;
+    echo ' <input type="submit" name="submitShifr" value="расшифровать" />'  ; }
   else {
-    echo ' <input type="submit" name="submit" value="encrypt" />' ;
-    echo ' <input type="submit" name="submit" value="decrypt" />' ; }
+    echo ' <input type="submit" name="submitShifr" value="encrypt" />' ;
+    echo ' <input type="submit" name="submitShifr" value="decrypt" />' ; }
   echo  '</fieldset></td>'  ;
   
   echo '<td><fieldset><legend><i>JavaScript</i></legend>' ;
@@ -277,13 +277,13 @@ let fshowpassword = function ( ) {
 <input type=file name=uploadfile><br>
 <?php
 if  ( $shifr -> localerus )
-  echo '<input type=submit name="submit" value="Зашифровать файл" > '.PHP_EOL ;
+  echo '<input type=submit name="submitShifr" value="Зашифровать файл" > '.PHP_EOL ;
 else
-  echo '<input type=submit name="submit" value="Encrypt file" > '.PHP_EOL  ;
+  echo '<input type=submit name="submitShifr" value="Encrypt file" > '.PHP_EOL  ;
 if  ( $shifr -> localerus )
-  echo '<input type=submit name="submit" value="Расшифровать файл" >'.PHP_EOL ;
+  echo '<input type=submit name="submitShifr" value="Расшифровать файл" >'.PHP_EOL ;
 else
-  echo '<input type=submit name="submit" value="Decrypt file" >'.PHP_EOL  ;
+  echo '<input type=submit name="submitShifr" value="Decrypt file" >'.PHP_EOL  ;
 ?>
 </fieldset></td><td><fieldset><legend><i>JavaScript</i></legend>
 <input type=file name=js_uploadfile onchange="js_readFile(this)"><br>
