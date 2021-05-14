@@ -1,3 +1,4 @@
+'use strict';
 // returns [ 0..15 , 0..14 , ... , 0..2 , 0..1 ]
 let js_shifr_generate_pass2 = function (  ) {
   let dice  = new Array ( ) ;

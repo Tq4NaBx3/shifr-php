@@ -23,6 +23,9 @@ if  ( $_POST  ) {
   if ( isset ( $_POST [ 'message'  ] ) )
     $shifr -> message = $_POST  [ 'message'  ] ;
   
+  if ( isset ( $_POST  [ 'password_name' ] ) ) 
+    shifr_generate_password ( $shifr  ) ; 
+  
   if  ( isset ( $_POST  [ 'submit'  ] ) ) {
     if  ( isset ( $_POST  [ 'radio' ] ) ) {
       switch  ( $_POST  [ 'radio' ] ) {
@@ -53,9 +56,6 @@ if  ( $_POST  ) {
       $_POST  [ 'submit'  ] == 'decrypt'  ) {
       shifr_password_load ( $shifr ) ;
       shifr_decrypt ( $shifr ) ; }
-  else  if  ( $_POST  [ 'submit'] == 'генерировать' or 
-      $_POST  [ 'submit'  ] == 'generate'  ) 
-      shifr_generate_password ( $shifr  ) ;
   else  if  ( $_POST  [ 'submit'] == 'загрузить' or 
       $_POST  [ 'submit'  ] == 'load'  ) 
       {   }
@@ -75,6 +75,9 @@ if  ( $_POST  ) {
   } // if  ( $_POST  )
 ?>
 <!DOCTYPE html>
+<script>
+'use strict';
+</script>
 <script src="shifr.js"></script>
 <script>
 let js_shifr  = { } ;
@@ -99,7 +102,7 @@ if (isset($err))
   echo '<p>err = \''.$err.'\'</p>' ;
 ?>
 <form action="<?php echo $_SERVER['PHP_SELF'] ; ?>" method=post 
-  enctype=multipart/form-data id="form" >
+  enctype=multipart/form-data id="form_id" name="form_name" >
 <input type="hidden" name="MAX_FILE_SIZE" value="1024000000">
 <label>
 <?php
@@ -174,19 +177,35 @@ chboxg_keys296 . addEventListener  ( 'click' , fkeysize296 ) ;
 <br>
 <label>
 <?php
-  if  ( $shifr -> localerus ) {
+  if  ( $shifr -> localerus )
     echo 'Ваш пароль : '  ;
-    echo '<table><tr><td><fieldset><legend><i>PHP</i></legend>' ;
-    echo '<input type="submit" name="submit" value="генерировать" id="generate" /></fieldset></td>'  ;
-    echo '<td><fieldset><legend><i>JavaScript</i></legend>' ;
-    echo '<input type="button" name="submit2" value="генерировать" id="generate2" /></fieldset></td></tr></table>'  ; }
-  else {
+  else
     echo 'Your password : ' ;
-    echo '<table><tr><td><fieldset><legend><i>PHP</i></legend>' ;
-    echo '<input type="submit" name="submit" value="generate" id="generate" /></fieldset></td>' ;
-    echo '<td><fieldset><legend><i>JavaScript</i></legend>' ;
-    echo '<input type="button" name="submit2" value="generate" id="generate2" /></fieldset></td></tr></table>'  ; }
 ?>
+<table>
+  <tr>
+    <td>
+      <fieldset>
+        <legend><i>PHP</i></legend>
+        <input type="submit" name="password_name" value="<?php
+          if  ( $shifr -> localerus )        
+            echo 'генерировать' ;
+          else
+            echo 'generate' ; ?>" id="generate_id" />
+      </fieldset>
+    </td>
+    <td>
+      <fieldset>
+        <legend><i>JavaScript</i></legend>
+        <input type="button" name="submit2" value="<?php
+          if  ( $shifr -> localerus )        
+            echo 'генерировать' ;
+          else
+            echo 'generate' ; ?>" id="generate2" />
+      </fieldset>
+    </td>
+  </tr>
+</table>
 </label>
 <br>
 <input name="password" type="password" value="<?php 
@@ -232,21 +251,26 @@ else {
   ' onchange="fshowpassword()" />' ; }
 ?>
 <script>
-  if ( document.getElementById('showpassword') . checked ) {
-    form [ "password" ] . type  = "text"  ; }
-  else {
-    form [ "password" ] . type  = "password" ; }
+  if ( document.getElementById('showpassword') . checked ) 
+    document  . forms [ 'form_id' ] [ 'password' ] . type  = 'text'  ; 
+  else 
+    document  . forms [ 'form_id' ] [ 'password' ] . type  = 'password'  ; 
 
 let fshowpassword = function ( ) {
+console . log ('form_id = ' , form_id ) ;
+console . log ('window . form_id = ' , window . form_id  ) ;
+console . log ('document  . forms [ \'form_id\' ] = ' , document  . forms [ 'form_id' ] ) ;
+console . log ('form_id === window . form_id => ' , form_id === window . form_id  ) ;
+console . log ('form_id === document  . forms [ \'form_id\' ] => ' ,
+  form_id === document  . forms [ 'form_id' ] ) ;
+
   let chbox = document.getElementById('showpassword');
 	if (chbox.checked) {
-    form [ "password" ] . type  = "text"  ;
-    chbox.setAttribute("checked", "checked" );
-    form [ 'showpassword' ] . value  = "1"  ; }
+    document  . forms [ 'form_id' ] [ 'password' ] . type  = 'text'  ;
+    chbox.setAttribute("checked", "checked" ); }
 	else {
-    form [ "password" ] . type  = "password" ;
-    chbox.removeAttribute("checked");
-    form [ 'showpassword' ] . value  = "0"  ; } }
+    document  . forms [ 'form_id' ] [ 'password' ] . type  = 'password'  ;
+    chbox.removeAttribute("checked"); } }
 </script>
 </p>
 <?php
