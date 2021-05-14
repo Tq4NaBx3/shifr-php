@@ -319,7 +319,7 @@ else
   echo '<input type=submit name="encrypt_decrypt_name" value="Decrypt file" >'.PHP_EOL  ;
 ?>
 </fieldset></td><td><fieldset><legend><i>JavaScript</i></legend>
-<input type=file name=js_uploadfile onchange="js_readFile(this)"><br>
+<input type=file name=js_uploadfile onchange="js_readFile(this)" id="js_inputfile_id"><br>
 <?php
 if  ( $shifr -> localerus )
   echo '<input type="button" name="submit3" value="Зашифровать файл" id="encrypt3" > '.PHP_EOL ;
@@ -420,21 +420,21 @@ let fencrypt3 = function  ( ) {
   js_shifr_encrypt ( js_shifr ) ; 
   js_shifr_flush ( js_shifr  ) ;
   
-console . log ( 'js_shifr  . message = ' , js_shifr  . message ) ;  
+//console . log ( 'js_shifr  . message = ' , js_shifr  . message ) ;  
 
-  //document . getElementById ( 'message' ) . value  = js_shifr  . message ;
+  document . getElementById ( 'message' ) . value  = js_shifr  . message ;
 
   let url = window . location . origin + window . location . pathname ;
-console . log ( 'url = ' , url ) ;
+//console . log ( 'url = ' , url ) ;
   /*let mes = JSON  . stringify ( js_shifr  . message ) ;
 console . log ( 'mes = ' , mes ) ;*/
   let boxinfo = document . getElementById ( 'boxes_info' ) ;
-console . log ( 'boxinfo = ' , boxinfo ) ;
-  boxinfo . value = /*mes*/js_shifr  . message ;
-console . log ( 'boxinfo . value = ' , boxinfo . value ) ;
-  let meso = document . getElementById  ( "message" ) ;
+//console . log ( 'boxinfo = ' , boxinfo ) ;
+  boxinfo . value = /*JSON  . stringify*/ ( js_shifr  . message ) ;
+//console . log ( 'boxinfo . value = ' , boxinfo . value ) ;
+  /*let meso = document . getElementById  ( "message" ) ;
   meso . value = js_shifr  . message ;
-console . log ( 'meso = ' , meso  ) ;
+console . log ( 'meso = ' , meso  ) ;*/
   document  . forms [ 'form_id' ] . submit  ( ) ;
   /*let pingpong = document . getElementById  ( "ping_pong" ) ;
   pingpong  . submit  ( ) ;*/

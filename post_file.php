@@ -1,6 +1,9 @@
 <?php
-      $uploadfileshi  = '/tmp/push.shi'  ;
-      $fpw = fopen ( $uploadfileshi , 'wb'  ) ;
+  $uploadfileshi = tempnam("/tmp", "shi");
+  $fpw = fopen ( $uploadfileshi , 'wb'  ) ;
+  //$fpw  = $_FILES["file"]["tmp_name"] ;
+      //$uploadfileshi  = '/tmp/push.shi'  ;
+      //$fpw = fopen ( $uploadfileshi , 'wb'  ) ;
       if ( ! $fpw ) {
         $postfileerr = "Cannot open file ($uploadfileshi)";
         exit; }
