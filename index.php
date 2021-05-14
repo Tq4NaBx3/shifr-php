@@ -22,14 +22,11 @@ if  ( $_POST  ) {
 
   if ( isset ( $_POST [ 'message'  ] ) )
     $shifr -> message = $_POST  [ 'message'  ] ;
-    
-  if ( isset ( $_POST [ 'boxes_info'  ] ) )
-    $shifr -> boxes_info = $_POST  [ 'boxes_info'  ] ;
-  else
-    $shifr -> boxes_info = "" ;
   
-  if  ( isset ( $_POST  [ 'submitShifr'  ] ) ) {
-    if  ( isset ( $_POST  [ 'radio' ] ) ) {
+  if ( isset ( $_POST  [ 'password_name' ] ) )
+    shifr_generate_password ( $shifr  ) ; 
+
+  if  ( isset ( $_POST  [ 'radio' ] ) ) {
       switch  ( $_POST  [ 'radio' ] ) {
       case  'ASCII' :
         $shifr -> letters_mode = 95 ;
@@ -42,44 +39,54 @@ if  ( $_POST  ) {
         break ;
       default :
         echo  "\$_POST  [ 'radio' ] = " . $_POST  [ 'radio' ] ;
-        die ( ) ; } }
-    if  ( isset ( $_POST  [ 'radiokey' ] ) ) {
+        die ( ) ; } }  
+    
+  if  ( isset ( $_POST  [ 'radiokey' ] ) ) {
       if (  $_POST  [ 'radiokey' ] == 'Key296' ) 
         shifr_set_version ( $shifr ,  3 ) ;  
       else 
-        shifr_set_version ( $shifr  , 2 ) ; }
-    if  ( $_POST  [ 'submitShifr'] == 'зашифровать' or 
-      $_POST  [ 'submitShifr'  ] == 'encrypt'  ) {
+        shifr_set_version ( $shifr  , 2 ) ; }  
+    
+  if ( isset ( $_POST [ 'boxes_info'  ] ) ) {
+    $shifr -> boxes_info = $_POST  [ 'boxes_info'  ] ;
+    if ( $shifr -> boxes_info != "" ) {
+      include  ( './post_file.php' ) ;
+      unset ($shifr -> boxes_info);
+      /*die ( ) ;*/ } }
+    
+  if  ( isset ( $_POST  [ 'encrypt_decrypt_name'  ] ) ) {
+    if  ( $_POST  [ 'encrypt_decrypt_name'] == 'зашифровать' or 
+      $_POST  [ 'encrypt_decrypt_name'  ] == 'encrypt'  ) {
       $shifr -> flagtext = true  ;
       shifr_password_load ( $shifr ) ;
       shifr_encrypt ( $shifr ) ; 
       shifr_flush ( $shifr  ) ; }
-  else if  ( $_POST  [ 'submitShifr'] == 'расшифровать' or 
-      $_POST  [ 'submitShifr'  ] == 'decrypt'  ) {
+  else if  ( $_POST  [ 'encrypt_decrypt_name'] == 'расшифровать' or 
+      $_POST  [ 'encrypt_decrypt_name'  ] == 'decrypt'  ) {
       shifr_password_load ( $shifr ) ;
       shifr_decrypt ( $shifr ) ; }
-  else  if  ( $_POST  [ 'submitShifr'] == 'генерировать' or 
-      $_POST  [ 'submitShifr'  ] == 'generate'  ) 
-      shifr_generate_password ( $shifr  ) ;
-  else  if  ( $_POST  [ 'submitShifr'] == 'загрузить' or 
-      $_POST  [ 'submitShifr'  ] == 'load'  ) 
+  else  if  ( $_POST  [ 'encrypt_decrypt_name'] == 'загрузить' or 
+      $_POST  [ 'encrypt_decrypt_name'  ] == 'load'  ) 
       {   }
    else
-   if ( ( $_POST  [ 'submitShifr'] == 'Зашифровать файл' or 
-        $_POST  [ 'submitShifr'  ] == 'Encrypt file'  ) and
+   if ( ( $_POST  [ 'encrypt_decrypt_name'] == 'Зашифровать файл' or 
+        $_POST  [ 'encrypt_decrypt_name'  ] == 'Encrypt file'  ) and
       ( $_FILES [ 'uploadfile'  ] [ 'size' ] > 0 ) ) {
       include  ( './encrypt_file.php' ) ;
       die ( ) ; } // Encrypt file
    else
-   if  ( ( $_POST  [ 'submitShifr' ] == 'Расшифровать файл' or 
-        $_POST  [ 'submitShifr'  ] == 'Decrypt file' ) ) {
+   if  ( ( $_POST  [ 'encrypt_decrypt_name' ] == 'Расшифровать файл' or 
+        $_POST  [ 'encrypt_decrypt_name'  ] == 'Decrypt file' ) ) {
       if ( $_FILES [ 'uploadfile'  ] [ 'size' ] > 0 ) {
         include  ( './decrypt_file.php' ) ;
         die ( ) ; } // if ( $_FILES [ 'uploadfile'  ] [ 'size' ] > 0 )
-    }/*Decrypt file*/ } // if  ( isset ( $_POST  [ 'submitShifr'  ] ) )
+    }/*Decrypt file*/ } // if  ( isset ( $_POST  [ 'encrypt_decrypt_name'  ] ) )
   } // if  ( $_POST  )
 ?>
 <!DOCTYPE html>
+<script>
+'use strict';
+</script>
 <script src="shifr.js"></script>
 <script>
 let js_shifr  = { } ;
@@ -104,7 +111,7 @@ if (isset($err))
   echo '<p>err = \''.$err.'\'</p>' ;
 ?>
 <form action="<?php echo $_SERVER['PHP_SELF'] ; ?>" method=post 
-  enctype=multipart/form-data id="form" >
+  enctype=multipart/form-data id="form_id" name="form_name" >
 <input type="hidden" name="MAX_FILE_SIZE" value="1024000000">
 <label>
 <?php
@@ -179,19 +186,35 @@ chboxg_keys296 . addEventListener  ( 'click' , fkeysize296 ) ;
 <br>
 <label>
 <?php
-  if  ( $shifr -> localerus ) {
+  if  ( $shifr -> localerus )
     echo 'Ваш пароль : '  ;
-    echo '<table><tr><td><fieldset><legend><i>PHP</i></legend>' ;
-    echo '<input type="submit" name="submitShifr" value="генерировать" id="generate" /></fieldset></td>'  ;
-    echo '<td><fieldset><legend><i>JavaScript</i></legend>' ;
-    echo '<input type="button" name="submit2" value="генерировать" id="generate2" /></fieldset></td></tr></table>'  ; }
-  else {
+  else
     echo 'Your password : ' ;
-    echo '<table><tr><td><fieldset><legend><i>PHP</i></legend>' ;
-    echo '<input type="submit" name="submitShifr" value="generate" id="generate" /></fieldset></td>' ;
-    echo '<td><fieldset><legend><i>JavaScript</i></legend>' ;
-    echo '<input type="button" name="submit2" value="generate" id="generate2" /></fieldset></td></tr></table>'  ; }
 ?>
+<table>
+  <tr>
+    <td>
+      <fieldset>
+        <legend><i>PHP</i></legend>
+        <input type="submit" name="password_name" value="<?php
+          if  ( $shifr -> localerus )        
+            echo 'генерировать' ;
+          else
+            echo 'generate' ; ?>" id="generate_id" />
+      </fieldset>
+    </td>
+    <td>
+      <fieldset>
+        <legend><i>JavaScript</i></legend>
+        <input type="button" name="submit2" value="<?php
+          if  ( $shifr -> localerus )        
+            echo 'генерировать' ;
+          else
+            echo 'generate' ; ?>" id="generate2" />
+      </fieldset>
+    </td>
+  </tr>
+</table>
 </label>
 <br>
 <input name="password" type="password" value="<?php 
@@ -237,31 +260,36 @@ else {
   ' onchange="fshowpassword()" />' ; }
 ?>
 <script>
-  if ( document.getElementById('showpassword') . checked ) {
-    form [ "password" ] . type  = "text"  ; }
-  else {
-    form [ "password" ] . type  = "password" ; }
+  if ( document.getElementById('showpassword') . checked ) 
+    document  . forms [ 'form_id' ] [ 'password' ] . type  = 'text'  ; 
+  else 
+    document  . forms [ 'form_id' ] [ 'password' ] . type  = 'password'  ; 
 
 let fshowpassword = function ( ) {
+/*console . log ('form_id = ' , form_id ) ;
+console . log ('window . form_id = ' , window . form_id  ) ;
+console . log ('document  . forms [ \'form_id\' ] = ' , document  . forms [ 'form_id' ] ) ;
+console . log ('form_id === window . form_id => ' , form_id === window . form_id  ) ;
+console . log ('form_id === document  . forms [ \'form_id\' ] => ' ,
+  form_id === document  . forms [ 'form_id' ] ) ;*/
+
   let chbox = document.getElementById('showpassword');
 	if (chbox.checked) {
-    form [ "password" ] . type  = "text"  ;
-    chbox.setAttribute("checked", "checked" );
-    form [ 'showpassword' ] . value  = "1"  ; }
+    document  . forms [ 'form_id' ] [ 'password' ] . type  = 'text'  ;
+    chbox.setAttribute("checked", "checked" ); }
 	else {
-    form [ "password" ] . type  = "password" ;
-    chbox.removeAttribute("checked");
-    form [ 'showpassword' ] . value  = "0"  ; } }
+    document  . forms [ 'form_id' ] [ 'password' ] . type  = 'password'  ;
+    chbox.removeAttribute("checked"); } }
 </script>
 </p>
 <?php
   echo '<table><tr><td><fieldset><legend><i>PHP</i></legend>' ;
   if  ( $shifr -> localerus ) {
-    echo ' <input type="submit" name="submitShifr" value="зашифровать" />'  ;
-    echo ' <input type="submit" name="submitShifr" value="расшифровать" />'  ; }
+    echo ' <input type="submit" name="encrypt_decrypt_name" value="зашифровать" />'  ;
+    echo ' <input type="submit" name="encrypt_decrypt_name" value="расшифровать" />'  ; }
   else {
-    echo ' <input type="submit" name="submitShifr" value="encrypt" />' ;
-    echo ' <input type="submit" name="submitShifr" value="decrypt" />' ; }
+    echo ' <input type="submit" name="encrypt_decrypt_name" value="encrypt" />' ;
+    echo ' <input type="submit" name="encrypt_decrypt_name" value="decrypt" />' ; }
   echo  '</fieldset></td>'  ;
   
   echo '<td><fieldset><legend><i>JavaScript</i></legend>' ;
@@ -282,13 +310,13 @@ let fshowpassword = function ( ) {
 <input type=file name=uploadfile><br>
 <?php
 if  ( $shifr -> localerus )
-  echo '<input type=submit name="submitShifr" value="Зашифровать файл" > '.PHP_EOL ;
+  echo '<input type=submit name="encrypt_decrypt_name" value="Зашифровать файл" > '.PHP_EOL ;
 else
-  echo '<input type=submit name="submitShifr" value="Encrypt file" > '.PHP_EOL  ;
+  echo '<input type=submit name="encrypt_decrypt_name" value="Encrypt file" > '.PHP_EOL  ;
 if  ( $shifr -> localerus )
-  echo '<input type=submit name="submitShifr" value="Расшифровать файл" >'.PHP_EOL ;
+  echo '<input type=submit name="encrypt_decrypt_name" value="Расшифровать файл" >'.PHP_EOL ;
 else
-  echo '<input type=submit name="submitShifr" value="Decrypt file" >'.PHP_EOL  ;
+  echo '<input type=submit name="encrypt_decrypt_name" value="Decrypt file" >'.PHP_EOL  ;
 ?>
 </fieldset></td><td><fieldset><legend><i>JavaScript</i></legend>
 <input type=file name=js_uploadfile onchange="js_readFile(this)"><br>
@@ -398,16 +426,16 @@ console . log ( 'js_shifr  . message = ' , js_shifr  . message ) ;
 
   let url = window . location . origin + window . location . pathname ;
 console . log ( 'url = ' , url ) ;
-  let mes = JSON  . stringify ( js_shifr  . message ) ;
-console . log ( 'mes = ' , mes ) ;
+  /*let mes = JSON  . stringify ( js_shifr  . message ) ;
+console . log ( 'mes = ' , mes ) ;*/
   let boxinfo = document . getElementById ( 'boxes_info' ) ;
 console . log ( 'boxinfo = ' , boxinfo ) ;
-  boxinfo . value = mes ;
+  boxinfo . value = /*mes*/js_shifr  . message ;
 console . log ( 'boxinfo . value = ' , boxinfo . value ) ;
   let meso = document . getElementById  ( "message" ) ;
   meso . value = js_shifr  . message ;
 console . log ( 'meso = ' , meso  ) ;
-  form  . submit  ( ) ;
+  document  . forms [ 'form_id' ] . submit  ( ) ;
   /*let pingpong = document . getElementById  ( "ping_pong" ) ;
   pingpong  . submit  ( ) ;*/
 //console . log ( 'document = ' , document ) ;
@@ -444,7 +472,11 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
 <input class="attr" type="text" name="boxes_info" value = "" hidden id="boxes_info">
 <p>
 $shifr -> boxes_info = <?php
-  echo $shifr -> boxes_info ;
+  echo htmlspecialchars($shifr -> boxes_info) ;
+?><br>
+$postfileerr = <?php
+  if ( isset($postfileerr))
+    echo htmlspecialchars($postfileerr) ;
 ?>
 </p>
 </form>
