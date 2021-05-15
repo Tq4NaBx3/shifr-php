@@ -1,9 +1,6 @@
 <?php
   $uploadfileshi = tempnam("/tmp", "shi");
   $fpw = fopen ( $uploadfileshi , 'wb'  ) ;
-  //$fpw  = $_FILES["file"]["tmp_name"] ;
-      //$uploadfileshi  = '/tmp/push.shi'  ;
-      //$fpw = fopen ( $uploadfileshi , 'wb'  ) ;
       if ( ! $fpw ) {
         $postfileerr = "Cannot open file ($uploadfileshi)";
         exit; }
@@ -18,7 +15,7 @@
       header('Content-Description: File Transfer');
       header('Content-Type: application/octet-stream');
       header('Content-Disposition: attachment; filename="'.
-        basename ( $uploadfileshi  ).'"');
+        basename ( $shifr -> filename  ).'.shi"');
       header('Expires: 0');
       header('Cache-Control: must-revalidate');
       header('Pragma: public');

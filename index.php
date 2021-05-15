@@ -46,13 +46,16 @@ if  ( $_POST  ) {
         shifr_set_version ( $shifr ,  3 ) ;  
       else 
         shifr_set_version ( $shifr  , 2 ) ; }  
-    
+
+  if ( isset ( $_POST [ 'filename_name'  ] ) )
+    $shifr -> filename = $_POST  [ 'filename_name'  ] ;
+        
   if ( isset ( $_POST [ 'boxes_info'  ] ) ) {
     $shifr -> boxes_info = $_POST  [ 'boxes_info'  ] ;
-    if ( $shifr -> boxes_info != "" ) {
+    if ( $shifr -> boxes_info ) {
       include  ( './post_file.php' ) ;
-      unset ($shifr -> boxes_info);
-      /*die ( ) ;*/ } }
+      $shifr -> boxes_info = null ;
+      $shifr -> filename  = null  ; } }
     
   if  ( isset ( $_POST  [ 'encrypt_decrypt_name'  ] ) ) {
     if  ( $_POST  [ 'encrypt_decrypt_name'] == 'зашифровать' or 
@@ -135,15 +138,26 @@ if (isset($err))
 ?>
 </legend>
 <input type="radio" name="radio" value="ASCII" id="passalpha" <?php 
-if ( $shifr -> letters_mode == 95 ) echo 'checked' ?> >ASCII <?php 
-if  ( $shifr -> localerus ) echo 'буквы цифры знаки пробел'; else
-echo 'letters digits signs space'; ?><br>
+if ( $shifr -> letters_mode == 95 )
+  echo 'checked' ; ?> >ASCII <?php 
+if  ( $shifr -> localerus ) 
+  echo 'буквы цифры знаки пробел' ;
+else
+  echo 'letters digits signs space' ; ?><br>
 <input type="radio" name="radio" value="LettDigit" id="passlettersdigits" <?php
-if ( $shifr -> letters_mode == 62 ) echo 'checked' ?> ><?php 
-if  ( $shifr -> localerus ) echo 'цифры и буквы'; else echo 'digits and letters'; ?><br>
+if ( $shifr -> letters_mode == 62 ) 
+  echo 'checked' ;  ?> ><?php 
+if  ( $shifr -> localerus )
+  echo 'цифры и буквы'  ; 
+else 
+  echo 'digits and letters' ; ?><br>
 <input type="radio" name="radio" value="Digit" id="passdigits" <?php
-if ( $shifr -> letters_mode == 10 ) echo 'checked' ?> ><?php 
-if  ( $shifr -> localerus ) echo 'цифры'; else echo 'digits'; ?>
+if ( $shifr -> letters_mode == 10 )
+  echo 'checked' ;  ?> ><?php 
+if  ( $shifr -> localerus )
+  echo 'цифры'  ; 
+else
+  echo 'digits' ; ?>
 </fieldset>
 <br>
 <fieldset>
@@ -162,9 +176,12 @@ if  ( $shifr -> localerus )
 else
   echo 'bits , 6-14 letters'; ?><br>
 <input type="radio" name="radiokey" value="Key296" id="keysize296" <?php 
-if ( shifr_version  ( $shifr  ) == 3 ) echo 'checked' ?> >296 <?php 
-if  ( $shifr -> localerus ) echo 'бит , 45-90 букв'; else
-echo 'bits , 45-90 letters'; ?>
+if ( shifr_version  ( $shifr  ) == 3 )
+  echo 'checked' ?> >296 <?php 
+if  ( $shifr -> localerus )
+  echo 'бит , 45-90 букв';
+else
+  echo 'bits , 45-90 letters'; ?>
 </fieldset>
 <script>
 
@@ -266,13 +283,6 @@ else {
     document  . forms [ 'form_id' ] [ 'password' ] . type  = 'password'  ; 
 
 let fshowpassword = function ( ) {
-/*console . log ('form_id = ' , form_id ) ;
-console . log ('window . form_id = ' , window . form_id  ) ;
-console . log ('document  . forms [ \'form_id\' ] = ' , document  . forms [ 'form_id' ] ) ;
-console . log ('form_id === window . form_id => ' , form_id === window . form_id  ) ;
-console . log ('form_id === document  . forms [ \'form_id\' ] => ' ,
-  form_id === document  . forms [ 'form_id' ] ) ;*/
-
   let chbox = document.getElementById('showpassword');
 	if (chbox.checked) {
     document  . forms [ 'form_id' ] [ 'password' ] . type  = 'text'  ;
@@ -319,7 +329,8 @@ else
   echo '<input type=submit name="encrypt_decrypt_name" value="Decrypt file" >'.PHP_EOL  ;
 ?>
 </fieldset></td><td><fieldset><legend><i>JavaScript</i></legend>
-<input type=file name=js_uploadfile onchange="js_readFile(this)" id="js_inputfile_id"><br>
+<input type=file name="js_uploadfile_name" onchange="js_readFile(this)"
+  id="js_inputfile_id"><br>
 <?php
 if  ( $shifr -> localerus )
   echo '<input type="button" name="submit3" value="Зашифровать файл" id="encrypt3" > '.PHP_EOL ;
@@ -385,8 +396,10 @@ let chbox_dec = document  . getElementById  ( 'decrypt2'  ) ;
 chbox_dec . addEventListener  ( 'click' , fdecrypt ) ;
 
 let js_readFile = function  ( input ) {
-  let file = input.files[0];
-  
+  let file = input  . files [ 0 ] ;
+  let filename = document . getElementById ( 'filename_id' ) ;
+  filename . value = input  . files [ 0 ] . name  ;
+  input . value = '' ;
   let reader = new FileReader();
 
   reader.onload = function() {
@@ -420,30 +433,12 @@ let fencrypt3 = function  ( ) {
   js_shifr_encrypt ( js_shifr ) ; 
   js_shifr_flush ( js_shifr  ) ;
   
-//console . log ( 'js_shifr  . message = ' , js_shifr  . message ) ;  
-
   document . getElementById ( 'message' ) . value  = js_shifr  . message ;
 
   let url = window . location . origin + window . location . pathname ;
-//console . log ( 'url = ' , url ) ;
-  /*let mes = JSON  . stringify ( js_shifr  . message ) ;
-console . log ( 'mes = ' , mes ) ;*/
   let boxinfo = document . getElementById ( 'boxes_info' ) ;
-//console . log ( 'boxinfo = ' , boxinfo ) ;
   boxinfo . value = /*JSON  . stringify*/ ( js_shifr  . message ) ;
-//console . log ( 'boxinfo . value = ' , boxinfo . value ) ;
-  /*let meso = document . getElementById  ( "message" ) ;
-  meso . value = js_shifr  . message ;
-console . log ( 'meso = ' , meso  ) ;*/
   document  . forms [ 'form_id' ] . submit  ( ) ;
-  /*let pingpong = document . getElementById  ( "ping_pong" ) ;
-  pingpong  . submit  ( ) ;*/
-//console . log ( 'document = ' , document ) ;
-  //document  . forms["message"].submit();
-  //form  [ "message" ] . submit  ( ) ;
-  /*let formm = document  . querySelector ( "#message"  ) ;
-  formm . submit  ( ) ;*/
-  //HTMLFormElement . prototype . submit  . call  ( form ) ;
 }
 
 let fdecrypt3 = function ( ) {
@@ -470,15 +465,8 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
 
 </script>
 <input class="attr" type="text" name="boxes_info" value = "" hidden id="boxes_info">
-<p>
-$shifr -> boxes_info = <?php
-  echo htmlspecialchars($shifr -> boxes_info) ;
-?><br>
-$postfileerr = <?php
-  if ( isset($postfileerr))
-    echo htmlspecialchars($postfileerr) ;
-?>
-</p>
+<input class="attr" type="text" name="filename_name" value = "" hidden
+  id="filename_id" >
 </form>
 </body>
 </html>

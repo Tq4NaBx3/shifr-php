@@ -262,6 +262,9 @@ class shifr {
   // encode3
   // 0-2 бит буфер чтения
   public  $bufin  ; // 0-2 bits buffer reading
+  // string to ping pong file from JavaScript
+  public  $boxes_info ; // file data
+  public  $filename ;
 }
     
 function  shifr_encrypt2 ( shifr & $sh ) {
