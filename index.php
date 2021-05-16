@@ -47,16 +47,19 @@ if  ( $_POST  ) {
       else 
         shifr_set_version ( $shifr  , 2 ) ; }  
 
-  if ( isset ( $_POST [ 'filename_name'  ] ) )
-    $shifr -> filename = $_POST  [ 'filename_name'  ] ;
-        
-  if ( isset ( $_POST [ 'boxes_info'  ] ) ) {
-    $shifr -> boxes_info = $_POST  [ 'boxes_info'  ] ;
-    if ( $shifr -> boxes_info ) {
-      include  ( './post_file.php' ) ;
-      $shifr -> boxes_info = null ;
-      $shifr -> filename  = null  ; } }
-    
+  if ( ! $shifr ->  flagfinishfilepinpong ) {
+  
+    if ( isset ( $_POST [ 'filename_name'  ] ) ) {
+      $shifr -> filename = $_POST  [ 'filename_name'  ] ;
+      unset ( $_POST [ 'filename_name'  ] ) ; }
+      
+    if ( isset ( $_POST [ 'boxes_info'  ] ) ) {
+      $shifr -> boxes_info = $_POST  [ 'boxes_info'  ] ;
+      unset ( $_POST  [ 'boxes_info'  ] ) ;
+      if ( $shifr -> boxes_info ) {
+        include  ( './post_file.php' ) ;
+        exit ; } } }
+  
   if  ( isset ( $_POST  [ 'encrypt_decrypt_name'  ] ) ) {
     if  ( $_POST  [ 'encrypt_decrypt_name'] == 'зашифровать' or 
       $_POST  [ 'encrypt_decrypt_name'  ] == 'encrypt'  ) {
@@ -124,7 +127,7 @@ if (isset($err))
     echo 'Message:' ;
 ?>
   <br />
-  <textarea name="message" rows="12" cols="61" id="message"><?php
+  <textarea name="message" rows="12" cols="61" id="message" maxlength="1024000000"><?php
   echo htmlspecialchars($shifr -> message) ; ?></textarea>
 </label><br />
 <p>
@@ -399,7 +402,6 @@ let js_readFile = function  ( input ) {
   let file = input  . files [ 0 ] ;
   let filename = document . getElementById ( 'filename_id' ) ;
   filename . value = input  . files [ 0 ] . name  ;
-  input . value = '' ;
   let reader = new FileReader();
 
   reader.onload = function() {
@@ -433,11 +435,11 @@ let fencrypt3 = function  ( ) {
   js_shifr_encrypt ( js_shifr ) ; 
   js_shifr_flush ( js_shifr  ) ;
   
-  document . getElementById ( 'message' ) . value  = js_shifr  . message ;
-
-  let url = window . location . origin + window . location . pathname ;
+  //let url = window . location . origin + window . location . pathname ;
   let boxinfo = document . getElementById ( 'boxes_info' ) ;
   boxinfo . value = /*JSON  . stringify*/ ( js_shifr  . message ) ;
+  let inputfile = document . getElementById ( 'js_inputfile_id' ) ;
+  inputfile . value = null ;
   document  . forms [ 'form_id' ] . submit  ( ) ;
 }
 
@@ -464,9 +466,41 @@ let chbox_fdec = document  . getElementById  ( 'decrypt3'  ) ;
 chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
 
 </script>
-<input class="attr" type="text" name="boxes_info" value = "" hidden id="boxes_info">
-<input class="attr" type="text" name="filename_name" value = "" hidden
-  id="filename_id" >
+<br>
+<p>
+<?php
+echo 'boxes_info = ' ; echo htmlspecialchars($shifr -> boxes_info) ;
+echo 'filename = ' ; echo htmlspecialchars($shifr -> filename) ;
+echo 'flagfinishfilepinpong = ';
+  if ( $shifr ->  flagfinishfilepinpong ) {
+    echo 'True' ;
+    $shifr ->  flagfinishfilepinpong  = false ; }
+  else
+    echo  'False' ;
+?>
+</p>
+<textarea name="boxes_info" rows="2" cols="61" id="boxes_info" value = "" maxlength="1024000000" readonly ><?php
+if ( ! $shifr ->  flagfinishfilepinpong )
+  echo htmlspecialchars($shifr -> boxes_info) ; ?></textarea><!--hidden-->
+<textarea name="filename_name" rows="1" cols="61" id="filename_id" value = "" maxlength="1024" readonly ><?php
+if ( ! $shifr ->  flagfinishfilepinpong )
+  echo htmlspecialchars($shifr -> filename) ; ?></textarea>
 </form>
 </body>
 </html>
+<?php
+/*
+  if ( ! $shifr ->  flagfinishfilepinpong ) {
+  
+    if ( isset ( $_POST [ 'filename_name'  ] ) ) {
+      $shifr -> filename = $_POST  [ 'filename_name'  ] ;
+      unset ( $_POST [ 'filename_name'  ] ) ; }
+      
+    if ( isset ( $_POST [ 'boxes_info'  ] ) ) {
+      $shifr -> boxes_info = $_POST  [ 'boxes_info'  ] ;
+      unset ( $_POST  [ 'boxes_info'  ] ) ;
+      if ( $shifr -> boxes_info ) {
+        include  ( './post_file.php' ) ;
+        exit ; } } }
+*/
+?>
