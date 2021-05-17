@@ -8,7 +8,10 @@
  
   header('Content-Description: File Transfer');
   header('Content-Type: application/octet-stream');
-  header('Content-Disposition: attachment; filename="' . basename($uploadfileshi) . '.shi"');
+  //header('Content-Disposition: attachment; filename="' . basename($uploadfileshi) . '.shi"'); // random
+  // header('Content-Disposition: attachment; filename="' . basename ( $shifr -> filename  ) . '.shi"'); // empty
+  header  ( 'Content-Disposition: attachment; filename="' .
+    basename ( $_POST  [ 'filename_name' ] )  . '.shi"' ) ;
   header('Expires: 0');
   header('Cache-Control: must-revalidate');
   header('Pragma: public');

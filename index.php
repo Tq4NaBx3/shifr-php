@@ -484,15 +484,16 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
 <br>
 <!--<textarea name="boxes_info" rows="2" cols="61" id="boxes_info" value = "" maxlength="1024000000" readonly >< ? php
   echo htmlspecialchars($shifr -> boxes_info) ; ? ></textarea>--><!--hidden-->
-<textarea name="filename_name" rows="1" cols="61" id="filename_id" value = "" maxlength="1024" readonly ><?php
-  echo htmlspecialchars($shifr -> filename) ; ?></textarea>
+<!--<textarea name="filename_name" rows="1" cols="61" id="filename_id" value = "" maxlength="1024" readonly >< ? php
+  echo htmlspecialchars($shifr -> filename) ; ? ></textarea>-->
 </form>
 
 <form method="post" action="./post_file.php">
 <textarea name="boxes_info"  rows="2" cols="61" id="boxes_info" value = ""
 maxlength="1024000000" readonly ><?php
   echo htmlspecialchars($shifr -> boxes_info) ; ?></textarea>
-    
+<textarea name="filename_name" rows="1" cols="61" id="filename_id" value = "" maxlength="1024" readonly ><?php
+  echo htmlspecialchars($shifr -> filename) ; ?></textarea>    
 <?php
 if  ( $shifr -> localerus )
   echo '<input type="submit" name="submit3" value="Зашифровать файл" id="encrypt3" > '.PHP_EOL ;
