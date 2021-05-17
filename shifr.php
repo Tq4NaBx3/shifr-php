@@ -265,7 +265,6 @@ class shifr {
   // string to ping pong file from JavaScript
   public  $boxes_info ; // file data
   public  $filename ;
-  public  $flagfinishfilepinpong  ;
 }
     
 function  shifr_encrypt2 ( shifr & $sh ) {
@@ -791,7 +790,6 @@ function  shifr_init ( shifr & $sh ) {
   $sh ->  flagtext  = true  ;
   $sh ->  boxes_info = "" ;
   $sh ->  filename = "" ;
-  $sh ->  flagfinishfilepinpong = false ;
   }
 
 function  shifr_password_load ( shifr & $shifr ) {

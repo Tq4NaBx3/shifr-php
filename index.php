@@ -47,8 +47,9 @@ if  ( $_POST  ) {
       else 
         shifr_set_version ( $shifr  , 2 ) ; }  
 
-  if ( ! $shifr ->  flagfinishfilepinpong ) {
-  
+  if ( ! isset (  $_SESSION [ 'flagfinishfilepingpong'  ] ) or
+    $_SESSION [ 'flagfinishfilepingpong'  ] === false ) {
+
     if ( isset ( $_POST [ 'filename_name'  ] ) ) {
       $shifr -> filename = $_POST  [ 'filename_name'  ] ;
       unset ( $_POST [ 'filename_name'  ] ) ; }
@@ -90,6 +91,15 @@ if  ( $_POST  ) {
   } // if  ( $_POST  )
 ?>
 <!DOCTYPE html>
+<html>
+<head>
+<style> p { font-size: 36px; }  textarea { font-size: 36px; }
+input { font-size: 36px; border-radius: 10px; }
+input.largerCheckbox { transform : scale(2); }
+label { font-size: 24px; }
+legend { font-size: 24px; }
+fieldset { font-size: 36px; border-radius: 10px; }
+</style>
 <script>
 'use strict';
 </script>
@@ -103,14 +113,7 @@ js_shifr . localerus = <?php
   else
     echo 'false' ; ?> ;
 </script>
-<style> p { font-size: 36px; }  textarea { font-size: 36px; }
-input { font-size: 36px; border-radius: 10px; }
-input.largerCheckbox { transform : scale(2); }
-label { font-size: 24px; }
-legend { font-size: 24px; }
-fieldset { font-size: 36px; border-radius: 10px; }
-</style>
-<html>
+</head>
 <body>
 <?php
 if (isset($err))
@@ -294,7 +297,7 @@ let fshowpassword = function ( ) {
     document  . forms [ 'form_id' ] [ 'password' ] . type  = 'password'  ;
     chbox.removeAttribute("checked"); } }
 </script>
-</p>
+<br>
 <?php
   echo '<table><tr><td><fieldset><legend><i>PHP</i></legend>' ;
   if  ( $shifr -> localerus ) {
@@ -435,9 +438,8 @@ let fencrypt3 = function  ( ) {
   js_shifr_encrypt ( js_shifr ) ; 
   js_shifr_flush ( js_shifr  ) ;
   
-  //let url = window . location . origin + window . location . pathname ;
   let boxinfo = document . getElementById ( 'boxes_info' ) ;
-  boxinfo . value = /*JSON  . stringify*/ ( js_shifr  . message ) ;
+  boxinfo . value = js_shifr  . message ;
   let inputfile = document . getElementById ( 'js_inputfile_id' ) ;
   inputfile . value = null ;
   document  . forms [ 'form_id' ] . submit  ( ) ;
@@ -467,40 +469,26 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
 
 </script>
 <br>
-<p>
-<?php
-echo 'boxes_info = ' ; echo htmlspecialchars($shifr -> boxes_info) ;
-echo 'filename = ' ; echo htmlspecialchars($shifr -> filename) ;
-echo 'flagfinishfilepinpong = ';
-  if ( $shifr ->  flagfinishfilepinpong ) {
-    echo 'True' ;
-    $shifr ->  flagfinishfilepinpong  = false ; }
-  else
-    echo  'False' ;
-?>
-</p>
 <textarea name="boxes_info" rows="2" cols="61" id="boxes_info" value = "" maxlength="1024000000" readonly ><?php
-if ( ! $shifr ->  flagfinishfilepinpong )
   echo htmlspecialchars($shifr -> boxes_info) ; ?></textarea><!--hidden-->
 <textarea name="filename_name" rows="1" cols="61" id="filename_id" value = "" maxlength="1024" readonly ><?php
-if ( ! $shifr ->  flagfinishfilepinpong )
   echo htmlspecialchars($shifr -> filename) ; ?></textarea>
 </form>
+<script>
+  let js_flagfinishfilepingpong = <?php
+    if ( isset (  $_SESSION [ 'flagfinishfilepingpong'  ] ) and
+      $_SESSION [ 'flagfinishfilepingpong'  ] === true ) {
+      $_SESSION [ 'flagfinishfilepingpong'  ] = false ;
+      echo  'true'  ; }
+    else
+      echo  'false' ; ?> ;
+      
+  if ( js_flagfinishfilepingpong ) {
+    let js_boxinfo = document . getElementById ( 'boxes_info' ) ;
+    js_boxinfo . value = "" ;
+    let js_inputfile = document . getElementById ( 'js_inputfile_id' ) ;
+    js_inputfile . value = "" ; }
+
+</script>
 </body>
 </html>
-<?php
-/*
-  if ( ! $shifr ->  flagfinishfilepinpong ) {
-  
-    if ( isset ( $_POST [ 'filename_name'  ] ) ) {
-      $shifr -> filename = $_POST  [ 'filename_name'  ] ;
-      unset ( $_POST [ 'filename_name'  ] ) ; }
-      
-    if ( isset ( $_POST [ 'boxes_info'  ] ) ) {
-      $shifr -> boxes_info = $_POST  [ 'boxes_info'  ] ;
-      unset ( $_POST  [ 'boxes_info'  ] ) ;
-      if ( $shifr -> boxes_info ) {
-        include  ( './post_file.php' ) ;
-        exit ; } } }
-*/
-?>
