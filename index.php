@@ -457,7 +457,8 @@ let fencrypt3 = function  ( ) {
   //document  . forms [ 'form_id' ] . submit  ( ) ;
   //window  . location  . reload ( ) ;
   //window  . location  . reload ( true ) ;
-  window  . location  . href  = "./post_file.php" ;
+  
+  //window  . location  . href  = "./post_file.php" ;
 }
 
 let fdecrypt3 = function ( ) {
