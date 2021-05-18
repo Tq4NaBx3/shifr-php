@@ -46,23 +46,6 @@ if  ( $_POST  ) {
         shifr_set_version ( $shifr ,  3 ) ;  
       else 
         shifr_set_version ( $shifr  , 2 ) ; }  
-/*
-  if ( ! isset (  $_SESSION [ 'flagfinishfilepingpong'  ] ) or
-    $_SESSION [ 'flagfinishfilepingpong'  ] === false ) {
-
-    if ( isset ( $_POST [ 'filename_name'  ] ) ) {
-      $shifr -> filename = $_POST  [ 'filename_name'  ] ;
-      unset ( $_POST [ 'filename_name'  ] ) ; }
-      
-    if ( isset ( $_POST [ 'boxes_info'  ] ) ) {
-      $shifr -> boxes_info = $_POST  [ 'boxes_info'  ] ;
-      unset ( $_POST  [ 'boxes_info'  ] ) ;
-      if ( $shifr -> boxes_info ) {
-        include  ( './post_file.php' ) ;
-        
-        //header("Location: ./post_file.php");
-        
-        exit ; } } }*/
   
   if  ( isset ( $_POST  [ 'encrypt_decrypt_name'  ] ) ) {
     if  ( $_POST  [ 'encrypt_decrypt_name'] == 'зашифровать' or 
@@ -118,13 +101,6 @@ fieldset { font-size: 36px; border-radius: 10px; }
     echo 'true' ;
   else
     echo 'false' ; ?> ;
-  document  . addEventListener  ( "DOMContentLoaded"  ,
-    function  ( ) {
-      function redirect ( ) {
-        //document  . getElementById  ( 'boxes_info'  ) . value = ''  ;
-        window  . location  . href  = "./index.php" ; }
-      /*let el  = document  . getElementById  ( "encrypt3"  ) ;
-      el  . addEventListener  ( "click" , redirect  , false ) ;*/ } ) ;
 </script>
 </head>
 <body>
@@ -351,10 +327,6 @@ else
 <input type=file name="js_uploadfile_name" onchange="js_readFile(this)"
   id="js_inputfile_id"><br>
 <?php
-/*if  ( $shifr -> localerus )
-  echo '<input type="submit" name="submit3" value="Зашифровать файл" id="encrypt3" > '.PHP_EOL ;
-else
-  echo '<input type="submit" name="submit3" value="Encrypt file" id="encrypt3" > '.PHP_EOL  ;*/
 if  ( $shifr -> localerus )
   echo '<input type="button" name="submit3" value="Расшифровать файл" id="decrypt3" >'.PHP_EOL ;
 else
@@ -453,12 +425,6 @@ let fencrypt3 = function  ( ) {
   
   let boxinfo = document . getElementById ( 'boxes_info' ) ;
   boxinfo . value = js_shifr  . message ;
-  //await sleep(3000);
-  //document  . forms [ 'form_id' ] . submit  ( ) ;
-  //window  . location  . reload ( ) ;
-  //window  . location  . reload ( true ) ;
-  
-  //window  . location  . href  = "./post_file.php" ;
 }
 
 let fdecrypt3 = function ( ) {
@@ -483,10 +449,6 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
 
 </script>
 <br>
-<!--<textarea name="boxes_info" rows="2" cols="61" id="boxes_info" value = "" maxlength="1024000000" readonly >< ? php
-  echo htmlspecialchars($shifr -> boxes_info) ; ? ></textarea>--><!--hidden-->
-<!--<textarea name="filename_name" rows="1" cols="61" id="filename_id" value = "" maxlength="1024" readonly >< ? php
-  echo htmlspecialchars($shifr -> filename) ; ? ></textarea>-->
 </form>
 
 <form method="post" action="./post_file.php">
@@ -506,21 +468,6 @@ else
 <script>
   let chbox_fenc = document  . getElementById  ( 'encrypt3'  ) ;
   chbox_fenc . addEventListener  ( 'click' , fencrypt3 ) ;
-  
-/*
-  let js_flagfinishfilepingpong = < ? php
-    if ( isset (  $_SESSION [ 'flagfinishfilepingpong'  ] ) and
-      $_SESSION [ 'flagfinishfilepingpong'  ] === true ) {
-      $_SESSION [ 'flagfinishfilepingpong'  ] = false ;
-      echo  'true'  ; }
-    else
-      echo  'false' ; ? > ;
-      
-  if ( js_flagfinishfilepingpong ) {
-    let js_boxinfo = document . getElementById ( 'boxes_info' ) ;
-    js_boxinfo . value = "" ;
-    let js_inputfile = document . getElementById ( 'js_inputfile_id' ) ;
-    js_inputfile . value = "" ; }*/
     
 </script>
 </body>
