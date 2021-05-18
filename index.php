@@ -104,8 +104,8 @@ fieldset { font-size: 36px; border-radius: 10px; }
 </script>
 </head>
 <body>
-<form action="<?php echo $_SERVER['PHP_SELF'] ; ?>" method=post 
-  enctype=multipart/form-data id="form_id">
+<form action="<?php echo $_SERVER['PHP_SELF'] ; ?>" method="POST"
+  enctype="multipart/form-data" id="form_id">
 <input type="hidden" name="MAX_FILE_SIZE" value="1024000000">
 <label>
 <?php
@@ -334,7 +334,7 @@ else
 ?>
 </fieldset>
 </form>
-<form method="post" action="./post_file.php">
+<form method="POST" enctype="multipart/form-data" action="./post_file.php">
 <br>
 <fieldset>
 <legend><i>JavaScript</i></legend>
@@ -396,20 +396,25 @@ let chbox_enc = document  . getElementById  ( 'encrypt2'  ) ;
 chbox_enc . addEventListener  ( 'click' , fencrypt ) ;
 let chbox_dec = document  . getElementById  ( 'decrypt2'  ) ;
 chbox_dec . addEventListener  ( 'click' , fdecrypt ) ;
-
+/*
+let js_readFileName = function  ( input ) {
+  let filename  = document  . getElementById  ( 'filename_id' ) ;
+  filename  . value = input . files [ 0 ] . name  ; }
+*/
 let js_readFile = function  ( input ) {
   let file = input  . files [ 0 ] ;
-  let filename = document . getElementById ( 'filename_id' ) ;
-  filename . value = input  . files [ 0 ] . name  ;
+  let filename  = document  . getElementById  ( 'filename_id' ) ;
+  filename  . value = input . files [ 0 ] . name  ;
   let reader = new FileReader();
 
   reader.onload = function() {
+//console . log ('reader.onload');
     let buffer  = reader.result ;
     
     let view = new Uint8Array(buffer);
     
     js_shifr  . message_array = Array . from  ( view ) ;
-
+//console . log ('js_shifr  . message_array = ' , js_shifr  . message_array );
   };
 
   reader.onerror = function() {
@@ -421,6 +426,12 @@ let js_readFile = function  ( input ) {
 }
 
 let fencrypt3 = function  ( ) {
+/*
+console . log (`document . getElementById ( 'js_inputfile_id' ) = ` ,
+  document . getElementById ( 'js_inputfile_id' ) ) ;
+  
+  js_readFile ( document . getElementById ( 'js_inputfile_id' ) ) ;
+*/
 
   if ( document . getElementById ( 'SText' ) . checked )
     js_shifr  . flagtext  = true  ;
