@@ -104,12 +104,8 @@ fieldset { font-size: 36px; border-radius: 10px; }
 </script>
 </head>
 <body>
-<?php
-if (isset($err))
-  echo '<p>err = \''.$err.'\'</p>' ;
-?>
 <form action="<?php echo $_SERVER['PHP_SELF'] ; ?>" method=post 
-  enctype=multipart/form-data id="form_id" name="form_name" >
+  enctype=multipart/form-data id="form_id">
 <input type="hidden" name="MAX_FILE_SIZE" value="1024000000">
 <label>
 <?php
@@ -311,28 +307,6 @@ let fshowpassword = function ( ) {
   echo '</tr></table>' ;
 ?>
 <hr>
-<table><tr><td><fieldset><legend><i>PHP</i></legend>
-<input type=file name=uploadfile><br>
-<?php
-if  ( $shifr -> localerus )
-  echo '<input type=submit name="encrypt_decrypt_name" value="Зашифровать файл" > '.PHP_EOL ;
-else
-  echo '<input type=submit name="encrypt_decrypt_name" value="Encrypt file" > '.PHP_EOL  ;
-if  ( $shifr -> localerus )
-  echo '<input type=submit name="encrypt_decrypt_name" value="Расшифровать файл" >'.PHP_EOL ;
-else
-  echo '<input type=submit name="encrypt_decrypt_name" value="Decrypt file" >'.PHP_EOL  ;
-?>
-</fieldset></td><td><fieldset><legend><i>JavaScript</i></legend>
-<input type=file name="js_uploadfile_name" onchange="js_readFile(this)"
-  id="js_inputfile_id"><br>
-<?php
-if  ( $shifr -> localerus )
-  echo '<input type="button" name="submit3" value="Расшифровать файл" id="decrypt3" >'.PHP_EOL ;
-else
-  echo '<input type="button" name="submit3" value="Decrypt file" id="decrypt3" >'.PHP_EOL  ;
-?>
-</fieldset></td></tr></table>
 <?php
 if  ( $shifr -> localerus )    {
   echo '<br>Шифрование в текстовом режиме : <input type="checkbox" '.
@@ -343,9 +317,46 @@ else {
   ' class="largerCheckbox" name="Encryption_in_text_mode" value="1" id="SText" ';
   if($shifr -> flagtext)echo 'checked'; echo ' />' ; }
 ?>
+<fieldset>
+<legend><i>PHP</i></legend>
+<input type=file name=uploadfile><br>
+<?php
+if  ( $shifr -> localerus )
+  echo '<input type=submit name="encrypt_decrypt_name" value="Зашифровать файл" > '.
+    PHP_EOL ;
+else
+  echo '<input type=submit name="encrypt_decrypt_name" value="Encrypt file" > '.PHP_EOL  ;
+if  ( $shifr -> localerus )
+  echo '<input type=submit name="encrypt_decrypt_name" value="Расшифровать файл" >'.
+    PHP_EOL ;
+else
+  echo '<input type=submit name="encrypt_decrypt_name" value="Decrypt file" >'.PHP_EOL  ;
+?>
+</fieldset>
+</form>
+<form method="post" action="./post_file.php">
+<br>
+<fieldset>
+<legend><i>JavaScript</i></legend>
+<input type=file name="js_uploadfile_name" onchange="js_readFile(this)"
+  id="js_inputfile_id"><br>
+<?php
+if  ( $shifr -> localerus )
+  echo '<input type="submit" name="submit3" value="Зашифровать файл" id="encrypt3" > '.
+    PHP_EOL ;
+else
+  echo '<input type="submit" name="submit3" value="Encrypt file" id="encrypt3" > '.
+    PHP_EOL  ;
 
+if  ( $shifr -> localerus )
+  echo '<input type="button" name="submit3" value="Расшифровать файл" id="decrypt3" >'.
+    PHP_EOL ;
+else
+  echo '<input type="button" name="submit3" value="Decrypt file" id="decrypt3" >'.
+    PHP_EOL  ;
+?>
+</fieldset>
 <script>
-
 js_shifr  . password  = document . getElementById ( 'password' ) . value ;
 js_shifr  . message = document . getElementById ( 'message' ) . value ;
 js_shifr  . flagtext  = document . getElementById ( 'SText' ) . checked ; 
@@ -449,20 +460,13 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
 
 </script>
 <br>
-</form>
 
-<form method="post" action="./post_file.php">
 <textarea name="boxes_info"  rows="2" cols="61" id="boxes_info" value = ""
-maxlength="1024000000" readonly ><?php
+  maxlength="1024000000" readonly ><?php
   echo htmlspecialchars($shifr -> boxes_info) ; ?></textarea>
-<textarea name="filename_name" rows="1" cols="61" id="filename_id" value = "" maxlength="1024" readonly ><?php
+<textarea name="filename_name" rows="1" cols="61" id="filename_id" value = ""
+  maxlength="1024" readonly ><?php
   echo htmlspecialchars($shifr -> filename) ; ?></textarea>    
-<?php
-if  ( $shifr -> localerus )
-  echo '<input type="submit" name="submit3" value="Зашифровать файл" id="encrypt3" > '.PHP_EOL ;
-else
-  echo '<input type="submit" name="submit3" value="Encrypt file" id="encrypt3" > '.PHP_EOL  ;
-?>
 
 </form>
 <script>
