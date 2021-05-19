@@ -342,17 +342,17 @@ else
   id="js_inputfile_id"><br>
 <?php
 if  ( $shifr -> localerus )
-  echo '<input type="submit" name="submit3" value="Зашифровать файл" id="encrypt3" > '.
+  echo '<input type="submit" name="encrypt3" value="Зашифровать файл" id="encrypt3" > '.
     PHP_EOL ;
 else
-  echo '<input type="submit" name="submit3" value="Encrypt file" id="encrypt3" > '.
+  echo '<input type="submit" name="encrypt3" value="Encrypt file" id="encrypt3" > '.
     PHP_EOL  ;
 
 if  ( $shifr -> localerus )
-  echo '<input type="button" name="submit3" value="Расшифровать файл" id="decrypt3" >'.
+  echo '<input type="button" name="decrypt3" value="Расшифровать файл" id="decrypt3" >'.
     PHP_EOL ;
 else
-  echo '<input type="button" name="submit3" value="Decrypt file" id="decrypt3" >'.
+  echo '<input type="button" name="decrypt3" value="Decrypt file" id="decrypt3" >'.
     PHP_EOL  ;
 ?>
 </fieldset>
@@ -396,11 +396,7 @@ let chbox_enc = document  . getElementById  ( 'encrypt2'  ) ;
 chbox_enc . addEventListener  ( 'click' , fencrypt ) ;
 let chbox_dec = document  . getElementById  ( 'decrypt2'  ) ;
 chbox_dec . addEventListener  ( 'click' , fdecrypt ) ;
-/*
-let js_readFileName = function  ( input ) {
-  let filename  = document  . getElementById  ( 'filename_id' ) ;
-  filename  . value = input . files [ 0 ] . name  ; }
-*/
+
 let js_readFile = function  ( input ) {
   let file = input  . files [ 0 ] ;
   let filename  = document  . getElementById  ( 'filename_id' ) ;
@@ -408,14 +404,12 @@ let js_readFile = function  ( input ) {
   let reader = new FileReader();
 
   reader.onload = function() {
-//console . log ('reader.onload');
     let buffer  = reader.result ;
     
     let view = new Uint8Array(buffer);
     
     js_shifr  . message_array = Array . from  ( view ) ;
-//console . log ('js_shifr  . message_array = ' , js_shifr  . message_array );
-  };
+    };
 
   reader.onerror = function() {
     alert(reader.error);
@@ -426,12 +420,6 @@ let js_readFile = function  ( input ) {
 }
 
 let fencrypt3 = function  ( ) {
-/*
-console . log (`document . getElementById ( 'js_inputfile_id' ) = ` ,
-  document . getElementById ( 'js_inputfile_id' ) ) ;
-  
-  js_readFile ( document . getElementById ( 'js_inputfile_id' ) ) ;
-*/
 
   if ( document . getElementById ( 'SText' ) . checked )
     js_shifr  . flagtext  = true  ;
@@ -455,6 +443,7 @@ let fdecrypt3 = function ( ) {
     js_shifr  . flagtext  = true  ;
   else
     js_shifr  . flagtext  = false ;
+    
   js_shifr  . password  = document . getElementById ( 'password' ) . value ;
     
   js_shifr_sole_init  ( js_shifr ) ;
@@ -462,7 +451,8 @@ let fdecrypt3 = function ( ) {
   js_shifr_decrypt ( js_shifr ) ; 
   js_shifr . message  = js_Utf8ArrayToStr ( js_shifr  . message ) ;
     
-  document . getElementById ( 'message' ) . value  = js_shifr  . message ;
+  let boxinfo = document . getElementById ( 'boxes_info' ) ;
+  boxinfo . value = js_shifr  . message ;
   
   }
 
