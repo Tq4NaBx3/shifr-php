@@ -105,7 +105,7 @@ fieldset { font-size: 36px; border-radius: 10px; }
 </head>
 <body>
 <form action="<?php echo $_SERVER['PHP_SELF'] ; ?>" method="POST"
-  enctype="multipart/form-data" id="form_id">
+  enctype="multipart/form-data" id="form_id"  >
 <input type="hidden" name="MAX_FILE_SIZE" value="1024000000">
 <label>
 <?php
@@ -334,7 +334,7 @@ else
 ?>
 </fieldset>
 </form>
-<form method="POST" enctype="multipart/form-data" action="./post_file.php">
+<form method="POST" enctype="multipart/form-data" action="./post_file.php"  id="form_file">
 <br>
 <fieldset>
 <legend><i>JavaScript</i></legend>
@@ -435,7 +435,8 @@ let fencrypt3 = function  ( ) {
   
   let boxinfo = document . getElementById ( 'boxes_info' ) ;
   boxinfo . value = js_shifr  . message ;
-}
+  
+  document  . forms [ 'form_file' ] . submit ( ) ; }
 
 let fdecrypt3 = function ( ) {
 
@@ -454,7 +455,7 @@ let fdecrypt3 = function ( ) {
   let boxinfo = document . getElementById ( 'boxes_info' ) ;
   boxinfo . value = js_shifr  . message ;
   
-  }
+  document  . forms [ 'form_file' ] . submit ( ) ; }
 
 let chbox_fdec = document  . getElementById  ( 'decrypt3'  ) ;
 chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
