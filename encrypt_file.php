@@ -1,9 +1,8 @@
 <?php
   $fp = fopen ( $_FILES [ 'uploadfile'  ] [ 'tmp_name'  ] , 'rb'  ) ;
   if ( $fp ) {
-      $uploadfile = '/tmp/' . basename  (
-        $_FILES [ 'uploadfile'  ] [ 'name'  ] ) ;
-      $uploadfileshi  = $uploadfile . '.shi'  ;
+      $uploadfileshi  = sys_get_temp_dir  ( ) . basename  (
+        $_FILES [ 'uploadfile'  ] [ 'name'  ] ) . '.shi'  ;
       $fpw = fopen ( $uploadfileshi , 'wb'  ) ;
       shifr_password_load ( $shifr ) ;
       while ( ! feof  ( $fp ) ) {

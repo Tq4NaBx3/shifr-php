@@ -1,10 +1,9 @@
 <?php
   $fp = fopen ( $_FILES [ 'uploadfile'  ] [ 'tmp_name'  ] , 'rb'  ) ;
   if ( $fp ) {
-      $uploadfile = '/tmp/' . basename  (
+      $uploadfile = sys_get_temp_dir  ( ) . basename  (
         $_FILES [ 'uploadfile'  ] [ 'name'  ] ) ;
-      $len_uploadfile = strlen ( $uploadfile ) ;
-      if ( $len_uploadfile > 4 and substr ( $uploadfile , -4 ) == '.shi' )
+      if ( strlen ( $uploadfile ) > 4 and substr ( $uploadfile , -4 ) == '.shi' )
         $uploadfile2 = substr ( $uploadfile , 0 , -4 ) ;
       else
         $uploadfile2 = $uploadfile  . '.des' ;

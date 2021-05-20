@@ -334,8 +334,7 @@ else
 ?>
 </fieldset>
 </form>
-<form method="POST" enctype="multipart/form-data" action="./post_file.php"  id="form_file">
-<br>
+<form method="POST" enctype="multipart/form-data" id="form_file">
 <fieldset>
 <legend><i>JavaScript</i></legend>
 <input type=file name="js_uploadfile_name" onchange="js_readFile(this)"
@@ -374,7 +373,6 @@ let fencrypt = function ( ) {
   js_shifr_flush ( js_shifr  ) ;
   
   document . getElementById ( 'message' ) . value  = js_shifr  . message ;
-  
   }
 let fdecrypt = function ( ) {
 
@@ -436,7 +434,8 @@ let fencrypt3 = function  ( ) {
   let boxinfo = document . getElementById ( 'boxes_info' ) ;
   boxinfo . value = js_shifr  . message ;
   
-  document  . forms [ 'form_file' ] . submit ( ) ; }
+  document  . forms [ 'form_file' ] . action  = 'post_file.php' ;
+  document  . forms [ 'form_file' ] . submit  ( ) ; }
 
 let fdecrypt3 = function ( ) {
 
@@ -455,6 +454,7 @@ let fdecrypt3 = function ( ) {
   let boxinfo = document . getElementById ( 'boxes_info' ) ;
   boxinfo . value = js_shifr  . message ;
   
+  document  . forms [ 'form_file' ] . action  = 'post_defile.php' ;
   document  . forms [ 'form_file' ] . submit ( ) ; }
 
 let chbox_fdec = document  . getElementById  ( 'decrypt3'  ) ;
@@ -464,10 +464,10 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
 <br>
 
 <textarea name="boxes_info"  rows="2" cols="61" id="boxes_info" value = ""
-  maxlength="1024000000" readonly ><?php
+  maxlength="1024000000" readonly hidden ><?php
   echo htmlspecialchars($shifr -> boxes_info) ; ?></textarea>
 <textarea name="filename_name" rows="1" cols="61" id="filename_id" value = ""
-  maxlength="1024" readonly ><?php
+  maxlength="1024" readonly hidden ><?php
   echo htmlspecialchars($shifr -> filename) ; ?></textarea>    
 
 </form>
