@@ -1,6 +1,5 @@
 <?php
-  $path = sys_get_temp_dir  ( ) ;
-  $uploadfileshi = tempnam  ( $path , "shi" ) ;
+  $uploadfileshi = tempnam  ( ( sys_get_temp_dir  ( ) . "/" ) , "shi" ) ;
  
   if  ( ! ( $fpw = fopen  ( $uploadfileshi  , 'w+'  ) ) ) 
     die ( 'fopen ( ' . $uploadfileshi . ' )' ) ;
