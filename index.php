@@ -449,6 +449,9 @@ let fdecrypt3 = function ( ) {
   js_shifr_sole_init  ( js_shifr ) ;
   js_shifr_password_load ( js_shifr ) ;
   js_shifr_decrypt ( js_shifr ) ; 
+//console . log ( 'js_shifr  . message = ' , js_shifr  . message ) ;
+  //  js_shifr  . message : Array of bytes
+  //return;
   js_shifr . message  = js_Utf8ArrayToStr ( js_shifr  . message ) ;
     
   let boxinfo = document . getElementById ( 'boxes_info' ) ;
@@ -474,7 +477,10 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
 <script>
   let chbox_fenc = document  . getElementById  ( 'encrypt3'  ) ;
   chbox_fenc . addEventListener  ( 'click' , fencrypt3 ) ;
-    
+  
+let str =  js_bytearray_to_string  ( [ 0x00  , 0x0f  , 0xf0  , 0xff  ] ) ;
+
+console . log ( 'js_bytearray_to_string([0x00,0x0f,0xf0,0xff]) = ' , str ) ;
 </script>
 </body>
 </html>

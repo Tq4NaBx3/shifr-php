@@ -775,3 +775,11 @@ let js_shifr_decrypt3 = function  ( sh  ) {
     secretdata = [ ] ;
     js_streambuf_write3bits ( sh , decrypteddata [ 0 ] ) ; }
   sh . message = sh . messageout ; }
+  
+let js_bytearray_to_string  = function  ( array ) {
+  const acode = 'a' . charCodeAt  ( 0 ) ;
+  let str = ''  ;
+  for ( let byte  of  array ) {
+    str +=  String  . fromCharCode  ( acode + ( byte  & 0b1111  ) ) ;
+    str +=  String  . fromCharCode  ( acode + ( byte  >>  4 ) ) ; }
+  return  str ; }
