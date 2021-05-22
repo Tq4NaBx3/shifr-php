@@ -92,7 +92,7 @@ fieldset { font-size: 36px; border-radius: 10px; }
 <script>
 'use strict';
 </script>
-<script src="shifr.js"></script>
+<script type="text/javascript" src="shifr.js"></script>
 <script>
   let js_shifr  = { } ;
   js_shifr_init ( js_shifr ) ;
@@ -448,12 +448,9 @@ let fdecrypt3 = function ( ) {
     
   js_shifr_sole_init  ( js_shifr ) ;
   js_shifr_password_load ( js_shifr ) ;
-  js_shifr_decrypt ( js_shifr ) ; 
-//console . log ( 'js_shifr  . message = ' , js_shifr  . message ) ;
-  //  js_shifr  . message : Array of bytes
-  //return;
-  js_shifr . message  = js_Utf8ArrayToStr ( js_shifr  . message ) ;
-    
+  js_shifr_decrypt ( js_shifr ) ;
+  js_shifr . message  = js_bytearray_to_string ( js_shifr  . message ) ;
+
   let boxinfo = document . getElementById ( 'boxes_info' ) ;
   boxinfo . value = js_shifr  . message ;
   
@@ -476,11 +473,7 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
 </form>
 <script>
   let chbox_fenc = document  . getElementById  ( 'encrypt3'  ) ;
-  chbox_fenc . addEventListener  ( 'click' , fencrypt3 ) ;
-  
-let str =  js_bytearray_to_string  ( [ 0x00  , 0x0f  , 0xf0  , 0xff  ] ) ;
-
-console . log ( 'js_bytearray_to_string([0x00,0x0f,0xf0,0xff]) = ' , str ) ;
+  chbox_fenc . addEventListener  ( 'click' , fencrypt3 ) ;  
 </script>
 </body>
 </html>

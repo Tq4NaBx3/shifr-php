@@ -775,7 +775,8 @@ let js_shifr_decrypt3 = function  ( sh  ) {
     secretdata = [ ] ;
     js_streambuf_write3bits ( sh , decrypteddata [ 0 ] ) ; }
   sh . message = sh . messageout ; }
-  
+
+// [0x00,0xf0,0x0f,0xff] => "aa" + "ap" + "pa" + "pp"
 let js_bytearray_to_string  = function  ( array ) {
   const acode = 'a' . charCodeAt  ( 0 ) ;
   let str = ''  ;

@@ -1,9 +1,25 @@
 <?php
+
+// '0x00','0xf0','0x0f','0xff' <= "aa" + "ap" + "pa" + "pp"
+function  shifr_string_to_bytes ( string & $string ) : string {
+  $strlen = strlen  ( $string ) ;
+  if ($strlen & 1)
+    --  $strlen ;
+  $acode  = ord ( "a" ) ;
+  $result = "" ;
+  for ($i=0;$i<$strlen;$i ++) {
+    $low  = ord ( $string[$i] ) - $acode ;
+    ++  $i  ;
+    $high = ord ( $string[$i] ) - $acode ;
+    $result .= chr(($high<<4) | $low); }
+  return  $result ; }
+  
   $uploadfileshi = tempnam  ( ( sys_get_temp_dir  ( ) . "/" ) , "shi" ) ;
- 
+  
   if  ( ! ( $fpw = fopen  ( $uploadfileshi  , 'w+'  ) ) ) 
     die ( 'fopen ( ' . $uploadfileshi . ' )' ) ;
-  if ( ! fwrite ( $fpw  , $_POST  [ 'boxes_info'  ] ) ) 
+  $string = $_POST  [ 'boxes_info'  ] ;
+  if ( ! fwrite ( $fpw  , shifr_string_to_bytes ( $string ) ) ) 
     die ( 'fwrite ( ' . $uploadfileshi . ' )' ) ;
   if (  ! fclose  ( $fpw  ) )
     die ( 'fclose ( ' . $uploadfileshi . ' )' ) ;
