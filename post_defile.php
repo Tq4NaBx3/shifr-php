@@ -1,5 +1,12 @@
 <?php
 
+  if ( empty  ( $_POST  [ 'boxes_info'  ] ) ) {
+    echo  ( '$_POST  [ \'boxes_info\'  ] is empty' . ' , post_max_size = ' .
+      ini_get ( 'post_max_size' ) . ' , upload_max_filesize = ' .
+      ini_get ( 'upload_max_filesize' ) ) ;
+    //phpinfo ( ) ;
+    die ( ) ; }
+
 // '0x00','0xf0','0x0f','0xff' <= "aa" + "ap" + "pa" + "pp"
 function  shifr_string_to_bytes ( string & $string ) : string {
   $strlen = strlen  ( $string ) ;

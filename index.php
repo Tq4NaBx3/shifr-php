@@ -106,7 +106,6 @@ fieldset { font-size: 36px; border-radius: 10px; }
 <body>
 <form action="<?php echo $_SERVER['PHP_SELF'] ; ?>" method="POST"
   enctype="multipart/form-data" id="form_id"  >
-<input type="hidden" name="MAX_FILE_SIZE" value="1024000000">
 <label>
 <?php
   if  ( $shifr -> localerus )
@@ -115,7 +114,7 @@ fieldset { font-size: 36px; border-radius: 10px; }
     echo 'Message:' ;
 ?>
   <br />
-  <textarea name="message" rows="12" cols="61" id="message" maxlength="1024000000"><?php
+  <textarea name="message" rows="12" cols="61" id="message" maxlength="2048000000"><?php
   echo htmlspecialchars($shifr -> message) ; ?></textarea>
 </label><br />
 <p>
@@ -319,6 +318,7 @@ else {
 ?>
 <fieldset>
 <legend><i>PHP</i></legend>
+<input type="hidden" name="MAX_FILE_SIZE" value="2048000000" />
 <input type=file name=uploadfile><br>
 <?php
 if  ( $shifr -> localerus )
@@ -337,6 +337,7 @@ else
 <form method="POST" enctype="multipart/form-data" id="form_file">
 <fieldset>
 <legend><i>JavaScript</i></legend>
+<input type="hidden" name="MAX_FILE_SIZE" value="2048000000" />
 <input type=file name="js_uploadfile_name" onchange="js_readFile(this)"
   id="js_inputfile_id"><br>
 <?php
@@ -464,10 +465,10 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
 <br>
 
 <textarea name="boxes_info"  rows="2" cols="61" id="boxes_info" value = ""
-  maxlength="1024000000" readonly hidden ><?php
+  maxlength="2048000000" readonly hidden ><?php
   echo htmlspecialchars($shifr -> boxes_info) ; ?></textarea>
 <textarea name="filename_name" rows="1" cols="61" id="filename_id" value = ""
-  maxlength="1024" readonly hidden ><?php
+  maxlength="2048" readonly hidden ><?php
   echo htmlspecialchars($shifr -> filename) ; ?></textarea>    
 
 </form>
