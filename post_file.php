@@ -8,11 +8,19 @@
     die ( ) ; }
     
   $uploadfileshi = tempnam  ( ( sys_get_temp_dir  ( ) . "/" ) , "shi" ) ;
- 
+  
   if  ( ! ( $fpw = fopen  ( $uploadfileshi  , 'w+'  ) ) ) 
     die ( 'fopen ( ' . $uploadfileshi . ' )' ) ;
-  if ( ! fwrite ( $fpw  , $_POST  [ 'boxes_info'  ] ) )
-    die ( 'fwrite ( ' . $uploadfileshi . ' )' ) ;
+  if ( isset ( $_POST [ 'text_mode' ] ) and 
+       $_POST [ 'text_mode' ] == '1' ) {
+    if ( ! fwrite ( $fpw  , $_POST  [ 'boxes_info'  ] ) )
+      die ( 'fwrite ( ' . $uploadfileshi . ' )' ) ; }
+  else  {
+  
+    require ( 'shifr.php' ) ;
+      
+    if ( ! fwrite ( $fpw  , shifr_string_to_bytes ( $_POST  [ 'boxes_info'  ] ) ) )
+      die ( 'fwrite ( ' . $uploadfileshi . ' )' ) ; }
   if (  ! fclose  ( $fpw  ) )
     die ( 'fclose ( ' . $uploadfileshi . ' )' ) ;
  

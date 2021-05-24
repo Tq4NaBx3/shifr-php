@@ -816,4 +816,19 @@ function  shifr_generate_password  ( shifr & $shifr ) {
   else 
     shifr_generate_password_3 ( $shifr  ) ; }
 
+// Base16 = [ abcd efgh ijkl mnop ]
+// '0x00','0xf0','0x0f','0xff' <= "aa" + "ap" + "pa" + "pp"
+function  shifr_string_to_bytes ( string & $string ) : string {
+  $strlen = strlen  ( $string ) ;
+  if ($strlen & 1)
+    --  $strlen ;
+  $acode  = ord ( "a" ) ;
+  $result = "" ;
+  for ($i=0;$i<$strlen;$i ++) {
+    $low  = ord ( $string[$i] ) - $acode ;
+    ++  $i  ;
+    $high = ord ( $string[$i] ) - $acode ;
+    $result .= chr(($high<<4) | $low); }
+  return  $result ; }
+
 ?>

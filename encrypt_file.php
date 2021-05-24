@@ -1,5 +1,6 @@
 <?php
-  $fp = fopen ( $_FILES [ 'uploadfile'  ] [ 'tmp_name'  ] , 'rb'  ) ;
+  $tmpname  = $_FILES [ 'uploadfile'  ] [ 'tmp_name'  ] ;
+  $fp = fopen ( $tmpname , 'rb'  ) ;
   if ( $fp ) {
       $uploadfileshi  = ( sys_get_temp_dir  ( ) . "/" ) . basename  (
         $_FILES [ 'uploadfile'  ] [ 'name'  ] ) . '.shi'  ;
@@ -15,6 +16,7 @@
       shifr_flush_file  ( $shifr , $fpw ) ;
       fclose  ( $fpw  ) ;
       fclose  ( $fp ) ;
+      unlink  ( $tmpname ) ;
       
       header('Content-Description: File Transfer');
       header('Content-Type: application/octet-stream');

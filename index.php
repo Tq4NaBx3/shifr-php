@@ -9,10 +9,8 @@ if ( $local == 'ru_RU.UTF-8' )
 
 if  ( $_POST  ) {
 
-  if ( ( ( isset ( $_POST [ 'Шифрование_в_текстовом_режиме' ] ) ) and
-        $_POST [ 'Шифрование_в_текстовом_режиме' ] ) or
-    ( ( isset ( $_POST [ 'Encryption_in_text_mode' ] ) ) and 
-       $_POST [ 'Encryption_in_text_mode' ] ) )
+  if ( ( ( isset ( $_POST [ 'Encryption_in_text_mode' ] ) ) and 
+       $_POST [ 'Encryption_in_text_mode' ] == '1' ) )
     $shifr -> flagtext = true  ;
   else
     $shifr -> flagtext = false ;
@@ -309,7 +307,7 @@ let fshowpassword = function ( ) {
 <?php
 if  ( $shifr -> localerus )    {
   echo '<br>Шифрование в текстовом режиме : <input type="checkbox" '.
-  ' class="largerCheckbox" name="Шифрование_в_текстовом_режиме" value="1"'.
+  ' class="largerCheckbox" name="Encryption_in_text_mode" value="1"'.
   ' id="SText" '; if($shifr -> flagtext)echo 'checked'; echo ' />' ; }
 else {
   echo '<br>Encryption in text mode : <input type="checkbox"' .
@@ -420,10 +418,12 @@ let js_readFile = function  ( input ) {
 
 let fencrypt3 = function  ( ) {
 
-  if ( document . getElementById ( 'SText' ) . checked )
+  if ( document . getElementById ( 'SText' ) . checked )  {
     js_shifr  . flagtext  = true  ;
-  else
+    document . getElementById ( 'JSText' ) . checked  = true  ; }
+  else {
     js_shifr  . flagtext  = false ;
+    document . getElementById ( 'JSText' ) . checked  = false ; }
   
   js_shifr  . password  = document . getElementById ( 'password' ) . value ;
   
@@ -431,7 +431,8 @@ let fencrypt3 = function  ( ) {
   js_shifr_password_load ( js_shifr ) ;
   js_shifr_encrypt ( js_shifr ) ; 
   js_shifr_flush ( js_shifr  ) ;
-  
+  if ( !  js_shifr  . flagtext )
+    js_shifr . message  = js_bytearray_to_string ( js_shifr  . message ) ;
   let boxinfo = document . getElementById ( 'boxes_info' ) ;
   boxinfo . value = js_shifr  . message ;
   
@@ -470,7 +471,10 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
 <textarea name="filename_name" rows="1" cols="61" id="filename_id" value = ""
   maxlength="2048" readonly hidden ><?php
   echo htmlspecialchars($shifr -> filename) ; ?></textarea>    
-
+<input type="checkbox" name="text_mode" value="1" id="JSText" <?php
+  if ( $shifr -> flagtext )
+    echo 'checked' ;
+?>  hidden />
 </form>
 <script>
   let chbox_fenc = document  . getElementById  ( 'encrypt3'  ) ;

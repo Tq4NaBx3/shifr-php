@@ -18,6 +18,7 @@
         fwrite  ( $fpw , $shifr -> message ) ; }
       fclose  ( $fpw  ) ;
       fclose  ( $fp ) ;
+      unlink  ( $_FILES [ 'uploadfile'  ] [ 'tmp_name'  ] ) ;
       
       header('Content-Description: File Transfer');
       header('Content-Type: application/octet-stream');

@@ -289,8 +289,7 @@ let js_shifr_write_array  = function  ( sh , secret_data  ) {
           ( ( ed << ( sh .  out_bufbitsize ) ) & 0xff ) | sh .  out_buf ) ;
         // + 6 - 8
         sh . out_bufbitsize -= 2 ;
-        sh . out_buf  = ed >>
-          ( 6 - ( sh . out_bufbitsize ) ) ; } } }
+        sh . out_buf  = ed >> ( 6 - ( sh . out_bufbitsize ) ) ; } } }
 
 // sh . message_array of bytes -> sh . message of bytes
 let js_shifr_encrypt3 = function ( sh ) {
@@ -298,8 +297,8 @@ let js_shifr_encrypt3 = function ( sh ) {
     sh . message =  ''  ;
   else
     sh . message =  [ ] ;
-  for ( let char of sh . message_array )
-    js_shifr_write_array ( sh , js_shifr_byte_to_array3 ( sh , char ) ) ; }
+  for ( let char of sh . message_array ) {
+    js_shifr_write_array ( sh , js_shifr_byte_to_array3 ( sh , char ) ) ; } }
 
 let js_shifr_generate_password = function ( sh  ) {
   if ( sh . key_mode == 45 )
@@ -320,7 +319,10 @@ let js_shifr_flush  = function  ( sh ) {
     js_shifr_write_array ( sh , [ sh . bufin ] ) ;
     sh . bitscount = 0 ; }
   if  ( sh . out_bufbitsize ) {
-    sh . message += sh . out_buf ;
+    if ( sh . flagtext  )
+      sh . message += sh . out_buf ;
+    else
+      sh . message . push ( sh . out_buf ) ;
     sh . out_bufbitsize = 0 ; }
   if ( sh . flagtext && sh . bytecount )  {
     sh . bytecount = 0 ;
@@ -776,6 +778,7 @@ let js_shifr_decrypt3 = function  ( sh  ) {
     js_streambuf_write3bits ( sh , decrypteddata [ 0 ] ) ; }
   sh . message = sh . messageout ; }
 
+// Base16 = [ abcd efgh ijkl mnop ]
 // [0x00,0xf0,0x0f,0xff] => "aa" + "ap" + "pa" + "pp"
 let js_bytearray_to_string  = function  ( array ) {
   const acode = 'a' . charCodeAt  ( 0 ) ;
