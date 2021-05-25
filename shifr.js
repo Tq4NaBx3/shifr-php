@@ -327,8 +327,12 @@ let js_shifr_flush  = function  ( sh ) {
   if ( sh . flagtext && sh . bytecount )  {
     sh . bytecount = 0 ;
     sh . message += "\n"  ; }
+    
+  // ?? _init will make it
   sh . old_last_data  = { n : 0 } ;
-  sh . old_last_sole  = { n : 0 } ; }
+  sh . old_last_sole  = { n : 0 } ;
+  
+  }
     
 let js_number_dec = function  ( number ) {
   let i = 0 ;
@@ -502,6 +506,17 @@ let js_shifr_set_version = function ( sh , ver ) {
     sh . key_mode = 296 ; }
 
 let js_shifr_sole_init = function ( sh  ) {
+  sh . messageout = [ ] ;
+  sh . buf3_index = 0 ;
+  sh . buf3 = [ ] ;
+  sh . out_buf = 0 ;
+  sh . decode_read_index = 0 ;
+  sh . in_buf = 0 ;
+  sh . in_bufbitsize = 0 ;
+  sh . bitscount = 0 ;
+  sh . bufin = 0 ;
+  sh . out_bufbitsize = 0 ;
+  sh . bytecount = 0 ;
   sh . old_last_data  = { n : 0 } ;
   sh . old_last_sole  = { n : 0 } ; }
     
@@ -526,19 +541,8 @@ let js_shifr_init = function ( sh ) {
   sh . letters_mode = 62 ;
   js_shifr_set_version ( sh , 3 ) ;
   js_shifr_sole_init  ( sh  ) ;
-  sh . bytecount  = 0 ;
-  sh . buf3_index = 0 ;
-  sh . buf3 = [ ] ;
-  sh . out_buf = 0 ;
-  sh . in_buf = 0 ;
-  sh . out_bufbitsize = 0 ;
-  sh . in_bufbitsize = 0 ;
-  sh . decode_read_index = 0 ;
-  sh . messageout = '' ;
-  sh . bitscount  = 0 ;
-  sh . bufin = 0 ;
   sh . localerus = false ;
-  sh . flagtext  = true  ; }
+  sh . flagtext  = true  ;  }
 
 let js_shifr_version = function ( sh ) {
   if  ( sh . key_mode == 45 )
@@ -786,4 +790,57 @@ let js_bytearray_to_string  = function  ( array ) {
   for ( let byte  of  array ) {
     str +=  String  . fromCharCode  ( acode + ( byte  & 0b1111  ) ) ;
     str +=  String  . fromCharCode  ( acode + ( byte  >>  4 ) ) ; }
+  return  str ; }
+
+// Base32 = ( ABCD EFGH IJKL MNOP
+//            QRST UVWX YZ[\ ]^_` )
+let js_bytearray_to_string5  = function  ( array ) {
+  const acode = 'A' . charCodeAt  ( 0 ) ;
+  let str = ''  ;
+  let cache = 0 ;
+  let cache_size  = 0 ; //  0 .. 4
+  for ( let byte  of  array ) {
+    switch  ( cache_size  ) {
+    case  0 :
+      // (7 6 5) [4 3 2 1 0]
+      str +=  String  . fromCharCode  ( acode + ( byte  & 0b11111 ) ) ;
+      cache = ( byte  >>  5 ) ;
+      cache_size  = 3 ;
+      break ;
+    case  1 :
+      // (7 6 5 4) [3 2 1 0 (7)]
+      str +=  String  . fromCharCode  ( acode +
+        ( ( ( byte  & 0b1111  ) <<  1 ) | cache ) ) ;
+      cache = ( byte  >>  4 ) ;
+      cache_size  = 4 ;
+      break ;
+    case  2 :
+      // [7 6 5 4 3] [2 1 0 (7 6)]
+      str +=  String  . fromCharCode  ( acode +
+        ( ( ( byte  & 0b111 ) <<  2 ) | cache ) ) ;
+      str +=  String  . fromCharCode  ( acode + ( byte  >>  3 ) ) ;
+      cache = 0 ;
+      cache_size  = 0 ;
+      break ;
+    case  3 :
+      // (7) [6 5 4 3 2] [1 0 (7 6 5)]
+      str +=  String  . fromCharCode  ( acode +
+        ( ( ( byte  & 0b11  ) <<  3 ) | cache ) ) ;
+      str +=  String  . fromCharCode  ( acode + ( ( byte  >>  2 ) & 0b11111 ) ) ;
+      cache = ( byte  >>  7 ) ;
+      cache_size  = 1 ;
+      break ;
+    case  4 :
+      // (7 6) [5 4 3 2 1] [0 (7 6 5 4)]
+      str +=  String  . fromCharCode  ( acode +
+        ( ( ( byte  & 0b1 ) <<  4 ) | cache ) ) ;
+      str +=  String  . fromCharCode  ( acode + ( ( byte  >>  1 ) & 0b11111 ) ) ;
+      cache = ( byte  >>  6 ) ;
+      cache_size  = 2 ;
+      break ;
+    default :
+      console . log ( 'js_bytearray_to_string5 : cache_size = ' , cache_size  ) ;
+      return  str ; } }
+  if  ( cache_size  !=  0 )
+    str +=  String  . fromCharCode  ( acode + cache ) ;
   return  str ; }

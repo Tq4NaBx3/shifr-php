@@ -441,10 +441,12 @@ let fencrypt3 = function  ( ) {
 
 let fdecrypt3 = function ( ) {
 
-  if ( document . getElementById ( 'SText' ) . checked )
+  if ( document . getElementById ( 'SText' ) . checked )  {
     js_shifr  . flagtext  = true  ;
-  else
+    document . getElementById ( 'JSText' ) . checked  = true  ; }
+  else  {
     js_shifr  . flagtext  = false ;
+    document . getElementById ( 'JSText' ) . checked  = false ; }
     
   js_shifr  . password  = document . getElementById ( 'password' ) . value ;
     
