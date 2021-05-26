@@ -21,9 +21,6 @@ if  ( $_POST  ) {
   if ( isset ( $_POST [ 'message'  ] ) )
     $shifr -> message = $_POST  [ 'message'  ] ;
   
-  if ( isset ( $_POST  [ 'password_name' ] ) )
-    shifr_generate_password ( $shifr  ) ; 
-
   if  ( isset ( $_POST  [ 'radio' ] ) ) {
       switch  ( $_POST  [ 'radio' ] ) {
       case  'ASCII' :
@@ -44,6 +41,9 @@ if  ( $_POST  ) {
         shifr_set_version ( $shifr ,  3 ) ;  
       else 
         shifr_set_version ( $shifr  , 2 ) ; }  
+  
+  if ( isset ( $_POST  [ 'password_name' ] ) )
+    shifr_generate_password ( $shifr  ) ; 
   
   if  ( isset ( $_POST  [ 'encrypt_decrypt_name'  ] ) ) {
     if  ( $_POST  [ 'encrypt_decrypt_name'] == 'зашифровать' or 
