@@ -482,5 +482,31 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
   let chbox_fenc = document  . getElementById  ( 'encrypt3'  ) ;
   chbox_fenc . addEventListener  ( 'click' , fencrypt3 ) ;  
 </script>
+<?php
+/*
+
+js_bytearray_to_string_univer ( [0x00,0x0f,0xf0,0xff] , 'A' , 5 ) ;
+"AYDA``D"
+
+js_bytearray_to_string_univer ( [0x00,0x0f,0xf0,0xff,0x00,0x08,0x80,0x88] , 'A' , 5 ) ;
+"AYDA``DAIAARI"
+
+*/
+
+//$teststr = "AYDA``D" ; // 0x00 0x0f 0xf0 0xff
+/*
+$teststr = "AYDA``DAIAARI" ; // 0x00 0x0f 0xf0 0xff 0x00 0x08 0x80 0x88
+$testbyte = shifr_string_to_bytes ( $teststr ) ;
+for ($i=0;$i<strlen($testbyte);++$i)
+  echo  '[ '.$i.' ] = '.ord($testbyte[$i]).' ; ' ;
+  */
+  /*
+echo  '<br>'  ;
+$teststr = "abcdefgh" ; // 0x10 0x43 0x76 0x00
+$testbyte = shifr_string_to_bytes_univer  ( $teststr , "a" , 4 ) ;
+for ($i=0;$i<4;++$i)
+  echo  '[ '.$i.' ] = '.ord($testbyte[$i]).' ; ' ;
+  */
+?>
 </body>
 </html>

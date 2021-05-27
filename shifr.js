@@ -329,8 +329,8 @@ let js_shifr_flush  = function  ( sh ) {
     sh . message += "\n"  ; }
     
   // ?? _init will make it
-  sh . old_last_data  = { n : 0 } ;
-  sh . old_last_sole  = { n : 0 } ;
+  // sh . old_last_data  = { n : 0 } ;
+  // sh . old_last_sole  = { n : 0 } ;
   
   }
     
@@ -647,24 +647,6 @@ let js_shifr_encrypt  = function  ( shifr ) {
   else 
     js_shifr_encrypt3 ( shifr  ) ; }
 
-let js_ShowShifrFull = function ( ) {
-  console . log ( "js_shifr = {" ) ;
-for ( let name in js_shifr ) {
-  if(js_shifr.hasOwnProperty(name)){
-    if( Array.isArray(js_shifr [ name ]))
-      console .log ( name + ' = [ ' + js_shifr [ name ] + ' ]' ) ;
-    else
-  if ( typeof ( js_shifr [ name ] ) === 'object' && js_shifr [ name ] !== null ) {
-    console . log ( name + " = {" ) ;
-    for ( let vari in js_shifr [ name ] )
-      if(js_shifr [ name ].hasOwnProperty(vari))
-        console . log ( vari + " : " + js_shifr [ name ] [ vari ] + " ,") ;
-    console . log ( "}" ) ; }
-  else
-    console . log ( name + " : " + js_shifr [ name ] + " ,") ; } }
-console . log ( "}" ) ;
-}
-
 let js_shifr_decrypt  = function  ( shifr ) {
   if ( js_shifr_version  ( shifr  ) == 2 ) 
     js_shifr_decrypt2 ( shifr ) ; 
@@ -781,9 +763,7 @@ let js_shifr_decrypt3 = function  ( sh  ) {
     secretdata = [ ] ;
     js_streambuf_write3bits ( sh , decrypteddata [ 0 ] ) ; }
   sh . message = sh . messageout ; }
-
-// Base16 = [ abcd efgh ijkl mnop ]
-// [0x00,0xf0,0x0f,0xff] => "aa" + "ap" + "pa" + "pp"
+/*
 let js_bytearray_to_string  = function  ( array ) {
   const acode = 'a' . charCodeAt  ( 0 ) ;
   let str = ''  ;
@@ -791,10 +771,36 @@ let js_bytearray_to_string  = function  ( array ) {
     str +=  String  . fromCharCode  ( acode + ( byte  & 0b1111  ) ) ;
     str +=  String  . fromCharCode  ( acode + ( byte  >>  4 ) ) ; }
   return  str ; }
-
+*/
+// [0x00,0xf0,0x0f,0xff] => "aa" + "ap" + "pa" + "pp"
+let js_bytearray_to_string_univer = function  ( array , start_letter  , bits_count  ) {
+  const acode = start_letter  . charCodeAt  ( 0 ) ;
+  let str = ''  ;
+  let cache = 0 ;
+  let cache_size  = 0 ; //  0 .. (bits_count - 1)
+  const bitmask = ( ( 1 <<  bits_count  ) - 1 ) ;
+  for ( let byte  of  array ) {
+    cache |= ( byte  <<  cache_size  )  ;
+    cache_size  +=  8 ;
+    do  {
+      str +=  String  . fromCharCode  ( acode + ( cache & bitmask ) ) ;
+      cache >>= bits_count  ;
+      cache_size  -=  bits_count  ;
+    } while ( cache_size  >=  bits_count  ) ; }
+  if  ( cache_size  !=  0 )
+    str +=  String  . fromCharCode  ( acode + cache ) ;
+  return  str ; }
+/*
+// Base16 = [ abcd efgh ijkl mnop ]
+let js_bytearray_to_string  = function  ( array ) {
+  return  js_bytearray_to_string_univer ( array , 'a' , 4 ) ; }
+  */  
 // Base32 = ( ABCD EFGH IJKL MNOP
 //            QRST UVWX YZ[\ ]^_` )
-let js_bytearray_to_string5  = function  ( array ) {
+let js_bytearray_to_string = function  ( array ) {
+  return  js_bytearray_to_string_univer ( array , 'A' , 5 ) ; }
+
+/*let js_bytearray_to_string5  = function  ( array ) {
   const acode = 'A' . charCodeAt  ( 0 ) ;
   let str = ''  ;
   let cache = 0 ;
@@ -844,3 +850,4 @@ let js_bytearray_to_string5  = function  ( array ) {
   if  ( cache_size  !=  0 )
     str +=  String  . fromCharCode  ( acode + cache ) ;
   return  str ; }
+*/
