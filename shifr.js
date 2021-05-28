@@ -763,15 +763,7 @@ let js_shifr_decrypt3 = function  ( sh  ) {
     secretdata = [ ] ;
     js_streambuf_write3bits ( sh , decrypteddata [ 0 ] ) ; }
   sh . message = sh . messageout ; }
-/*
-let js_bytearray_to_string  = function  ( array ) {
-  const acode = 'a' . charCodeAt  ( 0 ) ;
-  let str = ''  ;
-  for ( let byte  of  array ) {
-    str +=  String  . fromCharCode  ( acode + ( byte  & 0b1111  ) ) ;
-    str +=  String  . fromCharCode  ( acode + ( byte  >>  4 ) ) ; }
-  return  str ; }
-*/
+
 // [0x00,0xf0,0x0f,0xff] => "aa" + "ap" + "pa" + "pp"
 let js_bytearray_to_string_univer = function  ( array , start_letter  , bits_count  ) {
   const acode = start_letter  . charCodeAt  ( 0 ) ;
@@ -790,64 +782,27 @@ let js_bytearray_to_string_univer = function  ( array , start_letter  , bits_cou
   if  ( cache_size  !=  0 )
     str +=  String  . fromCharCode  ( acode + cache ) ;
   return  str ; }
+  
 /*
 // Base16 = [ abcd efgh ijkl mnop ]
 let js_bytearray_to_string  = function  ( array ) {
   return  js_bytearray_to_string_univer ( array , 'a' , 4 ) ; }
-  */  
-// Base32 = ( ABCD EFGH IJKL MNOP
-//            QRST UVWX YZ[\ ]^_` )
+*/  
+
+/*
+Base32 = ( ABCD EFGH IJKL MNOP
+           QRST UVWX YZ[\ ]^_` )
+*/
+/*
 let js_bytearray_to_string = function  ( array ) {
   return  js_bytearray_to_string_univer ( array , 'A' , 5 ) ; }
-
-/*let js_bytearray_to_string5  = function  ( array ) {
-  const acode = 'A' . charCodeAt  ( 0 ) ;
-  let str = ''  ;
-  let cache = 0 ;
-  let cache_size  = 0 ; //  0 .. 4
-  for ( let byte  of  array ) {
-    switch  ( cache_size  ) {
-    case  0 :
-      // (7 6 5) [4 3 2 1 0]
-      str +=  String  . fromCharCode  ( acode + ( byte  & 0b11111 ) ) ;
-      cache = ( byte  >>  5 ) ;
-      cache_size  = 3 ;
-      break ;
-    case  1 :
-      // (7 6 5 4) [3 2 1 0 (7)]
-      str +=  String  . fromCharCode  ( acode +
-        ( ( ( byte  & 0b1111  ) <<  1 ) | cache ) ) ;
-      cache = ( byte  >>  4 ) ;
-      cache_size  = 4 ;
-      break ;
-    case  2 :
-      // [7 6 5 4 3] [2 1 0 (7 6)]
-      str +=  String  . fromCharCode  ( acode +
-        ( ( ( byte  & 0b111 ) <<  2 ) | cache ) ) ;
-      str +=  String  . fromCharCode  ( acode + ( byte  >>  3 ) ) ;
-      cache = 0 ;
-      cache_size  = 0 ;
-      break ;
-    case  3 :
-      // (7) [6 5 4 3 2] [1 0 (7 6 5)]
-      str +=  String  . fromCharCode  ( acode +
-        ( ( ( byte  & 0b11  ) <<  3 ) | cache ) ) ;
-      str +=  String  . fromCharCode  ( acode + ( ( byte  >>  2 ) & 0b11111 ) ) ;
-      cache = ( byte  >>  7 ) ;
-      cache_size  = 1 ;
-      break ;
-    case  4 :
-      // (7 6) [5 4 3 2 1] [0 (7 6 5 4)]
-      str +=  String  . fromCharCode  ( acode +
-        ( ( ( byte  & 0b1 ) <<  4 ) | cache ) ) ;
-      str +=  String  . fromCharCode  ( acode + ( ( byte  >>  1 ) & 0b11111 ) ) ;
-      cache = ( byte  >>  6 ) ;
-      cache_size  = 2 ;
-      break ;
-    default :
-      console . log ( 'js_bytearray_to_string5 : cache_size = ' , cache_size  ) ;
-      return  str ; } }
-  if  ( cache_size  !=  0 )
-    str +=  String  . fromCharCode  ( acode + cache ) ;
-  return  str ; }
 */
+
+/*
+Base64 = ( ;<=> ?@AB CDEF GHIJ
+           KLMN OPQR STUV WXYZ
+           [\]^ _`ab cdef ghij
+           klmn opqr stuv wxyz )
+*/
+let js_bytearray_to_string = function  ( array ) {
+  return  js_bytearray_to_string_univer ( array , ';' , 6 ) ; }

@@ -815,20 +815,7 @@ function  shifr_generate_password  ( shifr & $shifr ) {
     shifr_generate_password_2 ( $shifr  ) ;
   else 
     shifr_generate_password_3 ( $shifr  ) ; }
-/*
-function  shifr_string_to_bytes ( string & $string ) : string {
-  $strlen = strlen  ( $string ) ;
-  if ($strlen & 1)
-    --  $strlen ;
-  $acode  = ord ( "a" ) ;
-  $result = "" ;
-  for ($i=0;$i<$strlen;$i ++) {
-    $low  = ord ( $string[$i] ) - $acode ;
-    ++  $i  ;
-    $high = ord ( $string[$i] ) - $acode ;
-    $result .= chr(($high<<4) | $low); }
-  return  $result ; }
-*/
+
 // '0x00','0xf0','0x0f','0xff' <= "aa" + "ap" + "pa" + "pp"
 function  shifr_string_to_bytes_univer  ( string & $string  , $start_letter ,
   $bits_count ) : string {
@@ -853,9 +840,23 @@ function  shifr_string_to_bytes_univer  ( string & $string  , $start_letter ,
 function  shifr_string_to_bytes ( string & $string ) : string {
   return  shifr_string_to_bytes_univer  ( $string , "a" , 4 ) ; }
 */
-// Base32 = ( ABCD EFGH IJKL MNOP
-//            QRST UVWX YZ[\ ]^_` )
+
+/*
+Base32 = ( ABCD EFGH IJKL MNOP
+           QRST UVWX YZ[\ ]^_` )
+*/
+/*
 function  shifr_string_to_bytes ( string & $string ) : string {
   return  shifr_string_to_bytes_univer  ( $string , "A" , 5 ) ; }
+*/
+
+/*
+Base64 = ( ;<=> ?@AB CDEF GHIJ
+           KLMN OPQR STUV WXYZ
+           [\]^ _`ab cdef ghij
+           klmn opqr stuv wxyz )
+*/
+function  shifr_string_to_bytes ( string & $string ) : string {
+  return  shifr_string_to_bytes_univer  ( $string , ";" , 6 ) ; }
 
 ?>
