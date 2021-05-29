@@ -1,3 +1,4 @@
 php_value upload_max_filesize 2G
 php_value post_max_size 2G
+php_value memory_limit 2G
 Options All -Indexes

@@ -80,7 +80,13 @@ if  ( $_POST  ) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width">
 <title>Shifr</title>
-<style> p { font-size: 36px; }  textarea { font-size: 36px; }
+<style>
+p { font-size: 36px; }
+textarea { font-size: 36px; }
+.div_message textarea {
+width: 100%;
+box-sizing: border-box;
+}
 input { font-size: 36px; border-radius: 10px; }
 input.largerCheckbox { transform : scale(2); }
 label { font-size: 24px; }
@@ -104,17 +110,46 @@ fieldset { font-size: 36px; border-radius: 10px; }
 <body>
 <form action="<?php echo $_SERVER['PHP_SELF'] ; ?>" method="POST"
   enctype="multipart/form-data" id="form_id"  >
-<label>
+<table>
+<tr>
+  <td>
+  <div class="div_message">
+  <label>
+    <?php
+      if  ( $shifr -> localerus )
+        echo 'Сообщение:'  ;
+      else
+        echo 'Message:' ; ?>
+    <br />
+    <textarea name="message" rows="12" cols="61" id="message" maxlength="2048000000"><?php
+    echo htmlspecialchars($shifr -> message) ; ?></textarea>
+  </label></div><br />
+  </td>
+  <td>
 <?php
-  if  ( $shifr -> localerus )
-    echo 'Сообщение:'  ;
-  else
-    echo 'Message:' ;
-?>
-  <br />
-  <textarea name="message" rows="12" cols="61" id="message" maxlength="2048000000"><?php
-  echo htmlspecialchars($shifr -> message) ; ?></textarea>
-</label><br />
+  echo '<fieldset><legend><i>PHP</i></legend>' ;
+  if  ( $shifr -> localerus ) {
+    echo ' <input type="submit" name="encrypt_decrypt_name" value="зашифровать" /><br>'  ;
+    echo ' <input type="submit" name="encrypt_decrypt_name" value="расшифровать" /><br>'  ; }
+  else {
+    echo ' <input type="submit" name="encrypt_decrypt_name" value="encrypt" />' ;
+    echo ' <input type="submit" name="encrypt_decrypt_name" value="decrypt" />' ; }
+  echo  '</fieldset><br>'  ;
+  
+  echo '<fieldset><legend><i>JavaScript</i></legend>' ;
+  if  ( $shifr -> localerus ) {
+    echo ' <input type="button" name="submit2" value="зашифровать" id="encrypt2" /><br>'  ;
+    echo ' <input type="button" name="submit2" value="расшифровать" id="decrypt2" /><br>' ;
+    }
+  else {
+    echo ' <input type="button" name="submit2" value="encrypt"  id="encrypt2" />' ;
+    echo ' <input type="button" name="submit2" value="decrypt"  id="decrypt2" />' ;
+    }
+  echo  '</fieldset><br>'  ;
+?>  
+  </td>
+<tr>
+</table>
 <p>
 <fieldset>
 <legend>
@@ -280,29 +315,6 @@ let fshowpassword = function ( ) {
     chbox.removeAttribute("checked"); } }
 </script>
 <br>
-<?php
-  echo '<table><tr><td><fieldset><legend><i>PHP</i></legend>' ;
-  if  ( $shifr -> localerus ) {
-    echo ' <input type="submit" name="encrypt_decrypt_name" value="зашифровать" />'  ;
-    echo ' <input type="submit" name="encrypt_decrypt_name" value="расшифровать" />'  ; }
-  else {
-    echo ' <input type="submit" name="encrypt_decrypt_name" value="encrypt" />' ;
-    echo ' <input type="submit" name="encrypt_decrypt_name" value="decrypt" />' ; }
-  echo  '</fieldset></td>'  ;
-  
-  echo '<td><fieldset><legend><i>JavaScript</i></legend>' ;
-  if  ( $shifr -> localerus ) {
-    echo ' <input type="button" name="submit2" value="зашифровать" id="encrypt2" />'  ;
-    echo ' <input type="button" name="submit2" value="расшифровать" id="decrypt2" />' ;
-    }
-  else {
-    echo ' <input type="button" name="submit2" value="encrypt"  id="encrypt2" />' ;
-    echo ' <input type="button" name="submit2" value="decrypt"  id="decrypt2" />' ;
-    }
-  echo  '</fieldset></td>'  ;
-  
-  echo '</tr></table>' ;
-?>
 <hr>
 <?php
 if  ( $shifr -> localerus )    {
