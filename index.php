@@ -150,7 +150,9 @@ fieldset { font-size: 36px; border-radius: 10px; }
   </td>
 <tr>
 </table>
-<p>
+<table width="100%">
+<tr>
+<td>
 <fieldset>
 <legend>
 <?php
@@ -182,7 +184,8 @@ if  ( $shifr -> localerus )
 else
   echo 'digits' ; ?>
 </fieldset>
-<br>
+</td>
+<td>
 <fieldset>
 <legend>
 <?php
@@ -206,6 +209,9 @@ if  ( $shifr -> localerus )
 else
   echo 'bits , 45-90 letters'; ?>
 </fieldset>
+</td>
+</tr>
+</table>
 <script>
 
   if ( document . getElementById ( 'keysize45' ) . checked ) {
