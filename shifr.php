@@ -126,12 +126,20 @@ Function Shifr(of pair: data+salt)should be randomly disordered.
 //  log ( 62 , 1.26886932186e89 ) ≈ 49.71 буквы <= 50 букв
 //  log ( 10 , 1.26886932186e89 ) ≈ 89.1 цифр <= 90 цифр
 
+// generate random number [ fr .. to ]
+function shifr_rand_fr_to  ( int $fr , int $to ) : int {
+  $wid = $to - $fr + 1 ;
+  do {
+    $buf = ord ( random_bytes ( 1 ) ) ;
+  } while ( $buf + 0x100 % $wid >= 0x100 ) ;
+  return  $fr + $buf % $wid ; }
+
 // returns [ 0..15 , 0..14 , ... , 0..2 , 0..1 ]
 function shifr_generate_pass2 ( ) : array {
   $dice = array ( ) ;
-  $i  = 0xf ;
+  $i  = 0xf ; // 15
   do  {
-    $r = rand  ( 0 , $i )  ;
+    $r  = shifr_rand_fr_to  ( 0 , $i  ) ;
     $dice [ ] = $r ;
     --  $i  ;
   } while ( $i  > 0 ) ;
@@ -140,9 +148,9 @@ function shifr_generate_pass2 ( ) : array {
 // returns [ 0..63 , 0..62 , ... , 0..2 , 0..1 ]
 function shifr_generate_pass3 ( ) : array {
   $dice = array ( ) ;
-  $i  = 0x3f ;
+  $i  = 0x3f ; // 63
   do  {
-    $r = rand  ( 0 , $i )  ;
+    $r = shifr_rand_fr_to  ( 0 , $i )  ;
     $dice [ ] = $r ;
     --  $i  ;
   } while ( $i  > 0 ) ;
@@ -151,21 +159,24 @@ function shifr_generate_pass3 ( ) : array {
 // get 4*2 bits => push 4*4 bits
 function  shifr_data_sole2 ( array & $secret_data ) : array {
   $secret_data_sole = array ( ) ;
-  /*if  ( count ( $secret_data  ) > 4 ) // debug
-    return  $secret_data_sole ;*/
-  $ra = rand ( 0 , 0xff ) ; // 4*2 = 8 bits
+  $ra = ord ( random_bytes ( 1 ) ) ; // 4*2 = 8 bits
   foreach ( $secret_data as $da ) {
     $secret_data_sole [ ] = ( $da << 2 ) | ( $ra & 0b11 ) ;
     $ra >>= 2 ; }
   return  $secret_data_sole ; }
 
+// data_size = 1 .. 3
 // get 2*3 bits => push 2*6 bits
 // get 3*3 bits => push 3*6 bits
 function  shifr_data_sole3 ( array & $secret_data ) : array {
   $secret_data_sole = array ( ) ;
-  /*if  ( count ( $secret_data  ) > 3 ) // debug
-    return  $secret_data_sole ;*/
-  $ra = rand ( 0 , 0x1ff ) ; // 3*3 = 9 bits
+  if ( count ( $secret_data ) == 3 ) {
+    // needs random [ 0 .. 0x1ff ]
+    $ras = random_bytes ( 2 ) ; // 3*3 = 9 bits
+    $ra = ( ord ( substr ( $ras , 1 , 1 ) ) << 8 ) | ord ( $ras ) ; }
+  else  {
+    $ras = random_bytes ( 1 ) ;
+    $ra = ord ( $ras ) ; }
   foreach ( $secret_data as $da ) {
     $secret_data_sole [ ] = ( $da << 3 ) | ( $ra & 0b111 ) ;
     $ra >>= 3 ; }
