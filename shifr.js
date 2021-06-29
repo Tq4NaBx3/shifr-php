@@ -1,40 +1,61 @@
 'use strict';
+
+// generate random number [ fr .. to ]
+let js_shifr_rand_fr_to = function  ( fr , to ) {
+  const wid = to - fr + 1 ;
+  const array = new Uint8Array  ( 1 ) ;
+  do {
+    window  . crypto  . getRandomValues ( array ) ;
+  } while ( array [ 0 ] + 0x100 % wid >= 0x100 ) ;
+  return  fr + array [ 0 ] % wid ; }
+
 // returns [ 0..15 , 0..14 , ... , 0..2 , 0..1 ]
 let js_shifr_generate_pass2 = function (  ) {
-  let dice  = new Array ( ) ;
-  let i = 0x10 ;
+  const dice  = new Array ( ) ;
+  let i = 0x0f  ; // 15
   do  {
-    let r = Math  . floor ( Math  . random  ( ) * i ) ;
+    let r = js_shifr_rand_fr_to ( 0 , i ) ;
     dice  . push  ( r ) ;
     --  i ;
-  } while ( i >= 2 ) ;
+  } while ( i > 0 ) ;
   return  dice  ; }
 
 // returns [ 0..63 , 0..62 , ... , 0..2 , 0..1 ]
 let js_shifr_generate_pass3 = function  ( ) {
-  let dice  = new Array ( ) ;
-  let i = 0x40 ;
+  const dice  = new Array ( ) ;
+  let i = 0x3f  ; //  63
   do  {
-    let r = Math  . floor ( Math  . random  ( ) * i ) ;
+    let r = js_shifr_rand_fr_to ( 0 , i ) ;
     dice  . push  ( r ) ;
     --  i ;
-  } while ( i >= 2 ) ;
+  } while ( i > 0 ) ;
   return  dice  ; }
 
 // get 4*2 bits => push 4*4 bits
 let js_shifr_data_sole2 = function  ( secret_data ) {
   let secret_data_sole  = new Array ( ) ;
-  let ra  = Math  . floor ( Math  . random  ( ) * 0x100 ) ; // 4*2 = 8 bits
+  const array = new Uint8Array  ( 1 ) ;
+  window  . crypto  . getRandomValues ( array ) ;
+  let ra  = array [ 0 ] ; // 4*2 = 8 bits
   for ( let da  of  secret_data ) {
     secret_data_sole  . push  ( ( da  << 2 ) | ( ra & 0b11 ) ) ;
-    ra >>= 2 ; }
+    ra  >>= 2 ; }
   return  secret_data_sole  ; }
   
 // get 2*3 bits => push 2*6 bits
 // get 3*3 bits => push 3*6 bits
 let js_shifr_data_sole3 = function  ( secret_data ) {
   let secret_data_sole  = new Array ( ) ;
-  let ra  = Math  . floor ( Math  . random  ( ) * 0x200 ) ; // 3*3 = 9 bits
+  let ra  ;
+  if ( secret_data  . length  ==  3 ) {
+    // needs random [ 0 .. 0x1ff ]
+    const array = new Uint8Array  ( 2 ) ;
+    window  . crypto  . getRandomValues ( array ) ;
+    ra = ( array  [ 1 ] << 8 ) | ( array [ 0 ] ) ; } // 3*3 = 9 bits
+  else  {
+    const array = new Uint8Array  ( 1 ) ;
+    window  . crypto  . getRandomValues ( array ) ;
+    ra = array [ 0 ] ; }
   for ( let da  of  secret_data ) {
     secret_data_sole  . push  ( ( da  << 3 ) | ( ra & 0b111 ) ) ;
     ra >>= 3 ; }
