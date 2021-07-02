@@ -376,7 +376,7 @@ let js_number_not_zero  = function ( number ) {
   return  ( number . length ) >  0 ; }
 
 let js_number_set_zero = function  ( number ) {
-  number = [ ] ; }
+  number . length = 0 ; }
   
 let js_number_set_byte  = function  ( number , byte ) {
   if ( byte != 0 ) {
@@ -433,7 +433,7 @@ let js_shifr_password_to_string = function ( sh , passworda ) {
 
 let js_number_mul_byte = function ( number , byte ) {
   if ( byte == 0 ) {
-    number = [ ] ;
+    number . length = 0 ;
     return  ; }
   if ( byte == 1 )
     return ;

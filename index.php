@@ -495,10 +495,10 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
   if ( $shifr -> flagtext )
     echo 'checked' ;
 ?>  hidden />
-</form>
 <script>
   let chbox_fenc = document  . getElementById  ( 'encrypt3'  ) ;
   chbox_fenc . addEventListener  ( 'click' , fencrypt3 ) ;  
 </script>
+</form>
 </body>
 </html>
