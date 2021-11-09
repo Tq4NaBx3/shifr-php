@@ -11,6 +11,17 @@ Or light key with 45 bits ( 6 - 14 lettters ).<br>
 The PHP <i>(server's side)</i> code compatible with C.<br>
 The JavaScript <i>(user's side)</i> code is also compatible.<br>
 <br>
+Dual use on the server using PHP and by the client using<br>
+JavaScript allows you to safely use password verification.<br>
+The server generates a random string to the client, the client<br>
+encrypts the string with his password and returns it to the server.<br>
+The server decrypts with the client password and verifies compliance.<br>
+The public transport of a random string and its encryption<br>
+does not allow you to explicitly define a password.<br>
+<br>
+SERVER                    -> random  -> CLIENT<br>
+DESHIFR(srandom,password) <- srandom <- SHIFR(random,password)<br>
+<br>
 Password encrypted × password = can serve as a hash function.<br>
 Hash ÷ decrypt (password) == password <br>
 If the decrypted hash with the password gives this password, then the password is correct.<br>
@@ -34,6 +45,15 @@ The data is decrypted twice and verified with the signature.<br>
 Или лёгкий ключ с 45 битами ( 6 - 14 букв ).<br>
 PHP <i>(серверная часть)</i> кода, совместимый с C.<br>
 Код JavaScript <i>(на стороне пользователя)</i> также совместима.<br>
+<br>
+Двойное использование на сервере с помощью PHP и клиентом с<br>
+помощью JavaScript позволяет безопасно использовать проверку пароля.<br>
+Сервер генерирует случайную строку клиенту, клиент шифрует строку своим паролем и<br>
+возвращает серверу. Сервер дешифрует клиентским паролем и проверяет соотвествие.<br>
+Публичный транспорт случайной строки и её зашифровки не позволяет явно определить пароль.<br>
+<br>
+SERVER                    -> random  -> CLIENT<br>
+DESHIFR(srandom,password) <- srandom <- SHIFR(random,password)<br>
 <br>
 Пароль зашированный × паролем = может служить как хеш функция.<br>
 Хеш ÷ расшифровать (паролем) == пароль<br>

@@ -442,8 +442,9 @@ function  shifr_decrypt3 ( shifr & $sh ) {
   $sh -> decode_read_index  = 0 ;
   while ( ! isEOFstreambuf_read6bits ( $sh , $secretdata ) ) {
     $decrypteddata = array ( ) ;
-    shifr_decrypt_sole3 ( $secretdata , $sh -> deshia , $decrypteddata ,
-      $sh -> old_last_sole ,  $sh -> old_last_data ) ;
+    if ( is_array ( $sh -> deshia ) )
+      shifr_decrypt_sole3 ( $secretdata , $sh -> deshia , $decrypteddata ,
+        $sh -> old_last_sole ,  $sh -> old_last_data ) ;
     $secretdata = array ( ) ;
     streambuf_write3bits ( $sh , $decrypteddata [ 0 ] ) ; }
   $sh -> message = $sh -> messageout ; }
@@ -703,12 +704,14 @@ function  shifr_password_load3  ( shifr & $sh , array $password ) {
   } while ( $inde < 0x40 ) ; }
   
 function  shifr_password_load_2 ( shifr & $sh ) {
-  return  shifr_password_load2  ( $sh , shifr_string_to_key_array ( $sh ,
-    $sh ->  password  ) ) ; }
+  $ar = shifr_string_to_key_array ( $sh , $sh ->  password  ) ;
+  if ( is_array ( $ar ) )
+    return  shifr_password_load2  ( $sh , $ar ) ; }
 
 function  shifr_password_load_3 ( shifr & $sh ) {
-  return  shifr_password_load3  ( $sh , shifr_string_to_key_array ( $sh ,
-    $sh ->  password  ) ) ; }
+  $ar = shifr_string_to_key_array ( $sh , $sh ->  password  ) ;
+  if ( is_array ( $ar ) )
+    return  shifr_password_load3  ( $sh , $ar ) ; }
     
 function  shifr_string_to_key_array  ( shifr & $sh , string & $str ) {
   $strn = strlen  ( $str  ) ;
