@@ -1,7 +1,7 @@
 <?php 
 /*
- Шифр ©2020-1 Глебов А.Н.
- Shifr ©2020-1 Glebe A.N.
+ Шифр ©2020-2 Глебов А.Н.
+ Shifr ©2020-2 Glebe A.N.
  
  $shifr  = new shifr ( ) ;
  shifr_init ( shifr & $shifr );
@@ -39,6 +39,7 @@ b00 может быть зашифрован четырьмя способами
  ascii буквы 126-32+1 = 95 шт
  длина буквенного пароля : log ( 95 , 20922789888000 ) ≈ 6.735 букв <= 7 букв
   log ( 62 , 20922789888000 ) ≈ 7.432 буквы <= 8 букв
+  log ( 26 , 20922789888000 ) ≈ 9.414 буквы <= 10 букв
   log ( 10 , 20922789888000 ) ≈ 13.32 цифр <= 14 цифр
 
 OrigData   : 01 11 11
@@ -78,6 +79,7 @@ Secr xxxx      xxxx            yyyy
 // ascii letters 126-32+1 = 95 pcs
 // letter password length : log ( 95 , 20922789888000 ) ≈ 6.735 letters <= 7 letters
 //  log ( 62 , 20922789888000 ) ≈ 7.432 letters <= 8 letters
+//  log ( 26 , 20922789888000 ) ≈ 9.414 letters <= 10 letters
 //  log ( 10 , 20922789888000 ) ≈ 13.32 цифр <= 14 цифр
 
 /*
@@ -124,7 +126,36 @@ Function Shifr(of pair: data+salt)should be randomly disordered.
 // ascii буквы 126-32+1 = 95 шт
 // длина буквенного пароля : log ( 95 , 1.26886932186e89 ) ≈ 45.05 букв <= 46 букв
 //  log ( 62 , 1.26886932186e89 ) ≈ 49.71 буквы <= 50 букв
+//  log ( 26 , 1.26886932186e89 ) ≈ 62.97 буквы <= 63 буквы
 //  log ( 10 , 1.26886932186e89 ) ≈ 89.1 цифр <= 90 цифр
+
+// ENG
+// 3 bits salt
+// 3 bits information
+// total 6 bits
+// encryption table: personal 3 bits + salt 3 bits => 6 bits encrypted
+// personal data b000 => can be encrypted in an ordered set 2^3 = 8pcs from
+// b000000 ... b111111 2^6 = 8*8 = 64 pieces
+// different encryption layouts for data
+// b000 = 64*63*62*61*60*59*58*57 = 178462987637760
+// b001 = 56*55*54*53*52*51*50*49 = 57274321104000
+// b010 = 48*47*46*45*44*43*42*41 = 15214711438080
+// b011 = 40*39*38*37*36*35*34*33 = 3100796899200
+// b100 = 32*31*30*29*28*27*26*25 = 424097856000
+// b101 = 24*23*22*21*20*19*18*17 = 29654190720
+// b110 = 16*15*14*13*12*11*10*9  = 518918400
+// b111 = 8*7*6*5*4*3*2*1         = 40320
+// в общем = b000 * b001 * b010 * b011 * b100 * b101 * b110 * b111 = 64! =
+// 1268869321858841641034333893351614808028655161745451921988018943752147042304e14
+// ≈ 1.26886932186e89
+// minimum you can write a password using
+// log(2,1.26886932186e89) ≈ 296 бит <= 37 байт
+// the password will have 296 bits size
+// ascii letters 126-32+1 = 95 pcs
+// letter password length : log ( 95 , 1.26886932186e89 ) ≈ 45.05 letters <= 46 letters
+//  log ( 62 , 1.26886932186e89 ) ≈ 49.71 letters <= 50 letters
+//  log ( 26 , 1.26886932186e89 ) ≈ 62.97 letters <= 63 letters
+//  log ( 10 , 1.26886932186e89 ) ≈ 89.1 digits <= 90 digits
 
 // generate random number [ fr .. to ]
 function shifr_rand_fr_to  ( int $fr , int $to ) : int {
@@ -242,9 +273,10 @@ class shifr {
   // alphabet ascii // алфавит ascii
   public  $letters95  ; // 0x20 пробел - 0x7e ~ тильда // 0x20 space - 0x7e ~ tilde
   public  $letters  ; // alphabet 62 letters digits // алфавит 62 буквы цифры
+  public  $letters26  ; // small letters a..z // маленькие буквы a..z
   public  $letters10  ; // alphabet 10 digits // алфавит 10 цифры
-  // password alphabet mode 10 or 62 or 95 
-  // режим алфавит пароля 10 или 62 или 95
+  // password alphabet mode 10 or 62 or 95 or 26
+  // режим алфавит пароля 10 или 62 или 95 или 26
   public  $letters_mode ;
   public  $localerus  ; // false or true // русская локаль false или true
   public  $flagtext ; // true or false // флаг текст true или false
@@ -281,7 +313,7 @@ class shifr {
 function  shifr_encrypt2 ( shifr & $sh ) {
   $message_array = str_split  ( $sh -> message  ) ;
   $sh -> message =  '' ;
-  foreach ( $message_array as $char ) {      
+  foreach ( $message_array as $char ) {
     $secret_data = shifr_byte_to_array2 ( ord ( $char ) ) ;
     $secret_data_sole = shifr_data_sole2 ( $secret_data ) ;
     shifr_data_xor2 ( $sh -> old_last_data , $sh -> old_last_sole ,
@@ -555,6 +587,9 @@ function  shifr_password_to_string ( shifr & $sh , array $passworda ) : string {
   case  62  :
     $letters  = $sh ->  letters  ;
     break ;
+  case  26  :
+    $letters  = $sh ->  letters26 ;
+    break ;
   case  10  :
     $letters  = $sh ->  letters10  ;
     break ;
@@ -574,12 +609,10 @@ function  number_set_zero ( array & $number ) {
 
 function  number_set_byte ( array & $number , int $byte ) {
   if ( $byte != 0 ) {
-    if ( $byte < 0 ) {
-      // echo 'number_set_byte:$byte < 0' ;
-      return  ; }
-    if ( $byte >= 0x100 ) {
-      // echo 'number_set_byte:$byte >= 0x100' ;
-      return  ; }
+    if ( $byte < 0 ) 
+      return  ; 
+    if ( $byte >= 0x100 ) 
+      return  ; 
     $number = array ( $byte ) ; }
   else
     $number = array ( ) ; }
@@ -623,12 +656,10 @@ function  number_mul_byte ( array & $number , int $byte ) {
     return  ; }
   if ( $byte == 1 )
     return ;
-  if ( $byte < 0 ) {
-    //echo 'number_mul_byte: $byte < 0' ;
-    return  ; }
-  if ( $byte >= 0x100 ) {
-    //echo 'number_mul_byte: $byte >= 0x100' ;
-    return  ; }
+  if ( $byte < 0 ) 
+    return  ; 
+  if ( $byte >= 0x100 ) 
+    return  ; 
   $per = 0 ;
   for ( $i = 0 ; $i < count  ( $number ) ; ++ $i )  {
     $x = $number [ $i ] *  $byte  + $per ;
@@ -726,6 +757,9 @@ function  shifr_string_to_key_array  ( shifr & $sh , string & $str ) {
   case  62  :
     $letters  = $sh ->  letters  ;
     break ;
+  case  26  :
+    $letters  = $sh ->  letters26 ;
+    break ;
   case  10  :
     $letters  = $sh ->  letters10  ;
     break ;
@@ -784,6 +818,10 @@ function  shifr_init ( shifr & $sh ) {
   $sh ->  letters10 = array ( ) ;
   for ( $i = ord  ( '0' ) ; $i <= ord ( '9' ) ; ++ $i )
     $sh ->  letters10 [ ] = chr ( $i ) ;
+  // 'a' - 'z'
+  $sh ->  letters26 = array ( ) ;
+  for ( $i  = ord ( 'a' ) ; $i  <=  ord ( 'z' ) ; ++  $i  )
+    $sh ->  letters26 [ ] = chr ( $i  ) ;
   // default is digits and letters
   $sh ->  letters_mode = 62 ;
   shifr_set_version ( $sh , 3 ) ;

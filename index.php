@@ -29,6 +29,9 @@ if  ( $_POST  ) {
       case  'LettDigit' :
         $shifr -> letters_mode = 62 ;
         break ;
+      case  'SmallLetters' :
+        $shifr  ->  letters_mode  = 26  ;
+        break ;
       case  'Digit' :
         $shifr -> letters_mode = 10 ;
         break ;
@@ -177,6 +180,13 @@ if  ( $shifr -> localerus )
   echo 'цифры и буквы'  ; 
 else 
   echo 'digits and letters' ; ?><br>
+<input type="radio" name="radio" value="SmallLetters" id="passSmallLetters" <?php
+if ( $shifr -> letters_mode == 26 )
+  echo 'checked' ;  ?> ><?php 
+if  ( $shifr -> localerus )
+  echo 'маленькие буквы'  ; 
+else 
+  echo 'small letters' ; ?><br>
 <input type="radio" name="radio" value="Digit" id="passdigits" <?php
 if ( $shifr -> letters_mode == 10 )
   echo 'checked' ;  ?> ><?php 
@@ -272,6 +282,8 @@ chboxg_keys296 . addEventListener  ( 'click' , fkeysize296 ) ;
     js_shifr . letters_mode = 62 ; }
   if ( document . getElementById ( 'passalpha' ) . checked ) {
     js_shifr . letters_mode = 95 ; }
+  if  ( document  . getElementById  ( 'passSmallLetters'  ) . checked )
+    js_shifr  . letters_mode  = 26  ;
   if ( document . getElementById ( 'passdigits' ) . checked ) {
     js_shifr . letters_mode = 10 ; }
 
@@ -282,6 +294,10 @@ document  . getElementById ( 'passalpha' ) . addEventListener  ( 'click' , falph
 let falpha62  = function ( ) {
   js_shifr . letters_mode = 62 ; }
 document  . getElementById ( 'passlettersdigits' ) . addEventListener  ( 'click' , falpha62 ) ;
+
+let falpha26  = function  ( ) {
+  js_shifr  . letters_mode  = 26  ; }
+document  . getElementById  ( 'passSmallLetters'  ) . addEventListener  ( 'click' , falpha26  ) ;
 
 let falpha10  = function ( ) {
   js_shifr . letters_mode = 10 ; }

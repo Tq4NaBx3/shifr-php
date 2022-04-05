@@ -130,9 +130,10 @@ class shifr {
   // alphabet ascii // алфавит ascii
   letters95  ; // 0x20 пробел - 0x7e ~ тильда // 0x20 space - 0x7e ~ tilde
   letters  ; // alphabet 62 letters digits // алфавит 62 буквы цифры
+  letters26  ; // small letters a..z // маленькие буквы a..z
   letters10  ; // alphabet 10 digits // алфавит 10 цифры
-  // password alphabet mode 10 or 62 or 95 
-  // режим алфавит пароля 10 или 62 или 95
+  // password alphabet mode 10 or 62 or 95 or 26
+  // режим алфавит пароля 10 или 62 или 95 или 26
   letters_mode ;
   localerus  ; // false or true // русская локаль false или true
   flagtext ; // true or false // флаг текст true или false
@@ -417,6 +418,9 @@ let js_shifr_password_to_string = function ( sh , passworda ) {
   case  62  :
     letters  = sh . letters  ;
     break ;
+  case  26  :
+    letters  = sh . letters26  ;
+    break ;
   case  10  :
     letters  = sh . letters10  ;
     break ;
@@ -558,6 +562,10 @@ let js_shifr_init = function ( sh ) {
   sh . letters10 = [ ] ;
   for ( let i = ( '0' . charCodeAt ( 0 ) ) ; i <= ( '9' . charCodeAt ( 0 ) ) ; ++ i )
     sh . letters10 . push ( String . fromCharCode ( i ) ) ;
+  // 'a' - 'z'
+  sh . letters26 = [ ] ;
+  for ( let i = ( 'a' . charCodeAt ( 0 ) ) ; i <= ( 'z' . charCodeAt ( 0 ) ) ; ++ i )
+    sh . letters26 . push ( String . fromCharCode ( i ) ) ;
   // default is digits and letters
   sh . letters_mode = 62 ;
   js_shifr_set_version ( sh , 3 ) ;
@@ -629,6 +637,9 @@ let js_shifr_string_to_key_array  = function ( sh , str ) {
     break ;
   case  62  :
     letters  = sh . letters  ;
+    break ;
+  case  26  :
+    letters  = sh . letters26  ;
     break ;
   case  10  :
     letters  = sh . letters10  ;
