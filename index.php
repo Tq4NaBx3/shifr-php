@@ -79,6 +79,7 @@ if  ( $_POST  ) {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width">
+<link rel="shortcut icon" href="shifr.ico" type="image/x-icon" />
 <title>Shifr</title>
 <style>
 p { font-size: 36px; }

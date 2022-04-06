@@ -703,12 +703,14 @@ function  shifr_password_load3  ( shifr & $sh , array $password ) {
   } while ( $inde < 0x40 ) ; }
   
 function  shifr_password_load_2 ( shifr & $sh ) {
-  return  shifr_password_load2  ( $sh , shifr_string_to_key_array ( $sh ,
-    $sh ->  password  ) ) ; }
+  $ar = shifr_string_to_key_array ( $sh , $sh ->  password  ) ;
+  if ( is_array ( $ar ) )
+    return  shifr_password_load2  ( $sh , $ar ) ; }
 
 function  shifr_password_load_3 ( shifr & $sh ) {
-  return  shifr_password_load3  ( $sh , shifr_string_to_key_array ( $sh ,
-    $sh ->  password  ) ) ; }
+  $ar = shifr_string_to_key_array ( $sh , $sh ->  password  ) ;
+  if ( is_array ( $ar ) )
+    return  shifr_password_load3  ( $sh , $ar ) ; }
     
 function  shifr_string_to_key_array  ( shifr & $sh , string & $str ) {
   $strn = strlen  ( $str  ) ;
