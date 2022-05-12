@@ -9,7 +9,7 @@
  $shifr -> flagtext = false  or true ;
  $shifr -> password = string ; to load , generate
  $shifr -> message = string ; to encode , decode
- $shifr -> letters_mode = 95 or 62 or 10 ;
+ $shifr -> letters_mode = 95 or 62 or 10 or 26 ;
  shifr_set_version ( shifr & $sh , $ver  ) ; $ver == 2 or 3
  shifr_version ( shifr & $sh ) ; returns 2 or 3
  shifr_password_load  ( $shifr ) ; from message string

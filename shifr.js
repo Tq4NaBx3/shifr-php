@@ -227,10 +227,6 @@ let js_Utf8ArrayToStr  = function (  array ) {
     
 // sh . message_array of bytes -> sh . message of bytes
 let js_shifr_encrypt2 = function ( sh ) {
-  if ( sh . flagtext )
-    sh . message =  '' ;
-  else
-    sh . message =  [ ] ;
   for ( let char of sh . message_array ) {
     let secret_data = js_shifr_byte_to_array2 ( char ) ;
     let secret_data_sole = js_shifr_data_sole2 ( secret_data ) ;
@@ -315,10 +311,6 @@ let js_shifr_write_array  = function  ( sh , secret_data  ) {
 
 // sh . message_array of bytes -> sh . message of bytes
 let js_shifr_encrypt3 = function ( sh ) {
-  if ( sh . flagtext )
-    sh . message =  ''  ;
-  else
-    sh . message =  [ ] ;
   for ( let char of sh . message_array ) {
     js_shifr_write_array ( sh , js_shifr_byte_to_array3 ( sh , char ) ) ; } }
 
@@ -674,6 +666,10 @@ search : {
 
 // sh . message_array of bytes -> sh . message of bytes
 let js_shifr_encrypt  = function  ( shifr ) {
+  if ( shifr . flagtext )
+    shifr . message =  ''  ;
+  else
+    shifr . message =  [ ] ;
   if ( js_shifr_version  ( shifr  ) == 2 ) 
     js_shifr_encrypt2 ( shifr ) ; 
   else 
