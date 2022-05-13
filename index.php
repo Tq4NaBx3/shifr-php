@@ -399,7 +399,6 @@ let fencrypt = function ( ) {
   js_shifr  . flagtext  = true  ;
   js_shifr  . password  = document . getElementById ( 'password' ) . value ;
   js_shifr  . message = document . getElementById ( 'message' ) . value ;
-  js_shifr  . message_array = js_toUTF8Array ( js_shifr . message ) ;
   
   js_shifr_sole_init  ( js_shifr ) ;
   js_shifr_password_load ( js_shifr ) ;
@@ -414,7 +413,6 @@ let fdecrypt = function ( ) {
   js_shifr  . flagtext  = true  ;
   js_shifr  . password  = document . getElementById ( 'password' ) . value ;
   js_shifr  . message = document . getElementById ( 'message' ) . value ;
-  js_shifr  . message_array = js_toUTF8Array ( js_shifr . message ) ;
   
   js_shifr_sole_init  ( js_shifr ) ;
   js_shifr_password_load ( js_shifr ) ;
@@ -440,7 +438,7 @@ let js_readFile = function  ( input ) {
     
     let view = new Uint8Array(buffer);
     
-    js_shifr  . message_array = Array . from  ( view ) ;
+    js_shifr  . message = Array . from  ( view ) ;
     };
 
   reader.onerror = function() {

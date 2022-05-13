@@ -226,6 +226,7 @@ let js_Utf8ArrayToStr  = function (  array ) {
     return out  ; }
     
 // sh . message_array of bytes -> sh . message of bytes
+// if flagtext :               -> sh . message of characters
 let js_shifr_encrypt2 = function ( sh ) {
   for ( let char of sh . message_array ) {
     let secret_data = js_shifr_byte_to_array2 ( char ) ;
@@ -285,6 +286,8 @@ let js_shifr_byte_to_array3 = function ( sh , charcode ) {
     return  ; }
   return  secret_data  ; }
   
+// if binary   : push to array 
+// if flagtext : push to string
 let js_shifr_write_array  = function  ( sh , secret_data  ) {
   let secret_data_sole = js_shifr_data_sole3 ( secret_data ) ;
   js_shifr_data_xor3 ( sh . old_last_data , sh . old_last_sole ,
@@ -309,7 +312,8 @@ let js_shifr_write_array  = function  ( sh , secret_data  ) {
         sh . out_bufbitsize -= 2 ;
         sh . out_buf  = ed >> ( 6 - ( sh . out_bufbitsize ) ) ; } } }
 
-// sh . message_array of bytes -> sh . message of bytes
+// sh . message_array of bytes -> sh . message as array of bytes
+// if flagtext :               -> sh . message as string
 let js_shifr_encrypt3 = function ( sh ) {
   for ( let char of sh . message_array ) {
     js_shifr_write_array ( sh , js_shifr_byte_to_array3 ( sh , char ) ) ; } }
@@ -664,8 +668,14 @@ search : {
   } while ( stringi  < str . length ) ;
   return  passarr ; }
 
-// sh . message_array of bytes -> sh . message of bytes
+// input : shifr . message = 'abc' or "лук" or [ 0 .. 127 .. 255 ]
+// sh . message_array = array of bytes
+// result : sh . message of bytes
 let js_shifr_encrypt  = function  ( shifr ) {
+  if ( typeof ( shifr . message ) ==  'string' )
+    shifr  . message_array = js_toUTF8Array ( shifr . message ) ;
+  else
+    shifr  . message_array =  shifr . message ;
   if ( shifr . flagtext )
     shifr . message =  ''  ;
   else
@@ -675,7 +685,14 @@ let js_shifr_encrypt  = function  ( shifr ) {
   else 
     js_shifr_encrypt3 ( shifr  ) ; }
 
+// input : shifr . message = 'abc' or "лук" or [ 0 .. 127 .. 255 ]
+// sh . message_array = array of bytes
+// result : sh . message of bytes
 let js_shifr_decrypt  = function  ( shifr ) {
+  if ( typeof ( shifr . message ) ==  'string' )
+    shifr  . message_array = js_toUTF8Array ( shifr . message ) ;
+  else
+    shifr  . message_array =  shifr . message ;
   if ( js_shifr_version  ( shifr  ) == 2 ) 
     js_shifr_decrypt2 ( shifr ) ; 
   else 
