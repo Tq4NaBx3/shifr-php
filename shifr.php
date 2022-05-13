@@ -869,7 +869,7 @@ function  shifr_generate_password  ( shifr & $shifr ) {
     shifr_generate_password_3 ( $shifr  ) ; }
 
 // '0x00','0xf0','0x0f','0xff' <= "aa" + "ap" + "pa" + "pp"
-function  shifr_string_to_bytes_univer  ( string & $string  , $start_letter ,
+function  shifr_Base64_decode_univer  ( string & $string  , $start_letter ,
   $bits_count ) : string {
   $strlen = strlen  ( $string ) ;
   $acode  = ord ( $start_letter ) ;
@@ -887,20 +887,6 @@ function  shifr_string_to_bytes_univer  ( string & $string  , $start_letter ,
     $cache  >>= 8 ;
     $cache_size -=  8 ; }
   return  $result ; }
-/*
-// Base16 = [ abcd efgh ijkl mnop ]
-function  shifr_string_to_bytes ( string & $string ) : string {
-  return  shifr_string_to_bytes_univer  ( $string , "a" , 4 ) ; }
-*/
-
-/*
-Base32 = ( ABCD EFGH IJKL MNOP
-           QRST UVWX YZ[\ ]^_` )
-*/
-/*
-function  shifr_string_to_bytes ( string & $string ) : string {
-  return  shifr_string_to_bytes_univer  ( $string , "A" , 5 ) ; }
-*/
 
 /*
 Base64 = ( ;<=> ?@AB CDEF GHIJ
@@ -908,7 +894,7 @@ Base64 = ( ;<=> ?@AB CDEF GHIJ
            [\]^ _`ab cdef ghij
            klmn opqr stuv wxyz )
 */
-function  shifr_string_to_bytes ( string & $string ) : string {
-  return  shifr_string_to_bytes_univer  ( $string , ";" , 6 ) ; }
+function  shifr_Base64_decode ( string & $string ) : string {
+  return  shifr_Base64_decode_univer  ( $string , ";" , 6 ) ; }
 
 ?>

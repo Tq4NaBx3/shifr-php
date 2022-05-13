@@ -19,7 +19,7 @@
   
     require ( 'shifr.php' ) ;
       
-    if ( ! fwrite ( $fpw  , shifr_string_to_bytes ( $_POST  [ 'boxes_info'  ] ) ) )
+    if ( ! fwrite ( $fpw  , shifr_Base64_decode ( $_POST  [ 'boxes_info'  ] ) ) )
       die ( 'fwrite ( ' . $uploadfileshi . ' )' ) ; }
   if (  ! fclose  ( $fpw  ) )
     die ( 'fclose ( ' . $uploadfileshi . ' )' ) ;

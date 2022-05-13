@@ -465,7 +465,7 @@ let fencrypt3 = function  ( ) {
   js_shifr_encrypt ( js_shifr ) ; 
   js_shifr_flush ( js_shifr  ) ;
   if ( !  js_shifr  . flagtext )
-    js_shifr . message  = js_bytearray_to_string ( js_shifr  . message ) ;
+    js_shifr . message  = js_shifr_Base64_encode ( js_shifr  . message ) ;
   let boxinfo = document . getElementById ( 'boxes_info' ) ;
   boxinfo . value = js_shifr  . message ;
   
@@ -486,7 +486,7 @@ let fdecrypt3 = function ( ) {
   js_shifr_sole_init  ( js_shifr ) ;
   js_shifr_password_load ( js_shifr ) ;
   js_shifr_decrypt ( js_shifr ) ;
-  js_shifr . message  = js_bytearray_to_string ( js_shifr  . message ) ;
+  js_shifr . message  = js_shifr_Base64_encode ( js_shifr  . message ) ;
 
   let boxinfo = document . getElementById ( 'boxes_info' ) ;
   boxinfo . value = js_shifr  . message ;

@@ -14,7 +14,7 @@
   if  ( ! ( $fpw = fopen  ( $uploadfileshi  , 'w+'  ) ) ) 
     die ( 'fopen ( ' . $uploadfileshi . ' )' ) ;
   $string = $_POST  [ 'boxes_info'  ] ;
-  if ( ! fwrite ( $fpw  , shifr_string_to_bytes ( $string ) ) ) 
+  if ( ! fwrite ( $fpw  , shifr_Base64_decode ( $string ) ) ) 
     die ( 'fwrite ( ' . $uploadfileshi . ' )' ) ;
   if (  ! fclose  ( $fpw  ) )
     die ( 'fclose ( ' . $uploadfileshi . ' )' ) ;

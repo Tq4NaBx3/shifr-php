@@ -810,7 +810,7 @@ let js_shifr_decrypt3 = function  ( sh  ) {
   sh . message = sh . messageout ; }
 
 // [0x00,0xf0,0x0f,0xff] => "aa" + "ap" + "pa" + "pp"
-let js_bytearray_to_string_univer = function  ( array , start_letter  , bits_count  ) {
+let js_shifr_Base64_encode_univer = function  ( array , start_letter  , bits_count  ) {
   const acode = start_letter  . charCodeAt  ( 0 ) ;
   let str = ''  ;
   let cache = 0 ;
@@ -827,21 +827,6 @@ let js_bytearray_to_string_univer = function  ( array , start_letter  , bits_cou
   if  ( cache_size  !=  0 )
     str +=  String  . fromCharCode  ( acode + cache ) ;
   return  str ; }
-  
-/*
-// Base16 = [ abcd efgh ijkl mnop ]
-let js_bytearray_to_string  = function  ( array ) {
-  return  js_bytearray_to_string_univer ( array , 'a' , 4 ) ; }
-*/  
-
-/*
-Base32 = ( ABCD EFGH IJKL MNOP
-           QRST UVWX YZ[\ ]^_` )
-*/
-/*
-let js_bytearray_to_string = function  ( array ) {
-  return  js_bytearray_to_string_univer ( array , 'A' , 5 ) ; }
-*/
 
 /*
 Base64 = ( ;<=> ?@AB CDEF GHIJ
@@ -849,5 +834,5 @@ Base64 = ( ;<=> ?@AB CDEF GHIJ
            [\]^ _`ab cdef ghij
            klmn opqr stuv wxyz )
 */
-let js_bytearray_to_string = function  ( array ) {
-  return  js_bytearray_to_string_univer ( array , ';' , 6 ) ; }
+let js_shifr_Base64_encode = function  ( array ) {
+  return  js_shifr_Base64_encode_univer ( array , ';' , 6 ) ; }
