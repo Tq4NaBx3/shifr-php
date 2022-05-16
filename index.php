@@ -7,6 +7,12 @@ $local = setlocale ( LC_ALL  , 'ru_RU.UTF-8'  ) ;
 if ( $local == 'ru_RU.UTF-8' )
   $shifr -> localerus = true ;
 
+global  $shifr_log  ;
+global  $shifr_debug  ;
+
+$shifr_debug  = true  ;
+$shifr_log  = array ( ) ;
+
 if  ( $_POST  ) {
 
   if ( ( ( isset ( $_POST [ 'Encryption_in_text_mode' ] ) ) and 
@@ -14,9 +20,6 @@ if  ( $_POST  ) {
     $shifr -> flagtext = true  ;
   else
     $shifr -> flagtext = false ;
-
-  if ( isset ( $_POST [ 'password'  ] ) )
-    $shifr -> password = $_POST [ 'password'  ] ;
 
   if ( isset ( $_POST [ 'message'  ] ) )
     $shifr -> message = $_POST  [ 'message'  ] ;
@@ -45,8 +48,17 @@ if  ( $_POST  ) {
       else 
         shifr_set_version ( $shifr  , 2 ) ; }  
   
-  if ( isset ( $_POST  [ 'password_name' ] ) )
-    shifr_generate_password ( $shifr  ) ; 
+  if ( isset ( $_POST  [ 'password_generate' ] ) ) {
+    shifr_generate_password ( $shifr  ) ;
+    if  ( $shifr_debug  )
+      $shifr_log [ ] = 'generate password `' .
+        $shifr -> password . '`' ; }
+  else
+    if ( isset ( $_POST [ 'password'  ] ) ) {
+      $shifr -> password = $_POST [ 'password'  ] ;
+      if  ( $shifr_debug  )
+        $shifr_log [ ] = 'set password `' .
+          $_POST [ 'password'  ] . '`' ; }
   
   if  ( isset ( $_POST  [ 'encrypt_decrypt_name'  ] ) ) {
     if  ( $_POST  [ 'encrypt_decrypt_name'] == 'зашифровать' or 
@@ -224,18 +236,18 @@ else
 </tr>
 </table>
 <script>
-
-  if ( document . getElementById ( 'keysize45' ) . checked ) {
-    js_shifr . key_mode = 45 ; }
-  if ( document . getElementById ( 'keysize296' ) . checked ) {
-    js_shifr . key_mode = 296 ; }
+  if ( document . getElementById ( 'keysize45' ) . checked )
+    js_shifr_set_version  ( js_shifr  , 2 ) ;
+  else
+    if ( document . getElementById ( 'keysize296' ) . checked ) 
+      js_shifr_set_version  ( js_shifr  , 3 ) ;
 
 let fkeysize45  = function ( ) {
-  js_shifr . key_mode = 45 ; }
+  js_shifr_set_version  ( js_shifr  , 2 ) ; }
 let chboxg_keys45 = document  . getElementById ( 'keysize45' ) ;
 chboxg_keys45 . addEventListener  ( 'click' , fkeysize45 ) ;
 let fkeysize296  = function ( ) {
-  js_shifr . key_mode = 296 ; }
+  js_shifr_set_version  ( js_shifr  , 3 ) ; }
 let chboxg_keys296 = document  . getElementById ( 'keysize296' ) ;
 chboxg_keys296 . addEventListener  ( 'click' , fkeysize296 ) ;
 
@@ -253,7 +265,7 @@ chboxg_keys296 . addEventListener  ( 'click' , fkeysize296 ) ;
     <td>
       <fieldset>
         <legend><i>PHP</i></legend>
-        <input type="submit" name="password_name" value="<?php
+        <input type="submit" name="password_generate" value="<?php
           if  ( $shifr -> localerus )        
             echo 'генерировать' ;
           else
@@ -275,7 +287,7 @@ chboxg_keys296 . addEventListener  ( 'click' , fkeysize296 ) ;
 </label>
 <br>
 <input name="password" type="password" value="<?php 
-    echo htmlspecialchars ( $shifr -> password ) ; ?>" size ="47" id="password" />
+    echo htmlspecialchars ( shifr_password_get ( $shifr ) ) ; ?>" size ="47" id="password" />
 <script>
 
   if ( document . getElementById ( 'passlettersdigits' ) . checked ) {
@@ -305,7 +317,7 @@ document  . getElementById ( 'passdigits' ) . addEventListener  ( 'click' , falp
     
 let fgenerate = function ( ) {
   js_shifr_generate_password  ( js_shifr  ) ;
-  document . getElementById ( 'password' ) . value  = js_shifr . password ; }
+  document . getElementById ( 'password' ) . value  = js_shifr_password_get ( js_shifr ) ; }
   
 let chboxg = document.getElementById('generate2');
 chboxg.addEventListener('click', fgenerate ) ;
@@ -390,14 +402,14 @@ else
 ?>
 </fieldset>
 <script>
-js_shifr  . password  = document . getElementById ( 'password' ) . value ;
+js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
 js_shifr  . message = document . getElementById ( 'message' ) . value ;
 js_shifr  . flagtext  = document . getElementById ( 'SText' ) . checked ; 
 let fencrypt = function ( ) {
 
   document . getElementById ( 'SText' ) . checked = true ;
   js_shifr  . flagtext  = true  ;
-  js_shifr  . password  = document . getElementById ( 'password' ) . value ;
+  js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
   js_shifr  . message = document . getElementById ( 'message' ) . value ;
   
   js_shifr_sole_init  ( js_shifr ) ;
@@ -411,7 +423,7 @@ let fdecrypt = function ( ) {
 
   document . getElementById ( 'SText' ) . checked = true ;
   js_shifr  . flagtext  = true  ;
-  js_shifr  . password  = document . getElementById ( 'password' ) . value ;
+  js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
   js_shifr  . message = document . getElementById ( 'message' ) . value ;
   
   js_shifr_sole_init  ( js_shifr ) ;
@@ -458,7 +470,7 @@ let fencrypt3 = function  ( ) {
     js_shifr  . flagtext  = false ;
     document . getElementById ( 'JSText' ) . checked  = false ; }
   
-  js_shifr  . password  = document . getElementById ( 'password' ) . value ;
+  js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
   
   js_shifr_sole_init  ( js_shifr ) ;
   js_shifr_password_load ( js_shifr ) ;
@@ -480,8 +492,8 @@ let fdecrypt3 = function ( ) {
   else  {
     js_shifr  . flagtext  = false ;
     document . getElementById ( 'JSText' ) . checked  = false ; }
-    
-  js_shifr  . password  = document . getElementById ( 'password' ) . value ;
+
+  js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
     
   js_shifr_sole_init  ( js_shifr ) ;
   js_shifr_password_load ( js_shifr ) ;
@@ -514,6 +526,16 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
   let chbox_fenc = document  . getElementById  ( 'encrypt3'  ) ;
   chbox_fenc . addEventListener  ( 'click' , fencrypt3 ) ;  
 </script>
+<?php
+if  ( $shifr_debug  ) {
+  echo  '<script>'  ;
+  echo  "console . log ( 'log = {' ) ;" ;
+  foreach ( $shifr_log as $value  )
+    echo  'console . log ( \'' . str_replace ( array  ( "\\" , "'" ) ,
+      array  ( "\\\\" , "\'" ) , $value ) . '\' ) ;' ;
+  echo  "console . log ( '}' ) ;" ;
+  echo  '</script>'  ; }
+?>
 </form>
 </body>
 </html>

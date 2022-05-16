@@ -7,18 +7,18 @@
  shifr_init ( shifr & $shifr );
  $shifr -> localerus = true or false ;
  $shifr -> flagtext = false  or true ;
- $shifr -> password = string ; to load , generate
  $shifr -> message = string ; to encode , decode
  $shifr -> letters_mode = 95 or 62 or 10 or 26 ;
  shifr_set_version ( shifr & $sh , $ver  ) ; $ver == 2 or 3
  shifr_version ( shifr & $sh ) ; returns 2 or 3
- shifr_password_load  ( $shifr ) ; from message string
  shifr_encrypt  ( shifr & $shifr ) ;
  shifr_flush ( $shifr  ) ; after last encode to clear buffer
  shifr_flush_file  ( $shifr , $fpw ) ;
  shifr_decrypt ( $shifr ) ;
- shifr_generate_password ( $shifr  ) ;
- 
+ shifr_password_load  ( $shifr ) ; from message string
+ shifr_generate_password ( $shifr  ) ; returns nothing
+ shifr_password_set ( $shifr , string ) ;
+ shifr_password_get ( $shifr ) ; returns string
 */
 /*
  RUS
@@ -570,14 +570,14 @@ function  number_dec  ( array & $number ) {
     
 function  number_not_zero ( array & $number ) {
   return  count  ( $number ) >  0 ; }
-  
-function  shifr_generate_password_2 ( shifr & $sh ) {
-  $sh ->  password  = shifr_password_to_string (  $sh ,
-    shifr_pass_to_array2  ( shifr_generate_pass2  ( ) ) ) ; }
 
-function  shifr_generate_password_3 ( shifr & $sh ) {
-  $sh ->  password  = shifr_password_to_string (  $sh ,
-    shifr_pass_to_array3  ( shifr_generate_pass3  ( ) ) ) ; }
+function  shifr_generate_password  ( shifr & $shifr ) {
+  $ar = null  ;
+  if ( shifr_version  ( $shifr  ) == 2 )
+    $ar = shifr_pass_to_array2  ( shifr_generate_pass2  ( ) ) ;
+  else 
+    $ar = shifr_pass_to_array3  ( shifr_generate_pass3  ( ) ) ;
+  shifr_password_set ( $shifr , shifr_password_to_string ( $shifr , $ar ) ) ; }
 
 function  shifr_password_to_string ( shifr & $sh , array $passworda ) : string {
   switch  ( $sh  ->  letters_mode ) {
@@ -734,16 +734,17 @@ function  shifr_password_load3  ( shifr & $sh , array $password ) {
     ++ $inde  ;
   } while ( $inde < 0x40 ) ; }
   
-function  shifr_password_load_2 ( shifr & $sh ) {
-  $ar = shifr_string_to_key_array ( $sh , $sh ->  password  ) ;
-  if ( is_array ( $ar ) )
-    return  shifr_password_load2  ( $sh , $ar ) ; }
+function  shifr_password_set  ( shifr & $shifr ,  $password ) {
+  $shifr  ->  password  = $password ; }
+  
+function  shifr_password_load ( shifr & $shifr ) {
+  $ar = shifr_string_to_key_array ( $shifr , shifr_password_get ( $shifr ) ) ;
+  if ( is_array ( $ar ) ) {
+    if ( shifr_version  ( $shifr  ) == 2 ) 
+      return  shifr_password_load2  ( $shifr , $ar ) ; 
+    else 
+      return  shifr_password_load3  ( $shifr , $ar ) ; } }
 
-function  shifr_password_load_3 ( shifr & $sh ) {
-  $ar = shifr_string_to_key_array ( $sh , $sh ->  password  ) ;
-  if ( is_array ( $ar ) )
-    return  shifr_password_load3  ( $sh , $ar ) ; }
-    
 function  shifr_string_to_key_array  ( shifr & $sh , string & $str ) {
   $strn = strlen  ( $str  ) ;
   $passarr = array ( ) ;
@@ -776,11 +777,14 @@ function  shifr_string_to_key_array  ( shifr & $sh , string & $str ) {
       if ( $str [ $stringi ] == $letters [ $i ] )
         goto found ; 
     } while ( $i ) ;
-    if  ( $sh -> localerus ) 
-      echo 'неправильная буква в пароле'  ;
-    else 
-      echo 'wrong letter in password' ;
-    return ;
+    global  $shifr_log  ;
+    global  $shifr_debug  ;
+    if  ( $shifr_debug  ) {
+      if  ( $sh -> localerus ) 
+        $shifr_log [ ] = 'неправильная буква в пароле'  ;
+      else 
+        $shifr_log [ ] = 'wrong letter in password' ; }
+    return array ( ) ;
 found :
     $tmp = $mult ;
     number_mul_byte ( $tmp , $i + 1 ) ;
@@ -844,11 +848,8 @@ function  shifr_init ( shifr & $sh ) {
   $sh ->  filename = "" ;
   }
 
-function  shifr_password_load ( shifr & $shifr ) {
-  if ( shifr_version  ( $shifr  ) == 2 ) 
-    shifr_password_load_2 ( $shifr ) ;
-  else 
-    shifr_password_load_3 ( $shifr ) ; }
+function  shifr_password_get  ( shifr & $shifr ) {
+  return  $shifr  ->  password  ; }
 
 function  shifr_encrypt  ( shifr & $shifr ) {
   if ( shifr_version  ( $shifr  ) == 2 ) 
@@ -861,12 +862,6 @@ function  shifr_decrypt  ( shifr & $shifr ) {
     shifr_decrypt2 ( $shifr ) ; 
   else 
     shifr_decrypt3 ( $shifr ) ; }
-
-function  shifr_generate_password  ( shifr & $shifr ) {
-  if ( shifr_version  ( $shifr  ) == 2 ) 
-    shifr_generate_password_2 ( $shifr  ) ;
-  else 
-    shifr_generate_password_3 ( $shifr  ) ; }
 
 // '0x00','0xf0','0x0f','0xff' <= "aa" + "ap" + "pa" + "pp"
 function  shifr_Base64_decode_univer  ( string & $string  , $start_letter ,

@@ -1,5 +1,61 @@
 'use strict';
+/*
+create an empty object
+  let js_shifr  = { } ;
 
+set default settings
+  js_shifr_init ( js_shifr ) ;
+
+set russian locale
+  js_shifr . localerus = true or false
+  
+set version
+  js_shifr_set_version ( js_shifr , 2 ) ;
+  or
+  js_shifr_set_version ( js_shifr , 3 ) ;
+  
+get version
+  js_shifr_version  ( js_shifr ) == 2 or 3
+  
+set alphabet for password
+  js_shifr . letters_mode = 10 ; // digits
+  or
+  js_shifr . letters_mode = 26 ; // small letters
+  or
+  js_shifr . letters_mode = 62 ; // digits and letters
+  or
+  js_shifr . letters_mode = 95 ; // letters digits signs space
+  
+generate password
+  js_shifr_generate_password  ( js_shifr  ) ;
+  
+to set password
+  js_shifr_password_set ( js_shifr , string ) ;
+
+to get password
+  js_shifr_password_get ( js_shifr ) ;
+
+data as string or an array of bytes
+  js_shifr . message = 'abc'
+  or
+  js_shifr . message = "луч"
+  or
+  js_shifr . message = [ 0 , 127 , 255 ]
+  
+encrypt in text mode or binary
+decrypt from text mode or binary
+  js_shifr . flagtext = true or false
+  
+setting sole generator in start mode to encrypt/decrypt another message
+  js_shifr_sole_init  ( js_shifr ) ;
+  
+..
+
+examples
+ 
+..
+
+*/
 // generate random number [ fr .. to ]
 let js_shifr_rand_fr_to = function  ( fr , to ) {
   const wid = to - fr + 1 ;
@@ -319,19 +375,13 @@ let js_shifr_encrypt3 = function ( sh ) {
     js_shifr_write_array ( sh , js_shifr_byte_to_array3 ( sh , char ) ) ; } }
 
 let js_shifr_generate_password = function ( sh  ) {
+  let ar  ;
   if ( sh . key_mode == 45 )
-    js_shifr_generate_password_2 ( sh ) ;
+    ar  = js_shifr_pass_to_array2 ( js_shifr_generate_pass2 ( ) ) ;
   else
-    js_shifr_generate_password_3 ( sh ) ; }
-    
-let js_shifr_generate_password_2 = function ( sh ) {
-  sh . password  = js_shifr_password_to_string ( sh ,
-    js_shifr_pass_to_array2  ( js_shifr_generate_pass2  ( ) ) ) ; }
+    ar  = js_shifr_pass_to_array3 ( js_shifr_generate_pass3 ( ) ) ;
+  js_shifr_password_set ( sh , js_shifr_password_to_string ( sh , ar  ) ) ; }
 
-let js_shifr_generate_password_3 = function ( sh ) {
-  sh . password  = js_shifr_password_to_string ( sh ,
-    js_shifr_pass_to_array3  ( js_shifr_generate_pass3  ( ) ) ) ; }
-    
 let js_shifr_flush  = function  ( sh ) {
   if ( sh . bitscount ) {
     js_shifr_write_array ( sh , [ sh . bufin ] ) ;
@@ -351,6 +401,9 @@ let js_shifr_flush  = function  ( sh ) {
   // sh . old_last_sole  = { n : 0 } ;
   
   }
+    
+let js_shifr_password_set = function ( shifr , password ) {
+  shifr . password  = password  ; }
     
 let js_number_dec = function  ( number ) {
   let i = 0 ;
@@ -575,18 +628,15 @@ let js_shifr_version = function ( sh ) {
   return  3 ; }
   
 let js_shifr_password_load = function ( shifr ) {
-  if ( js_shifr_version  ( shifr  ) == 2 ) 
-    js_shifr_password_load_2 ( shifr ) ;
+  let arr = js_shifr_string_to_key_array ( shifr ,
+    js_shifr_password_get ( shifr ) ) ;
+  if ( js_shifr_version  ( shifr  ) == 2 )
+    js_shifr_password_load2  ( shifr , arr ) ;
   else 
-    js_shifr_password_load_3 ( shifr ) ; }
-    
-let js_shifr_password_load_2 = function ( sh ) {
-  return  js_shifr_password_load2  ( sh , js_shifr_string_to_key_array ( sh ,
-    sh . password  ) ) ; }
+    js_shifr_password_load3  ( shifr , arr ) ; }
 
-let js_shifr_password_load_3 = function ( sh ) {
-  return  js_shifr_password_load3  ( sh , js_shifr_string_to_key_array ( sh ,
-    sh . password  ) ) ; }
+let js_shifr_password_get = function ( shifr ) {
+  return  shifr . password  ; }
 
 let js_shifr_password_load2 = function ( sh , password0 ) {
   sh . shifra = Array ( 0x10  ) . fill  ( 0xff  ) ;
