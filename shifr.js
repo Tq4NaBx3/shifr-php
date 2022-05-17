@@ -375,14 +375,6 @@ let js_shifr_encrypt3 = function ( sh ) {
   for ( let char of sh . message_array ) {
     js_shifr_write_array ( sh , js_shifr_byte_to_array3 ( sh , char ) ) ; } }
 
-let js_shifr_generate_password = function ( sh  ) {
-  let ar  ;
-  if ( sh . key_mode == 45 )
-    ar  = js_shifr_pass_to_array2 ( js_shifr_generate_pass2 ( ) ) ;
-  else
-    ar  = js_shifr_pass_to_array3 ( js_shifr_generate_pass3 ( ) ) ;
-  js_shifr_password_set ( sh , js_shifr_password_to_string ( sh , ar  ) ) ; }
-
 let js_shifr_flush  = function  ( sh ) {
   if ( sh . bitscount ) {
     js_shifr_write_array ( sh , [ sh . bufin ] ) ;
@@ -403,11 +395,27 @@ let js_shifr_flush  = function  ( sh ) {
   
   }
     
+let js_shifr_generate_password = function ( sh  ) {
+  let ar  ;
+  if ( sh . key_mode == 45 )
+    ar  = js_shifr_pass_to_array2 ( js_shifr_generate_pass2 ( ) ) ;
+  else
+    ar  = js_shifr_pass_to_array3 ( js_shifr_generate_pass3 ( ) ) ;
+  let str_psw = js_shifr_password_to_string ( sh , ar  ) ;
+  if  ( sh . flag_debug )
+    sh . array_log . push ( "js_shifr_generate_password `" + str_psw + "`" ) ;
+  js_shifr_password_set ( sh , str_psw ) ; }
+
 let js_shifr_password_set = function ( shifr , password ) {
   if  ( shifr . flag_debug )
     shifr . array_log . push ( "js_shifr_password_set `" + password + "`" ) ;
-  shifr . password  = password  ; }
-    
+  shifr . password  = password  ;
+  let arr = js_shifr_string_to_key_array ( shifr ,  password ) ;
+  if ( js_shifr_version  ( shifr  ) == 2 )
+    js_shifr_password_load2  ( shifr , arr ) ;
+  else 
+    js_shifr_password_load3  ( shifr , arr ) ;  }
+
 let js_number_dec = function  ( number ) {
   let i = 0 ;
   for ( ; i < number . length ; ++ i ) {
@@ -631,16 +639,6 @@ let js_shifr_version = function ( sh ) {
   if  ( sh . key_mode == 45 )
     return 2 ;
   return  3 ; }
-  
-let js_shifr_password_load = function ( shifr ) {
-  if  ( shifr . flag_debug )
-    shifr . array_log . push ( "js_shifr_password_load `" + js_shifr_password_get ( shifr ) + "`" ) ;
-  let arr = js_shifr_string_to_key_array ( shifr ,
-    js_shifr_password_get ( shifr ) ) ;
-  if ( js_shifr_version  ( shifr  ) == 2 )
-    js_shifr_password_load2  ( shifr , arr ) ;
-  else 
-    js_shifr_password_load3  ( shifr , arr ) ; }
 
 let js_shifr_password_get = function ( shifr ) {
   if  ( shifr . flag_debug )

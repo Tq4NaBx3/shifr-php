@@ -8,7 +8,6 @@
       else
         $uploadfile2 = $uploadfile  . '.des' ;
       $fpw = fopen ( $uploadfile2 , 'wb'  ) ;
-      shifr_password_load ( $shifr ) ;
       while ( ! feof  ( $fp ) ) {
         set_time_limit  ( 60  ) ;
         $shifr -> message = fread ( $fp , 0x1000 ) ;

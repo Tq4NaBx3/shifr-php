@@ -5,7 +5,6 @@
       $uploadfileshi  = ( sys_get_temp_dir  ( ) . "/" ) . basename  (
         $_FILES [ 'uploadfile'  ] [ 'name'  ] ) . '.shi'  ;
       $fpw = fopen ( $uploadfileshi , 'wb'  ) ;
-      shifr_password_load ( $shifr ) ;
       while ( ! feof  ( $fp ) ) {
         set_time_limit  ( 60  ) ;
         $shifr -> message = fread ( $fp , 0x1000 ) ;

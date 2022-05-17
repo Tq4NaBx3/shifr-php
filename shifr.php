@@ -15,7 +15,6 @@
  shifr_flush ( $shifr  ) ; after last encode to clear buffer
  shifr_flush_file  ( $shifr , $fpw ) ;
  shifr_decrypt ( $shifr ) ;
- shifr_password_load  ( $shifr ) ; from message string
  shifr_generate_password ( $shifr  ) ; returns nothing
  shifr_password_set ( $shifr , string ) ;
  shifr_password_get ( $shifr ) ; returns string
@@ -574,16 +573,6 @@ function  number_dec  ( array & $number ) {
 function  number_not_zero ( array & $number ) {
   return  count  ( $number ) >  0 ; }
 
-function  shifr_generate_password  ( shifr & $shifr ) {
-  $ar = null  ;
-  if ( shifr_version  ( $shifr  ) == 2 )
-    $ar = shifr_pass_to_array2  ( shifr_generate_pass2  ( ) ) ;
-  else 
-    $ar = shifr_pass_to_array3  ( shifr_generate_pass3  ( ) ) ;
-  shifr_password_set ( $shifr , shifr_password_to_string ( $shifr , $ar ) ) ;
-  if  ( $shifr -> flag_debug  )
-    $shifr -> array_log [ ] = 'shifr_generate_password `' . shifr_password_get ( $shifr ) . '`' ; }
-
 function  shifr_password_to_string ( shifr & $sh , array $passworda ) : string {
   switch  ( $sh  ->  letters_mode ) {
   case  95  :
@@ -738,17 +727,23 @@ function  shifr_password_load3  ( shifr & $sh , array $password ) {
     $arrind = array_values ( $arrind ) ;
     ++ $inde  ;
   } while ( $inde < 0x40 ) ; }
+
+function  shifr_generate_password  ( shifr & $shifr ) {
+  $ar = null  ;
+  if ( shifr_version  ( $shifr  ) == 2 )
+    $ar = shifr_pass_to_array2  ( shifr_generate_pass2  ( ) ) ;
+  else 
+    $ar = shifr_pass_to_array3  ( shifr_generate_pass3  ( ) ) ;
+  $str_psw  = shifr_password_to_string ( $shifr , $ar ) ;
+  if  ( $shifr -> flag_debug  )
+    $shifr -> array_log [ ] = 'shifr_generate_password `' . $str_psw . '`' ;
+  shifr_password_set ( $shifr , $str_psw ) ; }
   
 function  shifr_password_set  ( shifr & $shifr ,  $password ) {
   if  ( $shifr -> flag_debug  )
     $shifr -> array_log [ ] = 'shifr_password_set `' . $password . '`' ;
-  $shifr  ->  password  = $password ; }
-  
-function  shifr_password_load ( shifr & $shifr ) {
-  $str  = shifr_password_get ( $shifr ) ;
-  if  ( $shifr -> flag_debug  )
-    $shifr -> array_log [ ] = 'shifr_password_load `' . $str . '`' ;
-  $ar = shifr_string_to_key_array ( $shifr , $str ) ;
+  $shifr  ->  password  = $password ;
+  $ar = shifr_string_to_key_array ( $shifr , $password ) ;
   if ( is_array ( $ar ) ) {
     if ( shifr_version  ( $shifr  ) == 2 ) 
       return  shifr_password_load2  ( $shifr , $ar ) ; 

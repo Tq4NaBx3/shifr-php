@@ -49,7 +49,7 @@ if  ( $_POST  ) {
         $shifr -> password . '`' ; }
   else
     if ( isset ( $_POST [ 'password'  ] ) ) {
-      $shifr -> password = $_POST [ 'password'  ] ;
+      shifr_password_set  ( $shifr  , $_POST [ 'password'  ] ) ;
       if  ( $shifr -> flag_debug  )
         $shifr -> array_log [ ] = 'index : set password `' .
           $_POST [ 'password'  ] . '`' ; }
@@ -58,13 +58,11 @@ if  ( $_POST  ) {
     if  ( $_POST  [ 'encrypt_decrypt_name'] == 'зашифровать' or 
       $_POST  [ 'encrypt_decrypt_name'  ] == 'encrypt'  ) {
       $shifr -> flagtext = true  ;
-      shifr_password_load ( $shifr ) ;
       shifr_encrypt ( $shifr ) ; 
       shifr_flush ( $shifr  ) ; }
   else if  ( $_POST  [ 'encrypt_decrypt_name'] == 'расшифровать' or 
-      $_POST  [ 'encrypt_decrypt_name'  ] == 'decrypt'  ) {
-      shifr_password_load ( $shifr ) ;
-      shifr_decrypt ( $shifr ) ; }
+      $_POST  [ 'encrypt_decrypt_name'  ] == 'decrypt'  ) 
+      shifr_decrypt ( $shifr ) ; 
   else  if  ( $_POST  [ 'encrypt_decrypt_name'] == 'загрузить' or 
       $_POST  [ 'encrypt_decrypt_name'  ] == 'load'  ) 
       {   }
@@ -115,6 +113,12 @@ fieldset { font-size: 36px; border-radius: 10px; }
     echo 'true' ;
   else
     echo 'false' ; ?> ;
+<?php
+  if  ( $shifr -> flag_debug  )
+    foreach ( $shifr -> array_log as $value  )
+      echo  'js_shifr . array_log . push ( \'php : ' . str_replace (
+        array  ( "\\" , "'" ) , array  ( "\\\\" , "\'" ) , $value ) . '\' ) ;' ;
+?>
 </script>
 </head>
 <body>
@@ -407,7 +411,6 @@ let fencrypt = function ( ) {
   js_shifr  . message = document . getElementById ( 'message' ) . value ;
   
   js_shifr_sole_init  ( js_shifr ) ;
-  js_shifr_password_load ( js_shifr ) ;
   js_shifr_encrypt ( js_shifr ) ; 
   js_shifr_flush ( js_shifr  ) ;
   
@@ -421,7 +424,6 @@ let fdecrypt = function ( ) {
   js_shifr  . message = document . getElementById ( 'message' ) . value ;
   
   js_shifr_sole_init  ( js_shifr ) ;
-  js_shifr_password_load ( js_shifr ) ;
   js_shifr_decrypt ( js_shifr ) ; 
   js_shifr . message  = js_Utf8ArrayToStr ( js_shifr  . message ) ; 
     
@@ -467,7 +469,6 @@ let fencrypt3 = function  ( ) {
   js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
   
   js_shifr_sole_init  ( js_shifr ) ;
-  js_shifr_password_load ( js_shifr ) ;
   js_shifr_encrypt ( js_shifr ) ; 
   js_shifr_flush ( js_shifr  ) ;
   if ( !  js_shifr  . flagtext )
@@ -490,7 +491,6 @@ let fdecrypt3 = function ( ) {
   js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
     
   js_shifr_sole_init  ( js_shifr ) ;
-  js_shifr_password_load ( js_shifr ) ;
   js_shifr_decrypt ( js_shifr ) ;
   js_shifr . message  = js_shifr_Base64_encode ( js_shifr  . message ) ;
 
@@ -519,21 +519,6 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
 <script>
   let chbox_fenc = document  . getElementById  ( 'encrypt3'  ) ;
   chbox_fenc . addEventListener  ( 'click' , fencrypt3 ) ;  
-</script>
-<?php
-if  ( $shifr -> flag_debug  ) {
-  echo  '<script>'  ;
-  echo  "console . log ( 'php log = {' ) ;" ;
-  foreach ( $shifr -> array_log as $value  )
-    echo  'console . log ( \'' . str_replace ( array  ( "\\" , "'" ) ,
-      array  ( "\\\\" , "\'" ) , $value ) . '\' ) ;' ;
-  echo  "console . log ( '}' ) ;" ;
-  echo  '</script>'  ; }
-?>
-<script>
-if  ( js_shifr . flag_debug ) {
-  console . log ( 'js log = {' + js_shifr . array_log + '}' ) ;
-  }
 </script>
 </form>
 </body>
