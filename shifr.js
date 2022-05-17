@@ -56,6 +56,7 @@ examples
 ..
 
 */
+
 // generate random number [ fr .. to ]
 let js_shifr_rand_fr_to = function  ( fr , to ) {
   const wid = to - fr + 1 ;
@@ -403,6 +404,8 @@ let js_shifr_flush  = function  ( sh ) {
   }
     
 let js_shifr_password_set = function ( shifr , password ) {
+  if  ( shifr . flag_debug )
+    shifr . array_log . push ( "js_shifr_password_set `" + password + "`" ) ;
   shifr . password  = password  ; }
     
 let js_number_dec = function  ( number ) {
@@ -596,11 +599,11 @@ let js_shifr_sole_init = function ( sh  ) {
     
 let js_shifr_init = function ( sh ) {
   //  ascii ' ' => '~'
-  sh .  letters95 = [ ] ;
+  sh  .  letters95 = [ ] ;
   for ( let i = ( ' ' . charCodeAt ( 0 ) ) ; i <= ( '~' . charCodeAt ( 0 ) ) ; ++ i )
     sh . letters95 . push ( String . fromCharCode ( i ) ) ;
   // '0' - '9' , 'A' - 'Z' , 'a' - 'z'  
-  sh . letters = [ ] ;
+  sh  . letters = [ ] ;
   for ( let i = ( '0' . charCodeAt ( 0 ) ) ; i <= ( '9' . charCodeAt ( 0 ) ) ; ++ i )
     sh . letters . push ( String . fromCharCode ( i ) ) ;
   for ( let i = ( 'A' . charCodeAt ( 0 ) ) ; i <= ( 'Z' . charCodeAt ( 0 ) ) ; ++ i )
@@ -608,19 +611,21 @@ let js_shifr_init = function ( sh ) {
   for ( let i = ( 'a' . charCodeAt ( 0 ) ) ; i <= ( 'z' . charCodeAt ( 0 ) ) ; ++ i )
     sh . letters . push ( String . fromCharCode ( i ) ) ;
   // '0' - '9'
-  sh . letters10 = [ ] ;
+  sh  . letters10 = [ ] ;
   for ( let i = ( '0' . charCodeAt ( 0 ) ) ; i <= ( '9' . charCodeAt ( 0 ) ) ; ++ i )
     sh . letters10 . push ( String . fromCharCode ( i ) ) ;
   // 'a' - 'z'
-  sh . letters26 = [ ] ;
+  sh  . letters26 = [ ] ;
   for ( let i = ( 'a' . charCodeAt ( 0 ) ) ; i <= ( 'z' . charCodeAt ( 0 ) ) ; ++ i )
     sh . letters26 . push ( String . fromCharCode ( i ) ) ;
   // default is digits and letters
-  sh . letters_mode = 62 ;
+  sh  . letters_mode = 62 ;
   js_shifr_set_version ( sh , 3 ) ;
   js_shifr_sole_init  ( sh  ) ;
-  sh . localerus = false ;
-  sh . flagtext  = true  ;  }
+  sh  . localerus = false ;
+  sh  . flagtext  = true  ;
+  sh  . flag_debug  = true  ;
+  sh  . array_log = [ ] ; }
 
 let js_shifr_version = function ( sh ) {
   if  ( sh . key_mode == 45 )
@@ -628,6 +633,8 @@ let js_shifr_version = function ( sh ) {
   return  3 ; }
   
 let js_shifr_password_load = function ( shifr ) {
+  if  ( shifr . flag_debug )
+    shifr . array_log . push ( "js_shifr_password_load `" + js_shifr_password_get ( shifr ) + "`" ) ;
   let arr = js_shifr_string_to_key_array ( shifr ,
     js_shifr_password_get ( shifr ) ) ;
   if ( js_shifr_version  ( shifr  ) == 2 )
@@ -636,6 +643,8 @@ let js_shifr_password_load = function ( shifr ) {
     js_shifr_password_load3  ( shifr , arr ) ; }
 
 let js_shifr_password_get = function ( shifr ) {
+  if  ( shifr . flag_debug )
+    shifr . array_log . push ( "js_shifr_password_get `" + shifr . password + "`" ) ;
   return  shifr . password  ; }
 
 let js_shifr_password_load2 = function ( sh , password0 ) {

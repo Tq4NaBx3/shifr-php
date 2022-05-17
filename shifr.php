@@ -308,6 +308,9 @@ class shifr {
   // string to ping pong file from JavaScript
   public  $boxes_info ; // file data
   public  $filename ;
+  public  $array_log  ;
+  public  $flag_debug ;
+
 }
     
 function  shifr_encrypt2 ( shifr & $sh ) {
@@ -577,7 +580,9 @@ function  shifr_generate_password  ( shifr & $shifr ) {
     $ar = shifr_pass_to_array2  ( shifr_generate_pass2  ( ) ) ;
   else 
     $ar = shifr_pass_to_array3  ( shifr_generate_pass3  ( ) ) ;
-  shifr_password_set ( $shifr , shifr_password_to_string ( $shifr , $ar ) ) ; }
+  shifr_password_set ( $shifr , shifr_password_to_string ( $shifr , $ar ) ) ;
+  if  ( $shifr -> flag_debug  )
+    $shifr -> array_log [ ] = 'shifr_generate_password `' . shifr_password_get ( $shifr ) . '`' ; }
 
 function  shifr_password_to_string ( shifr & $sh , array $passworda ) : string {
   switch  ( $sh  ->  letters_mode ) {
@@ -735,10 +740,15 @@ function  shifr_password_load3  ( shifr & $sh , array $password ) {
   } while ( $inde < 0x40 ) ; }
   
 function  shifr_password_set  ( shifr & $shifr ,  $password ) {
+  if  ( $shifr -> flag_debug  )
+    $shifr -> array_log [ ] = 'shifr_password_set `' . $password . '`' ;
   $shifr  ->  password  = $password ; }
   
 function  shifr_password_load ( shifr & $shifr ) {
-  $ar = shifr_string_to_key_array ( $shifr , shifr_password_get ( $shifr ) ) ;
+  $str  = shifr_password_get ( $shifr ) ;
+  if  ( $shifr -> flag_debug  )
+    $shifr -> array_log [ ] = 'shifr_password_load `' . $str . '`' ;
+  $ar = shifr_string_to_key_array ( $shifr , $str ) ;
   if ( is_array ( $ar ) ) {
     if ( shifr_version  ( $shifr  ) == 2 ) 
       return  shifr_password_load2  ( $shifr , $ar ) ; 
@@ -777,13 +787,11 @@ function  shifr_string_to_key_array  ( shifr & $sh , string & $str ) {
       if ( $str [ $stringi ] == $letters [ $i ] )
         goto found ; 
     } while ( $i ) ;
-    global  $shifr_log  ;
-    global  $shifr_debug  ;
-    if  ( $shifr_debug  ) {
+    if  ( $sh -> flag_debug  ) {
       if  ( $sh -> localerus ) 
-        $shifr_log [ ] = 'неправильная буква в пароле'  ;
+        $sh -> array_log [ ] = 'неправильная буква в пароле'  ;
       else 
-        $shifr_log [ ] = 'wrong letter in password' ; }
+        $sh -> array_log [ ] = 'wrong letter in password' ; }
     return array ( ) ;
 found :
     $tmp = $mult ;
@@ -846,6 +854,8 @@ function  shifr_init ( shifr & $sh ) {
   $sh ->  flagtext  = true  ;
   $sh ->  boxes_info = "" ;
   $sh ->  filename = "" ;
+  $sh ->  flag_debug  = true  ;
+  $sh ->  array_log  = array ( ) ;
   }
 
 function  shifr_password_get  ( shifr & $shifr ) {

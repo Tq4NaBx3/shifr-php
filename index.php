@@ -7,12 +7,6 @@ $local = setlocale ( LC_ALL  , 'ru_RU.UTF-8'  ) ;
 if ( $local == 'ru_RU.UTF-8' )
   $shifr -> localerus = true ;
 
-global  $shifr_log  ;
-global  $shifr_debug  ;
-
-$shifr_debug  = true  ;
-$shifr_log  = array ( ) ;
-
 if  ( $_POST  ) {
 
   if ( ( ( isset ( $_POST [ 'Encryption_in_text_mode' ] ) ) and 
@@ -50,14 +44,14 @@ if  ( $_POST  ) {
   
   if ( isset ( $_POST  [ 'password_generate' ] ) ) {
     shifr_generate_password ( $shifr  ) ;
-    if  ( $shifr_debug  )
-      $shifr_log [ ] = 'generate password `' .
+    if  ( $shifr -> flag_debug  )
+      $shifr -> array_log [ ] = 'index : generate password `' .
         $shifr -> password . '`' ; }
   else
     if ( isset ( $_POST [ 'password'  ] ) ) {
       $shifr -> password = $_POST [ 'password'  ] ;
-      if  ( $shifr_debug  )
-        $shifr_log [ ] = 'set password `' .
+      if  ( $shifr -> flag_debug  )
+        $shifr -> array_log [ ] = 'index : set password `' .
           $_POST [ 'password'  ] . '`' ; }
   
   if  ( isset ( $_POST  [ 'encrypt_decrypt_name'  ] ) ) {
@@ -527,15 +521,20 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
   chbox_fenc . addEventListener  ( 'click' , fencrypt3 ) ;  
 </script>
 <?php
-if  ( $shifr_debug  ) {
+if  ( $shifr -> flag_debug  ) {
   echo  '<script>'  ;
-  echo  "console . log ( 'log = {' ) ;" ;
-  foreach ( $shifr_log as $value  )
+  echo  "console . log ( 'php log = {' ) ;" ;
+  foreach ( $shifr -> array_log as $value  )
     echo  'console . log ( \'' . str_replace ( array  ( "\\" , "'" ) ,
       array  ( "\\\\" , "\'" ) , $value ) . '\' ) ;' ;
   echo  "console . log ( '}' ) ;" ;
   echo  '</script>'  ; }
 ?>
+<script>
+if  ( js_shifr . flag_debug ) {
+  console . log ( 'js log = {' + js_shifr . array_log + '}' ) ;
+  }
+</script>
 </form>
 </body>
 </html>
