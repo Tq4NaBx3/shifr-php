@@ -49,12 +49,51 @@ decrypt from text mode or binary
 setting sole generator in start mode to encrypt/decrypt another message
   js_shifr_sole_init  ( js_shifr ) ;
   
-..
+setting version 2 (45 bits) or 3 (296 bits)
+  js_shifr_set_version  ( js_shifr  , 2 or 3 ) ;
+  
+encrypt data in variable message (was string or array)
+and change variable message with result of encyption
+if flagtest == true as string , or == false as array of bits
+  js_shifr_encrypt ( js_shifr ) ; 
 
-examples
- 
-..
+flush last byte of encyption/decryption (adds last letter/byte to message)
+  js_shifr_flush ( js_shifr  ) ;
 
+decrypt message in js_shifr and save result as array
+  js_shifr_decrypt ( js_shifr ) ;  
+
+decode array of bytes, represented 
+as UTF8 string and returns it
+  let string = js_Utf8ArrayToStr ( array ) ; 
+  
+encode array of bytes to string (Base64 shifr version)
+  let string = js_shifr_Base64_encode ( array ) ;
+
+example :
+
+let shif  = { } ;
+js_shifr_init ( shif ) ;
+js_shifr_password_set ( shif , "qwerty" ) ;
+shif . message = "Lambda" ;
+js_shifr_encrypt ( shif ) ;
+shif . message ;
+  '\\`AM[Am[FpW>sJJ`'
+shif . message = " !" ;
+js_shifr_encrypt ( shif ) ;
+shif . message ;
+  'xacyD'
+js_shifr_flush ( shif ) ;
+shif . message ;
+  'xacyDm\n'
+shif . message = '\\`AM[Am[FpW>sJJ`' + 'xacyDm\n' ;
+js_shifr_sole_init ( shif ) ;
+js_shifr_decrypt ( shif ) ;
+shif . message ;
+  [76, 97, 109, 98, 100, 97, 32, 33]
+js_Utf8ArrayToStr ( shif . message ) ;
+  'Lambda !'
+  
 */
 
 // generate random number [ fr .. to ]
@@ -632,7 +671,7 @@ let js_shifr_init = function ( sh ) {
   js_shifr_sole_init  ( sh  ) ;
   sh  . localerus = false ;
   sh  . flagtext  = true  ;
-  sh  . flag_debug  = true  ;
+  sh  . flag_debug  = false ;
   sh  . array_log = [ ] ; }
 
 let js_shifr_version = function ( sh ) {

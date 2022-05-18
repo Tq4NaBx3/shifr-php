@@ -847,10 +847,10 @@ function  shifr_init ( shifr & $sh ) {
   $sh ->  bufin = 0 ;
   $sh ->  localerus = false ;
   $sh ->  flagtext  = true  ;
-  $sh ->  boxes_info = "" ;
-  $sh ->  filename = "" ;
-  $sh ->  flag_debug  = true  ;
-  $sh ->  array_log  = array ( ) ;
+  $sh ->  boxes_info  = ""  ;
+  $sh ->  filename  = ""  ;
+  $sh ->  flag_debug  = false ;
+  $sh ->  array_log = array ( ) ;
   }
 
 function  shifr_password_get  ( shifr & $shifr ) {
