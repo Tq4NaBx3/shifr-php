@@ -743,19 +743,18 @@ function  shifr_password_set  ( shifr & $shifr ,  $password ) {
   if  ( $shifr -> flag_debug  )
     $shifr -> array_log [ ] = 'shifr_password_set `' . $password . '`' ;
   $shifr  ->  password  = $password ;
-  $ar = shifr_string_to_key_array ( $shifr , $password ) ;
-  if ( is_array ( $ar ) ) {
-    if ( shifr_version  ( $shifr  ) == 2 ) 
-      return  shifr_password_load2  ( $shifr , $ar ) ; 
-    else 
-      return  shifr_password_load3  ( $shifr , $ar ) ; } }
+  shifr_string_to_key_array ( $shifr , $password ) ; }
 
 function  shifr_string_to_key_array  ( shifr & $sh , string & $str ) {
   $strn = strlen  ( $str  ) ;
   $passarr = array ( ) ;
   number_set_zero ( $passarr ) ;
-  if ( $strn == 0 ) 
-    return $passarr ;
+  if ( $strn == 0 ) {
+    if ( shifr_version  ( $sh  ) == 2 )
+      return  shifr_password_load2  ( $sh , $passarr ) ; 
+    else 
+      return  shifr_password_load3  ( $sh , $passarr ) ;
+    return $passarr ; }
   switch  ( $sh ->  letters_mode ) {
   case  95  :
     $letters  = $sh ->  letters95  ;
@@ -795,7 +794,11 @@ found :
     number_mul_byte ( $mult , $letters_count ) ;
     ++  $stringi ;
   } while ( $stringi  < strlen  ( $str  ) ) ;
-  return  $passarr ; }  
+  if ( shifr_version  ( $sh  ) == 2 )
+    return  shifr_password_load2  ( $sh , $passarr ) ; 
+  else 
+    return  shifr_password_load3  ( $sh , $passarr ) ;
+  return  $passarr ; }
   
 function  shifr_set_version ( shifr & $sh , $ver  ) {
   if  ( $ver  ==  2 )

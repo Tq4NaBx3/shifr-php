@@ -449,11 +449,7 @@ let js_shifr_password_set = function ( shifr , password ) {
   if  ( shifr . flag_debug )
     shifr . array_log . push ( "js_shifr_password_set `" + password + "`" ) ;
   shifr . password  = password  ;
-  let arr = js_shifr_string_to_key_array ( shifr ,  password ) ;
-  if ( js_shifr_version  ( shifr  ) == 2 )
-    js_shifr_password_load2  ( shifr , arr ) ;
-  else 
-    js_shifr_password_load3  ( shifr , arr ) ;  }
+  js_shifr_string_to_key_array ( shifr ,  password ) ; }
 
 let js_number_dec = function  ( number ) {
   let i = 0 ;
@@ -720,8 +716,12 @@ let js_shifr_string_to_key_array  = function ( sh , str ) {
   let strn = str . length ;
   let passarr = [ ] ;
   js_number_set_zero ( passarr ) ;
-  if ( strn == 0 ) 
-    return passarr ;
+  if ( strn == 0 ) {
+    if ( js_shifr_version  ( sh  ) == 2 )
+      js_shifr_password_load2  ( sh , passarr ) ;
+    else 
+      js_shifr_password_load3  ( sh , passarr ) ;
+    return passarr ; }
   let letters ;
   switch  ( sh . letters_mode ) {
   case  95  :
@@ -762,6 +762,10 @@ search : {
     js_number_mul_byte ( mult , letters_count ) ;
     ++  stringi ;
   } while ( stringi  < str . length ) ;
+  if ( js_shifr_version  ( sh ) == 2 )
+    js_shifr_password_load2  ( sh , passarr ) ;
+  else 
+    js_shifr_password_load3  ( sh , passarr ) ;
   return  passarr ; }
 
 // input : shifr . message = 'abc' or "лук" or [ 0 .. 127 .. 255 ]
