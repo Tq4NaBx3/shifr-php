@@ -46,8 +46,8 @@ encrypt in text mode or binary
 decrypt from text mode or binary
   js_shifr . flagtext = true or false
   
-setting sole generator in start mode to encrypt/decrypt another message
-  js_shifr_sole_init  ( js_shifr ) ;
+setting salt generator in start mode to encrypt/decrypt another message
+  js_shifr_salt_init  ( js_shifr ) ;
   
 setting version 2 (45 bits) or 3 (296 bits)
   js_shifr_set_version  ( js_shifr  , 2 or 3 ) ;
@@ -87,7 +87,7 @@ js_shifr_flush ( shif ) ;
 shif . message ;
   'xacyDm\n'
 shif . message = '\\`AM[Am[FpW>sJJ`' + 'xacyDm\n' ;
-js_shifr_sole_init ( shif ) ;
+js_shifr_salt_init ( shif ) ;
 js_shifr_decrypt ( shif ) ;
 shif . message ;
   [76, 97, 109, 98, 100, 97, 32, 33]
@@ -128,20 +128,20 @@ let js_shifr_generate_pass3 = function  ( ) {
   return  dice  ; }
 
 // get 4*2 bits => push 4*4 bits
-let js_shifr_data_sole2 = function  ( secret_data ) {
-  let secret_data_sole  = new Array ( ) ;
+let js_shifr_data_salt2 = function  ( secret_data ) {
+  let secret_data_salt  = new Array ( ) ;
   const array = new Uint8Array  ( 1 ) ;
   window  . crypto  . getRandomValues ( array ) ;
   let ra  = array [ 0 ] ; // 4*2 = 8 bits
   for ( let da  of  secret_data ) {
-    secret_data_sole  . push  ( ( da  << 2 ) | ( ra & 0b11 ) ) ;
+    secret_data_salt  . push  ( ( da  << 2 ) | ( ra & 0b11 ) ) ;
     ra  >>= 2 ; }
-  return  secret_data_sole  ; }
+  return  secret_data_salt  ; }
   
 // get 2*3 bits => push 2*6 bits
 // get 3*3 bits => push 3*6 bits
-let js_shifr_data_sole3 = function  ( secret_data ) {
-  let secret_data_sole  = new Array ( ) ;
+let js_shifr_data_salt3 = function  ( secret_data ) {
+  let secret_data_salt  = new Array ( ) ;
   let ra  ;
   if ( secret_data  . length  ==  3 ) {
     // needs random [ 0 .. 0x1ff ]
@@ -153,9 +153,9 @@ let js_shifr_data_sole3 = function  ( secret_data ) {
     window  . crypto  . getRandomValues ( array ) ;
     ra = array [ 0 ] ; }
   for ( let da  of  secret_data ) {
-    secret_data_sole  . push  ( ( da  << 3 ) | ( ra & 0b111 ) ) ;
+    secret_data_salt  . push  ( ( da  << 3 ) | ( ra & 0b111 ) ) ;
     ra >>= 3 ; }
-  return  secret_data_sole  ; }
+  return  secret_data_salt  ; }
 
 // byte = 76543210b to array
 // [ 0 ] = 10 ; [ 1 ] = 32 ; [ 2 ] = 54 ; [ 3 ] = 76
@@ -170,31 +170,31 @@ let js_shifr_byte_to_array2 =  function  ( byte ) {
   return  arr ; }
 
 // old_last_data = { n : }
-// old_last_sole = { n : }
-// secret_data_sole = [ data_sole ]
-let js_shifr_data_xor2  = function  ( old_last_data , old_last_sole ,
-  secret_data_sole  ) {
-  const sl  = secret_data_sole  . length  ;
+// old_last_salt = { n : }
+// secret_data_salt = [ data_salt ]
+let js_shifr_data_xor2  = function  ( old_last_data , old_last_salt ,
+  secret_data_salt  ) {
+  const sl  = secret_data_salt  . length  ;
   for ( let i = 0 ; i < sl ; ++  i ) {
-    const ids = secret_data_sole  [ i ] ;
+    const ids = secret_data_salt  [ i ] ;
     const cur_data  = ids >>  2 ;
-    const cur_sole  = ids & 0b11 ;
-    secret_data_sole  [ i ] ^=  ( old_last_sole . n  <<  2 ) ;
-    secret_data_sole  [ i ] ^=  old_last_data . n ;
+    const cur_salt  = ids & 0b11 ;
+    secret_data_salt  [ i ] ^=  ( old_last_salt . n  <<  2 ) ;
+    secret_data_salt  [ i ] ^=  old_last_data . n ;
     old_last_data . n = cur_data ;
-    old_last_sole . n = cur_sole ; } }
+    old_last_salt . n = cur_salt ; } }
 
-let js_shifr_data_xor3  = function  ( old_last_data , old_last_sole ,
-  secret_data_sole  ) {
-  const sl  = secret_data_sole  . length  ;
+let js_shifr_data_xor3  = function  ( old_last_data , old_last_salt ,
+  secret_data_salt  ) {
+  const sl  = secret_data_salt  . length  ;
   for ( let i = 0 ; i < sl ; ++  i ) {
-    const ids = secret_data_sole  [ i ] ;
+    const ids = secret_data_salt  [ i ] ;
     const cur_data  = ids >>  3 ;
-    const cur_sole  = ids & 0b111 ;
-    secret_data_sole  [ i ] ^=  ( old_last_sole . n  <<  3 ) ;
-    secret_data_sole  [ i ] ^=  old_last_data . n ;
+    const cur_salt  = ids & 0b111 ;
+    secret_data_salt  [ i ] ^=  ( old_last_salt . n  <<  3 ) ;
+    secret_data_salt  [ i ] ^=  old_last_data . n ;
     old_last_data . n = cur_data ;
-    old_last_sole . n = cur_sole ; } }
+    old_last_salt . n = cur_salt ; } }
 
 let js_shifr_crypt_decrypt  = function  ( datap , tablep ) {
   let encrp = new Array ( ) ;
@@ -203,23 +203,23 @@ let js_shifr_crypt_decrypt  = function  ( datap , tablep ) {
   return  encrp ; }
 
 // old_last_data = { n : }
-// old_last_sole = { n : }
-let js_shifr_decrypt_sole2  = function  ( datap , tablep , decrp , 
-  old_last_sole , old_last_data ) {
+// old_last_salt = { n : }
+let js_shifr_decrypt_salt2  = function  ( datap , tablep , decrp , 
+  old_last_salt , old_last_data ) {
   for ( let id  of datap ) {
-    const data_sole = tablep [ id ] ;
-    const newdata = ( data_sole >> 2 ) ^ old_last_sole . n ;
+    const data_salt = tablep [ id ] ;
+    const newdata = ( data_salt >> 2 ) ^ old_last_salt . n ;
     decrp . push ( newdata ) ;
-    old_last_sole . n = (  data_sole & 0b11 ) ^ old_last_data . n ;
+    old_last_salt . n = (  data_salt & 0b11 ) ^ old_last_data . n ;
     old_last_data . n = newdata ; } }
 
-let js_shifr_decrypt_sole3  = function  ( datap , tablep , decrp , 
-  old_last_sole , old_last_data ) {
+let js_shifr_decrypt_salt3  = function  ( datap , tablep , decrp , 
+  old_last_salt , old_last_data ) {
   for ( let id  of datap ) {
-    const data_sole = tablep [ id ] ;
-    const newdata = ( data_sole >> 3 ) ^ old_last_sole . n ;
+    const data_salt = tablep [ id ] ;
+    const newdata = ( data_salt >> 3 ) ^ old_last_salt . n ;
     decrp . push ( newdata ) ;
-    old_last_sole . n = (  data_sole & 0b111 ) ^ old_last_data . n ;
+    old_last_salt . n = (  data_salt & 0b111 ) ^ old_last_data . n ;
     old_last_data . n = newdata ; } }
 /*
 class shifr {
@@ -237,7 +237,7 @@ class shifr {
   message  ; // сообщение/данные // message/data
   messageout  ; // сообщение/данные // message/data
   old_last_data  ; // предыдущие данные
-  old_last_sole  ; // предыдущая соль
+  old_last_salt  ; // предыдущая соль
   // текстовый режим : букв в строке написано
   bytecount  ; // text mode: letters are written in a line
   // decode : text place 0 .. 2 
@@ -326,10 +326,11 @@ let js_Utf8ArrayToStr  = function (  array ) {
 let js_shifr_encrypt2 = function ( sh ) {
   for ( let char of sh . message_array ) {
     let secret_data = js_shifr_byte_to_array2 ( char ) ;
-    let secret_data_sole = js_shifr_data_sole2 ( secret_data ) ;
-    js_shifr_data_xor2 ( sh . old_last_data , sh . old_last_sole ,
-      secret_data_sole ) ;
-    let encrypteddata = js_shifr_crypt_decrypt ( secret_data_sole , sh . shifra )  ;
+    let secret_data_salt = js_shifr_data_salt2 ( secret_data ) ;
+    js_shifr_data_xor2 ( sh . old_last_data , sh . old_last_salt ,
+      secret_data_salt ) ;
+    let encrypteddata = js_shifr_crypt_decrypt ( secret_data_salt ,
+      sh . shifra )  ;
     if ( sh . flagtext ) {
       let buf16 = ( encrypteddata [ 0 ] & 0b1111 ) |
         ( ( encrypteddata [ 1 ] & 0b1111 ) << 4 ) |
@@ -341,7 +342,8 @@ let js_shifr_encrypt2 = function ( sh ) {
       sh . message += String.fromCharCode (
         ( 'R' . charCodeAt ( 0 ) ) + ( buf16 % 40 ) ) ;
       buf16 = Math . floor ( ( buf16 + 0.5 )  / 40 )  ;            
-      sh . message +=  String.fromCharCode ( ( 'R' . charCodeAt ( 0 ) ) + buf16 ) ;
+      sh . message +=  String.fromCharCode ( ( 'R' . charCodeAt ( 0 ) ) +
+        buf16 ) ;
       sh . bytecount += 3 ;
       if ( sh . bytecount >= 60 ) {
         sh . message += "\n" ;
@@ -385,10 +387,11 @@ let js_shifr_byte_to_array3 = function ( sh , charcode ) {
 // if binary   : push to array 
 // if flagtext : push to string
 let js_shifr_write_array  = function  ( sh , secret_data  ) {
-  let secret_data_sole = js_shifr_data_sole3 ( secret_data ) ;
-  js_shifr_data_xor3 ( sh . old_last_data , sh . old_last_sole ,
-    secret_data_sole ) ;
-  let encrypteddata = js_shifr_crypt_decrypt ( secret_data_sole , sh . shifra )  ;
+  let secret_data_salt = js_shifr_data_salt3 ( secret_data ) ;
+  js_shifr_data_xor3 ( sh . old_last_data , sh . old_last_salt ,
+    secret_data_salt ) ;
+  let encrypteddata = js_shifr_crypt_decrypt ( secret_data_salt ,
+    sh . shifra )  ;
   if ( sh . flagtext ) {
     for ( let ed  of  encrypteddata ) {
       sh . message  +=  String . fromCharCode ( ';' . charCodeAt ( 0 ) + ed ) ;
@@ -430,7 +433,7 @@ let js_shifr_flush  = function  ( sh ) {
     
   // ?? _init will make it
   // sh . old_last_data  = { n : 0 } ;
-  // sh . old_last_sole  = { n : 0 } ;
+  // sh . old_last_salt  = { n : 0 } ;
   
   }
     
@@ -625,7 +628,7 @@ let js_shifr_set_version = function ( sh , ver ) {
   else 
     sh . key_mode = 296 ; }
 
-let js_shifr_sole_init = function ( sh  ) {
+let js_shifr_salt_init = function ( sh  ) {
   sh . messageout = [ ] ;
   sh . buf3_index = 0 ;
   sh . buf3 = [ ] ;
@@ -638,7 +641,7 @@ let js_shifr_sole_init = function ( sh  ) {
   sh . out_bufbitsize = 0 ;
   sh . bytecount = 0 ;
   sh . old_last_data  = { n : 0 } ;
-  sh . old_last_sole  = { n : 0 } ; }
+  sh . old_last_salt  = { n : 0 } ; }
     
 let js_shifr_init = function ( sh ) {
   //  ascii ' ' => '~'
@@ -664,7 +667,7 @@ let js_shifr_init = function ( sh ) {
   // default is digits and letters
   sh  . letters_mode = 62 ;
   js_shifr_set_version ( sh , 3 ) ;
-  js_shifr_sole_init  ( sh  ) ;
+  js_shifr_salt_init  ( sh  ) ;
   sh  . localerus = false ;
   sh  . flagtext  = true  ;
   sh  . flag_debug  = false ;
@@ -829,8 +832,8 @@ let js_shifr_decrypt2 = function  ( sh ) {
           buf [ 1 ] & 0b1111 ,
           ( buf [ 1 ] >> 4 ) & 0b1111 ] ;
         let decrypteddata = [ ] ;
-        js_shifr_decrypt_sole2 ( secretdata , sh . deshia , decrypteddata ,
-          sh . old_last_sole , sh . old_last_data ) ;
+        js_shifr_decrypt_salt2 ( secretdata , sh . deshia , decrypteddata ,
+          sh . old_last_salt , sh . old_last_data ) ;
         sh  . message . push ( ( decrypteddata [ 0 ] & 0b11  ) |
           ( ( decrypteddata [ 1 ] & 0b11  ) << 2  ) |
           ( ( decrypteddata [ 2 ] & 0b11  ) <<  4 ) |
@@ -845,8 +848,8 @@ let js_shifr_decrypt2 = function  ( sh ) {
         ( sh . message_array [ i + 1 ] ) & 0xf ,
         ( ( sh . message_array [ i + 1 ] ) >> 4 ) & 0xf ] ;
       let decrypteddata = [ ] ;
-      js_shifr_decrypt_sole2 ( secretdata , sh . deshia , decrypteddata ,
-        sh . old_last_sole , sh . old_last_data ) ;
+      js_shifr_decrypt_salt2 ( secretdata , sh . deshia , decrypteddata ,
+        sh . old_last_salt , sh . old_last_data ) ;
       sh . message . push ( ( decrypteddata [ 0 ] & 0b11 ) |
           ( ( decrypteddata [ 1 ] & 0b11 ) << 2  ) |
           ( ( decrypteddata [ 2 ] & 0b11 ) <<  4 ) |
@@ -903,8 +906,8 @@ let js_shifr_decrypt3 = function  ( sh  ) {
   sh .  decode_read_index  = 0 ;
   while ( ! js_isEOFstreambuf_read6bits ( sh , secretdata ) ) {
     let decrypteddata = [ ] ;
-    js_shifr_decrypt_sole3 ( secretdata , sh . deshia , decrypteddata ,
-      sh . old_last_sole ,  sh . old_last_data ) ;
+    js_shifr_decrypt_salt3 ( secretdata , sh . deshia , decrypteddata ,
+      sh . old_last_salt ,  sh . old_last_data ) ;
     secretdata = [ ] ;
     js_streambuf_write3bits ( sh , decrypteddata [ 0 ] ) ; }
   sh . message = sh . messageout ; }

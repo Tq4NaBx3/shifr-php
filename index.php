@@ -410,7 +410,7 @@ let fencrypt = function ( ) {
   js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
   js_shifr  . message = document . getElementById ( 'message' ) . value ;
   
-  js_shifr_sole_init  ( js_shifr ) ;
+  js_shifr_salt_init  ( js_shifr ) ;
   js_shifr_encrypt ( js_shifr ) ; 
   js_shifr_flush ( js_shifr  ) ;
   
@@ -423,7 +423,7 @@ let fdecrypt = function ( ) {
   js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
   js_shifr  . message = document . getElementById ( 'message' ) . value ;
   
-  js_shifr_sole_init  ( js_shifr ) ;
+  js_shifr_salt_init  ( js_shifr ) ;
   js_shifr_decrypt ( js_shifr ) ; 
   js_shifr . message  = js_Utf8ArrayToStr ( js_shifr  . message ) ; 
     
@@ -468,7 +468,7 @@ let fencrypt3 = function  ( ) {
   
   js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
   
-  js_shifr_sole_init  ( js_shifr ) ;
+  js_shifr_salt_init  ( js_shifr ) ;
   js_shifr_encrypt ( js_shifr ) ; 
   js_shifr_flush ( js_shifr  ) ;
   if ( !  js_shifr  . flagtext )
@@ -490,7 +490,7 @@ let fdecrypt3 = function ( ) {
 
   js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
     
-  js_shifr_sole_init  ( js_shifr ) ;
+  js_shifr_salt_init  ( js_shifr ) ;
   js_shifr_decrypt ( js_shifr ) ;
   js_shifr . message  = js_shifr_Base64_encode ( js_shifr  . message ) ;
 
