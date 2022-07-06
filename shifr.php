@@ -162,7 +162,8 @@ function shifr_rand_fr_to  ( int $fr , int $to ) : int {
   do {
     $buf = ord ( random_bytes ( 1 ) ) ;
   } while ( $buf + 0x100 % $wid >= 0x100 ) ;
-  return  $fr + $buf % $wid ; }
+  return  $fr + $buf % $wid ;
+}
 
 // returns [ 0..15 , 0..14 , ... , 0..2 , 0..1 ]
 function shifr_generate_pass2 ( ) : array {
@@ -173,7 +174,8 @@ function shifr_generate_pass2 ( ) : array {
     $dice [ ] = $r ;
     --  $i  ;
   } while ( $i  > 0 ) ;
-  return  $dice ; }
+  return  $dice ;
+}
 
 // returns [ 0..63 , 0..62 , ... , 0..2 , 0..1 ]
 function shifr_generate_pass3 ( ) : array {
@@ -184,7 +186,8 @@ function shifr_generate_pass3 ( ) : array {
     $dice [ ] = $r ;
     --  $i  ;
   } while ( $i  > 0 ) ;
-  return  $dice ; }
+  return  $dice ;
+}
   
 // get 4*2 bits => push 4*4 bits
 function  shifr_data_salt2 ( array & $secret_data ) : array {
@@ -192,8 +195,10 @@ function  shifr_data_salt2 ( array & $secret_data ) : array {
   $ra = ord ( random_bytes ( 1 ) ) ; // 4*2 = 8 bits
   foreach ( $secret_data as $da ) {
     $secret_data_salt [ ] = ( $da << 2 ) | ( $ra & 0b11 ) ;
-    $ra >>= 2 ; }
-  return  $secret_data_salt ; }
+    $ra >>= 2 ;
+  }
+  return  $secret_data_salt ;
+}
 
 // data_size = 1 .. 3
 // get 2*3 bits => push 2*6 bits
@@ -203,14 +208,17 @@ function  shifr_data_salt3 ( array & $secret_data ) : array {
   if ( count ( $secret_data ) == 3 ) {
     // needs random [ 0 .. 0x1ff ]
     $ras = random_bytes ( 2 ) ; // 3*3 = 9 bits
-    $ra = ( ord ( substr ( $ras , 1 , 1 ) ) << 8 ) | ord ( $ras ) ; }
-  else  {
+    $ra = ( ord ( substr ( $ras , 1 , 1 ) ) << 8 ) | ord ( $ras ) ;
+  } else  {
     $ras = random_bytes ( 1 ) ;
-    $ra = ord ( $ras ) ; }
+    $ra = ord ( $ras ) ;
+  }
   foreach ( $secret_data as $da ) {
     $secret_data_salt [ ] = ( $da << 3 ) | ( $ra & 0b111 ) ;
-    $ra >>= 3 ; }
-  return  $secret_data_salt ; }
+    $ra >>= 3 ;
+  }
+  return  $secret_data_salt ;
+}
   
 // byte = 76543210b to array
 // [ 0 ] = 10 ; [ 1 ] = 32 ; [ 2 ] = 54 ; [ 3 ] = 76
@@ -222,7 +230,8 @@ function  shifr_byte_to_array2 ( int $byte ) : array {
     $byte >>= 2 ;
     ++  $i  ;
   } while ( $i < 4  ) ;
-  return  $arr ; }
+  return  $arr ;
+}
 
 function  shifr_data_xor2 ( int & $old_last_data , int & $old_last_salt ,
   array & $secret_data_salt ) {
@@ -232,7 +241,9 @@ function  shifr_data_xor2 ( int & $old_last_data , int & $old_last_salt ,
     $ids  ^=  ( $old_last_salt  <<  2 ) ;
     $ids  ^=  $old_last_data  ;
     $old_last_data = $cur_data ;
-    $old_last_salt  = $cur_salt ; } }
+    $old_last_salt  = $cur_salt ;
+  }
+}
 
 function  shifr_data_xor3 ( int & $old_last_data , int & $old_last_salt ,
   array & $secret_data_salt ) {
@@ -242,13 +253,16 @@ function  shifr_data_xor3 ( int & $old_last_data , int & $old_last_salt ,
     $ids  ^=  ( $old_last_salt  <<  3 ) ;
     $ids  ^=  $old_last_data  ;
     $old_last_data = $cur_data ;
-    $old_last_salt  = $cur_salt ; } }
+    $old_last_salt  = $cur_salt ;
+  }
+}
     
 function  shifr_crypt_decrypt ( array & $datap , array & $tablep ) : array {
   $encrp = array ( ) ;
   foreach ( $datap as $id )
     $encrp [ ] = $tablep [ $id ] ;
-  return  $encrp  ; }
+  return  $encrp  ;
+}
 
 function  shifr_decrypt_salt2 ( array & $datap , array & $tablep ,
   array & $decrp ,  & $old_last_salt ,  & $old_last_data ) {
@@ -257,7 +271,9 @@ function  shifr_decrypt_salt2 ( array & $datap , array & $tablep ,
     $newdata = ( $data_salt >> 2 ) ^ $old_last_salt ;
     $decrp [ ] = $newdata ;
     $old_last_salt = (  $data_salt & 0b11 ) ^ $old_last_data ;
-    $old_last_data  = $newdata ; } }
+    $old_last_data  = $newdata ;
+  }
+}
 
 function  shifr_decrypt_salt3 ( array & $datap , array & $tablep ,
   array & $decrp ,  & $old_last_salt ,  & $old_last_data ) {
@@ -266,7 +282,9 @@ function  shifr_decrypt_salt3 ( array & $datap , array & $tablep ,
     $newdata = ( $data_salt >> 3 ) ^ $old_last_salt ;
     $decrp [ ] = $newdata ;
     $old_last_salt = (  $data_salt & 0b111 ) ^ $old_last_data ;
-    $old_last_data  = $newdata ; } }
+    $old_last_data  = $newdata ;
+  }
+}
 
 class shifr {
   // alphabet ascii // алфавит ascii
@@ -335,12 +353,16 @@ function  shifr_encrypt2 ( shifr & $sh ) {
       $sh ->  bytecount += 3 ;
       if ( $sh -> bytecount >= 60 ) {
         $sh -> message .= "\n" ;
-        $sh -> bytecount = 0 ; } }
-    else {
+        $sh -> bytecount = 0 ;
+      }
+    } else {
       $sh -> message .=  chr ( ( $encrypteddata [ 0 ] & 0b1111 ) |
         ( ( $encrypteddata [ 1 ] & 0b1111 ) << 4 ) ) ;
       $sh -> message .=  chr ( ( $encrypteddata [ 2 ] & 0b1111 ) |
-        ( ( $encrypteddata [ 3 ] & 0b1111 ) << 4 ) ) ; } } }
+        ( ( $encrypteddata [ 3 ] & 0b1111 ) << 4 ) ) ;
+    }
+  }
+}
         
 function shifr_byte_to_array3 ( shifr & $sh , int $charcode )
   : array {
@@ -369,8 +391,10 @@ function shifr_byte_to_array3 ( shifr & $sh , int $charcode )
       echo 'неожиданное значение bitscount = '  . $sh -> bitscount  ;
     else
       echo 'unexpected value bitscount = '  . $sh -> bitscount ;
-    return  array ( ) ; }
-  return  $secret_data  ; }
+    return  array ( ) ;
+  }
+  return  $secret_data  ;
+}
     
 function  shifr_write_array ( shifr & $sh , array $secret_data  ) {
   $secret_data_salt = shifr_data_salt3 ( $secret_data ) ;
@@ -383,51 +407,65 @@ function  shifr_write_array ( shifr & $sh , array $secret_data  ) {
       ++ $sh -> bytecount ;
       if ( $sh -> bytecount >= 60 ) {
         $sh -> message .= "\n" ;
-        $sh -> bytecount = 0 ; } } }
-  else
+        $sh -> bytecount = 0 ;
+      }
+    }
+  } else
     foreach ( $encrypteddata as $ed ) {
       if  ( $sh ->  out_bufbitsize  < 2 ) {
         $sh ->  out_buf |=  ( $ed << ( $sh ->  out_bufbitsize ) ) ;
-        $sh ->  out_bufbitsize  +=  6 ; }
-      else  {
+        $sh ->  out_bufbitsize  +=  6 ;
+      } else  {
         $sh -> message  .=  chr (
           ( ( $ed << ( $sh ->  out_bufbitsize ) ) & 0xff ) | $sh ->  out_buf ) ;
         // + 6 - 8
         $sh -> out_bufbitsize -= 2 ;
         $sh -> out_buf  = $ed >>
-          ( 6 - ( $sh -> out_bufbitsize ) ) ; } } }
+          ( 6 - ( $sh -> out_bufbitsize ) ) ;
+      }
+    }
+}
         
 function  shifr_encrypt3 ( shifr & $sh ) {
   $message_array = str_split  ( $sh -> message  ) ;
   $sh -> message =  ''  ;
   foreach ( $message_array as $char ) 
-    shifr_write_array ( $sh , shifr_byte_to_array3 ( $sh , ord ( $char ) ) ) ; }
+    shifr_write_array ( $sh , shifr_byte_to_array3 ( $sh , ord ( $char ) ) ) ;
+}
 
 function  shifr_flush ( shifr & $sh ) {
   if ( $sh  -> bitscount ) {
     shifr_write_array ( $sh , array ( $sh -> bufin ) ) ;
-    $sh -> bitscount = 0 ; }
+    $sh -> bitscount = 0 ;
+  }
   if  ( $sh ->  out_bufbitsize ) {
     $sh -> message .= $sh ->  out_buf ;
-    $sh ->  out_bufbitsize = 0 ; }
+    $sh ->  out_bufbitsize = 0 ;
+  }
   if ( $sh  ->  flagtext and $sh -> bytecount )  {
     $sh -> bytecount = 0 ;
-    $sh -> message .= "\n"  ; }
+    $sh -> message .= "\n"  ;
+  }
   $sh ->  old_last_data  = 0 ;
-  $sh ->  old_last_salt  = 0 ; }
+  $sh ->  old_last_salt  = 0 ;
+}
 
 function  shifr_flush_file  ( shifr & $sh , & $fpw ) {
   if ( $sh  -> bitscount ) {
     $sh -> message = ''  ;
     shifr_write_array ( $sh , array ( $sh -> bufin ) ) ;
     $sh -> bitscount = 0 ;
-    fwrite  ( $fpw , $sh  -> message ) ; }
+    fwrite  ( $fpw , $sh  -> message ) ;
+  }
   if  ( $sh ->  out_bufbitsize ) {
     fwrite  ( $fpw , $sh ->  out_buf ) ;
-    $sh ->  out_bufbitsize = 0 ; }
+    $sh ->  out_bufbitsize = 0 ;
+  }
   if ( $sh  ->  flagtext and $sh -> bytecount )  {
     $sh -> bytecount = 0 ;
-    fwrite  ( $fpw , "\n" ) ; } }
+    fwrite  ( $fpw , "\n" ) ;
+  }
+}
     
 // читаю 6 бит
 // 6 bits reads
@@ -436,7 +474,8 @@ function  isEOFstreambuf_read6bits ( shifr & $sh , array & $encrypteddata ) : bo
     $sh -> in_bufbitsize -=  6 ;
     $encrypteddata [ ] = $sh -> in_buf & ( 0x40 - 1 ) ;
     $sh -> in_buf  >>= 6 ;
-    return  false ; }
+    return  false ;
+  }
   if ( $sh -> decode_read_index >= strlen ( $sh -> message ) )
     return true ;
   $reads = ord ( $sh -> message [ $sh -> decode_read_index ] ) ;
@@ -448,28 +487,34 @@ function  isEOFstreambuf_read6bits ( shifr & $sh , array & $encrypteddata ) : bo
       if ( $sh -> decode_read_index >= strlen ( $sh -> message ) )
         return true ;
       $reads = ord ( $sh -> message [ $sh -> decode_read_index ] ) ;
-      ++  $sh -> decode_read_index  ; }
-    $encrypteddata [ ] = $reads - ord ( ';' ) ; } // flagtext
-  else  {
+      ++  $sh -> decode_read_index  ;
+    }
+    $encrypteddata [ ] = $reads - ord ( ';' ) ;
+  // flagtext
+  } else  {
     $encrypteddata [ ] = ( $sh -> in_buf | 
       ( $reads <<  $sh -> in_bufbitsize ) ) & ( 0x40 - 1 )  ;
     $sh -> in_buf = $reads >>  ( 6 - $sh -> in_bufbitsize ) ;
-    $sh -> in_bufbitsize +=  2 ; } // + 8 - 6
-  return  false ; }
+    $sh -> in_bufbitsize +=  2 ;
+  } // + 8 - 6
+  return  false ;
+}
     
 // версия 3 пишу три бита для расшифровки
 // version 3 write three bits to decode
 function  streambuf_write3bits ( shifr & $sh , $decrypteddata ) {
   if  ( $sh -> out_bufbitsize < 5 ) {
     $sh -> out_buf |= ( $decrypteddata << ( $sh -> out_bufbitsize ) ) ;
-    $sh -> out_bufbitsize +=  3 ; }
-  else  {
+    $sh -> out_bufbitsize +=  3 ;
+  } else  {
     $to_write  = ( ( $decrypteddata << $sh -> out_bufbitsize ) |
       ( $sh -> out_buf ) ) & 0xff ;
     $sh -> messageout .= chr ( $to_write ) ;
     // + 3 - 8
     $sh -> out_bufbitsize -= 5 ;
-    $sh -> out_buf = $decrypteddata >> ( 3 - ( $sh -> out_bufbitsize ) ) ; } }
+    $sh -> out_buf = $decrypteddata >> ( 3 - ( $sh -> out_bufbitsize ) ) ;
+  }
+}
     
 function  shifr_decrypt3 ( shifr & $sh ) {
   $secretdata = array ( ) ;
@@ -481,8 +526,10 @@ function  shifr_decrypt3 ( shifr & $sh ) {
       shifr_decrypt_salt3 ( $secretdata , $sh -> deshia , $decrypteddata ,
         $sh -> old_last_salt ,  $sh -> old_last_data ) ;
     $secretdata = array ( ) ;
-    streambuf_write3bits ( $sh , $decrypteddata [ 0 ] ) ; }
-  $sh -> message = $sh -> messageout ; }
+    streambuf_write3bits ( $sh , $decrypteddata [ 0 ] ) ;
+  }
+  $sh -> message = $sh -> messageout ;
+}
     
 function  shifr_decrypt2 ( shifr & $sh ) {
   $message_array = str_split  ( $sh -> message  ) ;
@@ -494,7 +541,8 @@ function  shifr_decrypt2 ( shifr & $sh ) {
           ord ( $message_array [ $i ] ) > ord ( 'z' ) )  {
           ++  $i  ;
           if ( $i >= count ( $message_array  ) )
-            break ;  }
+            break ;  
+        }
         if ( $i >= count  (  $message_array  ) )
           break ; 
         $sh ->  buf3 [ ] = ord ( $message_array [ $i ] ) - ord ( 'R' ) ;
@@ -520,9 +568,9 @@ function  shifr_decrypt2 ( shifr & $sh ) {
         $sh -> message .= chr ( ( $decrypteddata [ 0 ] & 0x3  ) |
           ( ( $decrypteddata [ 1 ] & 0x3  ) << 2  ) |
           ( ( $decrypteddata [ 2 ] & 0x3  ) <<  4 ) |
-          ( ( $decrypteddata [ 3 ] & 0x3  ) << 6  ) ) ; } // for $i    
-    }
-  else {
+          ( ( $decrypteddata [ 3 ] & 0x3  ) << 6  ) ) ;
+    } // for $i    
+  } else {
     // binary
     for ( $i = 0 ; $i < count ( $message_array  ) - 1 ; $i += 2 ) {
       $secretdata = array (
@@ -536,7 +584,10 @@ function  shifr_decrypt2 ( shifr & $sh ) {
       $sh -> message .= chr ( ( $decrypteddata [ 0 ] & 0x3  ) |
           ( ( $decrypteddata [ 1 ] & 0x3  ) << 2  ) |
           ( ( $decrypteddata [ 2 ] & 0x3  ) <<  4 ) |
-          ( ( $decrypteddata [ 3 ] & 0x3  ) << 6  ) ) ; } } }    
+          ( ( $decrypteddata [ 3 ] & 0x3  ) << 6  ) ) ;
+    }
+  }
+}
     
 // number /= div , number := floor [ деление ] , return := остаток (remainder)
 function  number_div8_mod ( array & $number , int $div ) : int {
@@ -546,33 +597,42 @@ function  number_div8_mod ( array & $number , int $div ) : int {
     -- $i ;
     $x = ( $modi << 8 ) | ( $number [ $i  ] ) ;
     $modi = $x % $div  ;
-    $number [ $i  ] = intdiv  ( $x , $div  ) ;  }
+    $number [ $i  ] = intdiv  ( $x , $div  ) ; 
+  }
   $i = count  ( $number ) ;
   while ( $i > 0 )  {
     -- $i ;
     if ( $number [ $i  ] != 0 )
       break ;
-    unset ( $number [ $i  ] ) ; }
-  return  $modi ; }
+    unset ( $number [ $i  ] ) ;
+  }
+  return  $modi ;
+}
     
 function  number_dec  ( array & $number ) {
   for ( $i = 0 ; $i < count  ( $number ) ; ++ $i )  {
     if ( $number [ $i  ] != 0 ) {
       $number [ $i  ] = $number [ $i  ] - 1 ;
-      break ; }
-    $number [ $i  ] = 0xff  ; }
+      break ;
+    }
+    $number [ $i  ] = 0xff  ;
+  }
   if ( $i == count  ( $number ) ) {
     echo  'number_dec:$i == count  ( $number )' ;
-    return  ; }
+    return  ;
+  }
   $i = count  ( $number ) ;
   while ( $i > 0 )  {
     -- $i ;
     if ( $number [ $i  ] != 0 ) 
       break ;
-    unset ( $number [ $i  ] ) ; } }
+    unset ( $number [ $i  ] ) ;
+  }
+}
     
 function  number_not_zero ( array & $number ) {
-  return  count  ( $number ) >  0 ; }
+  return  count  ( $number ) >  0 ;
+}
 
 function  shifr_password_to_string ( shifr & $sh , array $passworda ) : string {
   switch  ( $sh  ->  letters_mode ) {
@@ -589,18 +649,22 @@ function  shifr_password_to_string ( shifr & $sh , array $passworda ) : string {
     $letters  = $sh ->  letters10  ;
     break ;
   default :
-    return  ''  ; }
+    return  ''  ;
+  }
   $letters_count  = count ( $letters  ) ;
   $str = '' ;
   if ( number_not_zero ( $passworda ) ) {
     do {
       number_dec ( $passworda ) ;
       $str .= $letters [ number_div8_mod ( $passworda , $letters_count ) ] ;
-    } while ( number_not_zero ( $passworda ) ) ; }
-  return $str ; }
+    } while ( number_not_zero ( $passworda ) ) ;
+  }
+  return $str ;
+}
   
 function  number_set_zero ( array & $number ) {
-  $number = array ( ) ; }
+  $number = array ( ) ;
+}
 
 function  number_set_byte ( array & $number , int $byte ) {
   if ( $byte != 0 ) {
@@ -608,9 +672,10 @@ function  number_set_byte ( array & $number , int $byte ) {
       return  ; 
     if ( $byte >= 0x100 ) 
       return  ; 
-    $number = array ( $byte ) ; }
-  else
-    $number = array ( ) ; }
+    $number = array ( $byte ) ;
+  } else
+    $number = array ( ) ;
+}
   
 function  number_add  ( array & $num , array & $xnum ) {
   $per = 0 ;
@@ -618,10 +683,12 @@ function  number_add  ( array & $num , array & $xnum ) {
     $s = $num [ $i ] + $xnum [ $i ] + $per ;
     if ( $s >= 0x100  ) {
       $num [ $i ] = $s - 0x100 ;
-      $per = 1 ; }
-    else  {
+      $per = 1 ;
+    } else  {
       $num [ $i ] = $s  ;
-      $per = 0 ;  } }
+      $per = 0 ; 
+    }
+  }
   if ( count  ( $num ) > count  ( $xnum ) ) {
     if ( $per == 0 ) 
       return  ;
@@ -629,26 +696,34 @@ function  number_add  ( array & $num , array & $xnum ) {
       $s = $num [ $i ] + 1 ;
       if ( $s < 0x100  ) {
         $num [ $i ] = $s  ;
-        return ;  }
-      $num [ $i ] = 0 ;  }
+        return ; 
+      }
+      $num [ $i ] = 0 ; 
+    }
     $num [ $i ] = 1 ;
-    return  ; }
+    return  ;
+  }
   if ( count  ( $num ) < count  ( $xnum ) ) {
     for ( ; $i < count  ( $xnum ) ; ++ $i )  {
       $s = $xnum [ $i ] + $per ;
       if ( $s == 0x100  ) {
         $num [ $i ] = 0 ;
-        $per  = 1 ; }
-      else  {
+        $per  = 1 ;
+      } else  {
         $num [ $i ] = $s  ;
-        $per  = 0 ; } } }
+        $per  = 0 ;
+      }
+    }
+  }
   if ( $per > 0 )
-    $num [ $i ] = 1 ; }
+    $num [ $i ] = 1 ;
+}
 
 function  number_mul_byte ( array & $number , int $byte ) {
   if ( $byte == 0 ) {
     $number = array ( ) ;
-    return  ; }
+    return  ;
+  }
   if ( $byte == 1 )
     return ;
   if ( $byte < 0 ) 
@@ -659,9 +734,11 @@ function  number_mul_byte ( array & $number , int $byte ) {
   for ( $i = 0 ; $i < count  ( $number ) ; ++ $i )  {
     $x = $number [ $i ] *  $byte  + $per ;
     $number [ $i ] = $x & 0xff ;
-    $per = $x >> 8 ; }
+    $per = $x >> 8 ;
+  }
   if ( $per > 0 )
-    $number [ $i ] = $per ; }
+    $number [ $i ] = $per ;
+}
   
 // [ 0..15 , 0..14 , 0..13 , ... , 0..2 , 0..1 ] = [ x , y , z , ... , u , v ] =
 // = x + y * 16 + z * 16 * 15 + ... + u * 16! / 2 / 3 + v * 16! / 2 = 0 .. 16!-1
@@ -673,12 +750,14 @@ function  shifr_pass_to_array2 ( array $password ) : array {
     { // $re += $password [ $in ] * $mu ;
       $mux = $mu ;
       number_mul_byte ( $mux  , $password [ $in ] ) ;
-      number_add  ( $re , $mux  ) ; }
+      number_add  ( $re , $mux  ) ;
+    }
     //$mu *=  16 - $in ;
     number_mul_byte ( $mu , 0x10 - $in  ) ;
     ++  $in ;
   } while ( $in < 0x0f ) ;
-  return  $re ; }
+  return  $re ;
+}
 
 // [ 0..63 , 0..62 , 0..61 , ... , 0..2 , 0..1 ] = [ x , y , z , ... , u , v ] =
 // = x + y * 64 + z * 64 * 63 + ... + u * 64! / 2 / 3 + v * 64! / 2 = 0 .. 64!-1
@@ -690,12 +769,14 @@ function  shifr_pass_to_array3 ( array $password ) : array {
     { // $re += $password [ $in ] * $mu ;
       $mux = $mu ;
       number_mul_byte ( $mux  , $password [ $in ] ) ;
-      number_add  ( $re , $mux  ) ; }
+      number_add  ( $re , $mux  ) ;
+    }
     //$mu *=  64 - $in ;
     number_mul_byte ( $mu , 0x40 - $in  ) ;
     ++  $in ;
   } while ( $in < 0x3f ) ;
-  return  $re ; }
+  return  $re ;
+}
   
 function  shifr_password_load2  ( shifr & $sh , array $password ) {
   $sh -> shifra = array_fill  ( 0 , 0x10 , 0xff  ) ;
@@ -711,7 +792,8 @@ function  shifr_password_load2  ( shifr & $sh , array $password ) {
     unset ( $arrind [ $cindex ] ) ;
     $arrind = array_values ( $arrind ) ;
     ++ $inde  ;
-  } while ( $inde < 0x10 ) ; }
+  } while ( $inde < 0x10 ) ;
+}
 
 function  shifr_password_load3  ( shifr & $sh , array $password ) {
   $sh -> shifra = array_fill  ( 0 , 0x40 , 0xff  ) ;
@@ -727,7 +809,8 @@ function  shifr_password_load3  ( shifr & $sh , array $password ) {
     unset ( $arrind [ $cindex ] ) ;
     $arrind = array_values ( $arrind ) ;
     ++ $inde  ;
-  } while ( $inde < 0x40 ) ; }
+  } while ( $inde < 0x40 ) ;
+}
 
 function  shifr_generate_password  ( shifr & $shifr ) {
   $ar = null  ;
@@ -738,13 +821,15 @@ function  shifr_generate_password  ( shifr & $shifr ) {
   $str_psw  = shifr_password_to_string ( $shifr , $ar ) ;
   if  ( $shifr -> flag_debug  )
     $shifr -> array_log [ ] = 'shifr_generate_password `' . $str_psw . '`' ;
-  shifr_password_set ( $shifr , $str_psw ) ; }
+  shifr_password_set ( $shifr , $str_psw ) ;
+}
   
 function  shifr_password_set  ( shifr & $shifr ,  $password ) {
   if  ( $shifr -> flag_debug  )
     $shifr -> array_log [ ] = 'shifr_password_set `' . $password . '`' ;
   $shifr  ->  password  = $password ;
-  shifr_string_to_key_array ( $shifr , $password ) ; }
+  shifr_string_to_key_array ( $shifr , $password ) ;
+}
 
 function  shifr_string_to_key_array  ( shifr & $sh , string & $str ) {
   $strn = strlen  ( $str  ) ;
@@ -755,7 +840,8 @@ function  shifr_string_to_key_array  ( shifr & $sh , string & $str ) {
       return  shifr_password_load2  ( $sh , $passarr ) ; 
     else 
       return  shifr_password_load3  ( $sh , $passarr ) ;
-    return $passarr ; }
+    return $passarr ;
+  }
   switch  ( $sh ->  letters_mode ) {
   case  95  :
     $letters  = $sh ->  letters95  ;
@@ -770,7 +856,8 @@ function  shifr_string_to_key_array  ( shifr & $sh , string & $str ) {
     $letters  = $sh ->  letters10  ;
     break ;
   default :
-    return  ; }
+    return  ; 
+  }
   $letters_count  = count ( $letters  ) ;
   $mult = array ( ) ;
   number_set_byte ( $mult , 1 ) ;
@@ -786,7 +873,8 @@ function  shifr_string_to_key_array  ( shifr & $sh , string & $str ) {
       if  ( $sh -> localerus ) 
         $sh -> array_log [ ] = 'неправильная буква в пароле'  ;
       else 
-        $sh -> array_log [ ] = 'wrong letter in password' ; }
+        $sh -> array_log [ ] = 'wrong letter in password' ;
+    }
     return array ( ) ;
 found :
     $tmp = $mult ;
@@ -799,18 +887,21 @@ found :
     return  shifr_password_load2  ( $sh , $passarr ) ; 
   else 
     return  shifr_password_load3  ( $sh , $passarr ) ;
-  return  $passarr ; }
+  return  $passarr ; 
+}
   
 function  shifr_set_version ( shifr & $sh , $ver  ) {
   if  ( $ver  ==  2 )
     $sh ->  key_mode = 45 ;
   else 
-    $sh ->  key_mode = 296 ;  }
+    $sh ->  key_mode = 296 ; 
+}
 
 function  shifr_version ( shifr & $sh ) {
   if  ( $sh ->  key_mode == 45 )
     return 2 ;
-  return  3 ; }
+  return  3 ;
+}
 
 function  shifr_init ( shifr & $sh ) {
   //  ascii ' ' => '~'
@@ -855,22 +946,25 @@ function  shifr_init ( shifr & $sh ) {
   $sh ->  filename  = ""  ;
   $sh ->  flag_debug  = false ;
   $sh ->  array_log = array ( ) ;
-  }
+}
 
 function  shifr_password_get  ( shifr & $shifr ) {
-  return  $shifr  ->  password  ; }
+  return  $shifr  ->  password  ; 
+}
 
 function  shifr_encrypt  ( shifr & $shifr ) {
   if ( shifr_version  ( $shifr  ) == 2 ) 
     shifr_encrypt2 ( $shifr ) ; 
   else 
-    shifr_encrypt3 ( $shifr  ) ; }
+    shifr_encrypt3 ( $shifr  ) ;
+}
 
 function  shifr_decrypt  ( shifr & $shifr ) {
   if ( shifr_version  ( $shifr  ) == 2 ) 
     shifr_decrypt2 ( $shifr ) ; 
   else 
-    shifr_decrypt3 ( $shifr ) ; }
+    shifr_decrypt3 ( $shifr ) ;
+}
 
 // '0x00','0xf0','0x0f','0xff' <= "aa" + "ap" + "pa" + "pp"
 function  shifr_Base64_decode_univer  ( string & $string  , $start_letter ,
@@ -889,8 +983,10 @@ function  shifr_Base64_decode_univer  ( string & $string  , $start_letter ,
     } while ( $cache_size < 8 and $i  < $strlen ) ;
     $result .=  chr ( $cache  & 0xff  ) ;
     $cache  >>= 8 ;
-    $cache_size -=  8 ; }
-  return  $result ; }
+    $cache_size -=  8 ;
+  }
+  return  $result ;
+}
 
 /*
 Base64 = ( ;<=> ?@AB CDEF GHIJ
@@ -899,6 +995,7 @@ Base64 = ( ;<=> ?@AB CDEF GHIJ
            klmn opqr stuv wxyz )
 */
 function  shifr_Base64_decode ( string & $string ) : string {
-  return  shifr_Base64_decode_univer  ( $string , ";" , 6 ) ; }
+  return  shifr_Base64_decode_univer  ( $string , ";" , 6 ) ;
+}
 
 ?>

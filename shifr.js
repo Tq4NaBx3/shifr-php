@@ -103,7 +103,8 @@ let js_shifr_rand_fr_to = function  ( fr , to ) {
   do {
     window  . crypto  . getRandomValues ( array ) ;
   } while ( array [ 0 ] + 0x100 % wid >= 0x100 ) ;
-  return  fr + array [ 0 ] % wid ; }
+  return  fr + array [ 0 ] % wid ;
+}
 
 // returns [ 0..15 , 0..14 , ... , 0..2 , 0..1 ]
 let js_shifr_generate_pass2 = function (  ) {
@@ -114,7 +115,8 @@ let js_shifr_generate_pass2 = function (  ) {
     dice  . push  ( r ) ;
     --  i ;
   } while ( i > 0 ) ;
-  return  dice  ; }
+  return  dice  ;
+}
 
 // returns [ 0..63 , 0..62 , ... , 0..2 , 0..1 ]
 let js_shifr_generate_pass3 = function  ( ) {
@@ -125,7 +127,8 @@ let js_shifr_generate_pass3 = function  ( ) {
     dice  . push  ( r ) ;
     --  i ;
   } while ( i > 0 ) ;
-  return  dice  ; }
+  return  dice  ;
+}
 
 // get 4*2 bits => push 4*4 bits
 let js_shifr_data_salt2 = function  ( secret_data ) {
@@ -135,8 +138,10 @@ let js_shifr_data_salt2 = function  ( secret_data ) {
   let ra  = array [ 0 ] ; // 4*2 = 8 bits
   for ( let da  of  secret_data ) {
     secret_data_salt  . push  ( ( da  << 2 ) | ( ra & 0b11 ) ) ;
-    ra  >>= 2 ; }
-  return  secret_data_salt  ; }
+    ra  >>= 2 ;
+  }
+  return  secret_data_salt  ;
+}
   
 // get 2*3 bits => push 2*6 bits
 // get 3*3 bits => push 3*6 bits
@@ -147,15 +152,19 @@ let js_shifr_data_salt3 = function  ( secret_data ) {
     // needs random [ 0 .. 0x1ff ]
     const array = new Uint8Array  ( 2 ) ;
     window  . crypto  . getRandomValues ( array ) ;
-    ra = ( array  [ 1 ] << 8 ) | ( array [ 0 ] ) ; } // 3*3 = 9 bits
-  else  {
+    ra = ( array  [ 1 ] << 8 ) | ( array [ 0 ] ) ;
+    // 3*3 = 9 bits
+  } else  {
     const array = new Uint8Array  ( 1 ) ;
     window  . crypto  . getRandomValues ( array ) ;
-    ra = array [ 0 ] ; }
+    ra = array [ 0 ] ;
+  }
   for ( let da  of  secret_data ) {
     secret_data_salt  . push  ( ( da  << 3 ) | ( ra & 0b111 ) ) ;
-    ra >>= 3 ; }
-  return  secret_data_salt  ; }
+    ra >>= 3 ;
+  }
+  return  secret_data_salt  ;
+}
 
 // byte = 76543210b to array
 // [ 0 ] = 10 ; [ 1 ] = 32 ; [ 2 ] = 54 ; [ 3 ] = 76
@@ -167,7 +176,8 @@ let js_shifr_byte_to_array2 =  function  ( byte ) {
     byte >>= 2 ;
     ++  i ;
   } while ( i < 4 ) ;
-  return  arr ; }
+  return  arr ;
+}
 
 // old_last_data = { n : }
 // old_last_salt = { n : }
@@ -182,7 +192,9 @@ let js_shifr_data_xor2  = function  ( old_last_data , old_last_salt ,
     secret_data_salt  [ i ] ^=  ( old_last_salt . n  <<  2 ) ;
     secret_data_salt  [ i ] ^=  old_last_data . n ;
     old_last_data . n = cur_data ;
-    old_last_salt . n = cur_salt ; } }
+    old_last_salt . n = cur_salt ;
+  }
+}
 
 let js_shifr_data_xor3  = function  ( old_last_data , old_last_salt ,
   secret_data_salt  ) {
@@ -194,13 +206,16 @@ let js_shifr_data_xor3  = function  ( old_last_data , old_last_salt ,
     secret_data_salt  [ i ] ^=  ( old_last_salt . n  <<  3 ) ;
     secret_data_salt  [ i ] ^=  old_last_data . n ;
     old_last_data . n = cur_data ;
-    old_last_salt . n = cur_salt ; } }
+    old_last_salt . n = cur_salt ;
+  }
+}
 
 let js_shifr_crypt_decrypt  = function  ( datap , tablep ) {
   let encrp = new Array ( ) ;
   for ( let id  of datap )
     encrp . push  ( tablep  [ id  ] ) ;
-  return  encrp ; }
+  return  encrp ;
+}
 
 // old_last_data = { n : }
 // old_last_salt = { n : }
@@ -211,7 +226,9 @@ let js_shifr_decrypt_salt2  = function  ( datap , tablep , decrp ,
     const newdata = ( data_salt >> 2 ) ^ old_last_salt . n ;
     decrp . push ( newdata ) ;
     old_last_salt . n = (  data_salt & 0b11 ) ^ old_last_data . n ;
-    old_last_data . n = newdata ; } }
+    old_last_data . n = newdata ;
+  }
+}
 
 let js_shifr_decrypt_salt3  = function  ( datap , tablep , decrp , 
   old_last_salt , old_last_data ) {
@@ -220,7 +237,9 @@ let js_shifr_decrypt_salt3  = function  ( datap , tablep , decrp ,
     const newdata = ( data_salt >> 3 ) ^ old_last_salt . n ;
     decrp . push ( newdata ) ;
     old_last_salt . n = (  data_salt & 0b111 ) ^ old_last_data . n ;
-    old_last_data . n = newdata ; } }
+    old_last_data . n = newdata ;
+  } 
+}
 /*
 class shifr {
   // alphabet ascii // алфавит ascii
@@ -269,13 +288,13 @@ let js_toUTF8Array = function ( str ) {
           utf8.push(charcode);
         else if (charcode < 0x800) {
             utf8.push(0xc0 | (charcode >> 6),
-                      0x80 | (charcode & 0x3f)); }
-        else if (charcode < 0xd800 || charcode >= 0xe000) {
+                      0x80 | (charcode & 0x3f));
+        } else if (charcode < 0xd800 || charcode >= 0xe000) {
             utf8.push(0xe0 | (charcode >> 12),
                       0x80 | ((charcode>>6) & 0x3f),
-                      0x80 | (charcode & 0x3f)); }
-        // surrogate pair
-        else {
+                      0x80 | (charcode & 0x3f));
+        } else {
+          // surrogate pair
             i++;
             // UTF-16 encodes 0x10000-0x10FFFF by
             // subtracting 0x10000 and splitting the
@@ -285,8 +304,11 @@ let js_toUTF8Array = function ( str ) {
             utf8.push(0xf0 | (charcode >>18),
                       0x80 | ((charcode>>12) & 0x3f),
                       0x80 | ((charcode>>6) & 0x3f),
-                      0x80 | (charcode & 0x3f)); } }
-    return utf8; }
+                      0x80 | (charcode & 0x3f)); 
+        }
+    }
+    return utf8; 
+}
 
 
 let js_Utf8ArrayToStr  = function (  array ) {
@@ -306,7 +328,8 @@ let js_Utf8ArrayToStr  = function (  array ) {
         { let char2 = array [ i ] ;
           ++  i ;
           out += String . fromCharCode  (
-            ( ( c & 0x1F  ) << 6  ) | ( char2 & 0x3F  ) ) ; }
+            ( ( c & 0x1F  ) << 6  ) | ( char2 & 0x3F  ) ) ;
+        }
         break ;
       case 14:
         // 1110 xxxx  10xx xxxx  10xx xxxx
@@ -317,9 +340,14 @@ let js_Utf8ArrayToStr  = function (  array ) {
             ++  i ;
             out += String . fromCharCode  ( ( ( c & 0x0F  ) << 12 ) |
                        (  ( char2 & 0x3F  ) << 6  ) |
-                       (  ( char3 & 0x3F  ) << 0  ) ) ; } }
-        break ; } }
-    return out  ; }
+                       (  ( char3 & 0x3F  ) << 0  ) ) ; 
+          }
+        }
+        break ;
+      }
+    }
+    return out  ;
+}
     
 // sh . message_array of bytes -> sh . message of bytes
 // if flagtext :               -> sh . message of characters
@@ -347,12 +375,16 @@ let js_shifr_encrypt2 = function ( sh ) {
       sh . bytecount += 3 ;
       if ( sh . bytecount >= 60 ) {
         sh . message += "\n" ;
-        sh . bytecount = 0 ; } }
-    else {
+        sh . bytecount = 0 ;
+      }
+    } else {
       sh . message . push ( ( encrypteddata [ 0 ] & 0b1111 ) |
         ( ( encrypteddata [ 1 ] & 0b1111 ) << 4 ) ) ;
       sh . message . push ( ( encrypteddata [ 2 ] & 0b1111 ) |
-        ( ( encrypteddata [ 3 ] & 0b1111 ) << 4 ) ) ; } } }
+        ( ( encrypteddata [ 3 ] & 0b1111 ) << 4 ) ) ;
+    }
+  }
+}
 
 let js_shifr_byte_to_array3 = function ( sh , charcode ) {
   let secret_data ;
@@ -381,8 +413,10 @@ let js_shifr_byte_to_array3 = function ( sh , charcode ) {
       console . log ( 'неожиданное значение bitscount = ' + sh . bitscount ) ;
     else
       console . log ( 'unexpected value bitscount = '  + sh . bitscount ) ;
-    return  ; }
-  return  secret_data  ; }
+    return  ;
+  }
+  return  secret_data  ;
+}
   
 // if binary   : push to array 
 // if flagtext : push to string
@@ -398,44 +432,54 @@ let js_shifr_write_array  = function  ( sh , secret_data  ) {
       ++ ( sh . bytecount ) ;
       if ( sh . bytecount >= 60 ) {
         sh . message += "\n" ;
-        sh . bytecount = 0 ; } } }
-  else
+        sh . bytecount = 0 ;
+      }
+    }
+  } else
     for ( let ed  of  encrypteddata ) {
       if  ( sh .  out_bufbitsize  < 2 ) {
         sh .  out_buf |=  ( ed << ( sh .  out_bufbitsize ) ) ;
-        sh .  out_bufbitsize  +=  6 ; }
-      else  {
+        sh .  out_bufbitsize  +=  6 ;
+      } else  {
         sh . message  . push (
           ( ( ed << ( sh .  out_bufbitsize ) ) & 0xff ) | sh .  out_buf ) ;
         // + 6 - 8
         sh . out_bufbitsize -= 2 ;
-        sh . out_buf  = ed >> ( 6 - ( sh . out_bufbitsize ) ) ; } } }
+        sh . out_buf  = ed >> ( 6 - ( sh . out_bufbitsize ) ) ;
+      }
+    }
+}
 
 // sh . message_array of bytes -> sh . message as array of bytes
 // if flagtext :               -> sh . message as string
 let js_shifr_encrypt3 = function ( sh ) {
   for ( let char of sh . message_array ) {
-    js_shifr_write_array ( sh , js_shifr_byte_to_array3 ( sh , char ) ) ; } }
+    js_shifr_write_array ( sh , js_shifr_byte_to_array3 ( sh , char ) ) ;
+  }
+}
 
 let js_shifr_flush  = function  ( sh ) {
   if ( sh . bitscount ) {
     js_shifr_write_array ( sh , [ sh . bufin ] ) ;
-    sh . bitscount = 0 ; }
+    sh . bitscount = 0 ;
+  }
   if  ( sh . out_bufbitsize ) {
     if ( sh . flagtext  )
       sh . message += sh . out_buf ;
     else
       sh . message . push ( sh . out_buf ) ;
-    sh . out_bufbitsize = 0 ; }
+    sh . out_bufbitsize = 0 ;
+  }
   if ( sh . flagtext && sh . bytecount )  {
     sh . bytecount = 0 ;
-    sh . message += "\n"  ; }
+    sh . message += "\n"  ;
+  }
     
   // ?? _init will make it
   // sh . old_last_data  = { n : 0 } ;
   // sh . old_last_salt  = { n : 0 } ;
   
-  }
+}
     
 let js_shifr_generate_password = function ( sh  ) {
   let ar  ;
@@ -446,49 +490,61 @@ let js_shifr_generate_password = function ( sh  ) {
   let str_psw = js_shifr_password_to_string ( sh , ar  ) ;
   if  ( sh . flag_debug )
     sh . array_log . push ( "js_shifr_generate_password `" + str_psw + "`" ) ;
-  js_shifr_password_set ( sh , str_psw ) ; }
+  js_shifr_password_set ( sh , str_psw ) ;
+}
 
 let js_shifr_password_set = function ( shifr , password ) {
   if  ( shifr . flag_debug )
     shifr . array_log . push ( "js_shifr_password_set `" + password + "`" ) ;
   shifr . password  = password  ;
-  js_shifr_string_to_key_array ( shifr ,  password ) ; }
+  js_shifr_string_to_key_array ( shifr ,  password ) ;
+}
 
 let js_number_dec = function  ( number ) {
   let i = 0 ;
   for ( ; i < number . length ; ++ i ) {
     if ( number [ i ] != 0 ) {
       number [ i ] = number [ i ] - 1 ;
-      break ; }
-    number [ i ] = 0xff  ; }
+      break ;
+    }
+    number [ i ] = 0xff  ;
+  }
   if ( i == ( number . length ) ) {
     console . log ( 'js_number_dec:i == ( number . length )' ) ;
-    return  ; }
+    return  ;
+  }
   i = ( number . length ) ;
   while ( i > 0 ) {
     -- i ;
     if ( number [ i ] != 0 ) 
       break ;
-    number . pop ( ) ; } }
+    number . pop ( ) ;
+  }
+}
 
 let js_number_not_zero  = function ( number ) {
-  return  ( number . length ) >  0 ; }
+  return  ( number . length ) >  0 ;
+}
 
 let js_number_set_zero = function  ( number ) {
-  number . length = 0 ; }
+  number . length = 0 ;
+}
   
 let js_number_set_byte  = function  ( number , byte ) {
   if ( byte != 0 ) {
     if ( byte < 0 ) {
       alert ( 'js_number_set_byte:byte < 0' ) ;
-      return  ; }
+      return  ;
+    }
     if ( byte >= 0x100 ) {
       alert ( 'js_number_set_byte:byte >= 0x100' ) ;
-      return  ; }
+      return  ;
+    }
     number . length = 1 ;
-    number [ 0 ] = byte ; }
-  else
-    number . length = 0 ; }
+    number [ 0 ] = byte ;
+  } else
+    number . length = 0 ;
+}
 
 // number /= div , number := floor [ деление ] , return := остаток (remainder)
 let js_number_div8_mod = function  ( number , div ) {
@@ -498,14 +554,18 @@ let js_number_div8_mod = function  ( number , div ) {
       -- i ;
       let x = ( modi << 8 ) | ( number [ i ] ) ;
       modi = x % div ;
-      number [ i ] = ( ( x - modi ) / div ) ; } }
+      number [ i ] = ( ( x - modi ) / div ) ;
+    }
+  }
   let i = ( number . length ) ;
   while ( i > 0 ) {
     -- i ;
     if ( number [ i ] != 0 )
       break ;
-    number . pop ( ) ; }
-  return  modi ; }
+    number . pop ( ) ;
+  }
+  return  modi ;
+}
   
 let js_shifr_password_to_string = function ( sh , passworda ) {
   let letters ;
@@ -523,36 +583,44 @@ let js_shifr_password_to_string = function ( sh , passworda ) {
     letters  = sh . letters10  ;
     break ;
   default :
-    return  ''  ; }
+    return  ''  ;
+  }
   let letters_count = letters . length ;
   let str = '' ;
   if ( js_number_not_zero ( passworda ) ) {
     do {
       js_number_dec ( passworda ) ;
       str += letters [ js_number_div8_mod ( passworda , letters_count ) ] ;
-    } while ( js_number_not_zero ( passworda ) ) ; }
-  return str ; }
+    } while ( js_number_not_zero ( passworda ) ) ;
+  }
+  return str ;
+}
 
 let js_number_mul_byte = function ( number , byte ) {
   if ( byte == 0 ) {
     number . length = 0 ;
-    return  ; }
+    return  ;
+  }
   if ( byte == 1 )
     return ;
   if ( byte < 0 ) {
     console . log ( 'js_number_mul_byte: byte < 0' ) ;    
-    return  ; }
+    return  ;
+  }
   if ( byte >= 0x100 ) {
     console . log ( 'js_number_mul_byte: byte >= 0x100' ) ;
-    return  ; }
+    return  ;
+  }
   let per = 0 ;
   let i = 0 ;
   for ( ; i < number . length ; ++ i ) {
     let x = number [ i ] * byte + per ;
     number [ i ] = x & 0xff ;
-    per = x >> 8 ; }
+    per = x >> 8 ;
+  }
   if ( per > 0 )
-    number [ i ] = per ; }
+    number [ i ] = per ;
+}
   
 let js_number_add = function ( num , xnum ) {
   let per = 0 ;
@@ -561,10 +629,12 @@ let js_number_add = function ( num , xnum ) {
     let s = num [ i ] + xnum [ i ] + per ;
     if ( s >= 0x100  ) {
       num [ i ] = s - 0x100 ;
-      per = 1 ; }
-    else  {
+      per = 1 ;
+    } else  {
       num [ i ] = s  ;
-      per = 0 ; } }
+      per = 0 ;
+    }
+  }
   if ( num . length > xnum . length ) {
     if ( per == 0 )
       return  ;
@@ -572,21 +642,28 @@ let js_number_add = function ( num , xnum ) {
       let s = num [ i ] + 1 ;
       if ( s < 0x100  ) {
         num [ i ] = s  ;
-        return ; }
-      num [ i ] = 0 ; }
+        return ;
+      }
+      num [ i ] = 0 ;
+    }
     num [ i ] = 1 ;
-    return  ; }
+    return  ;
+  }
   if ( num . length < xnum . length ) {
     for ( ; i < xnum . length ; ++ i )  {
       let s = xnum [ i ] + per ;
       if ( s == 0x100  ) {
         num [ i ] = 0 ;
-        per  = 1 ; }
-      else  {
+        per  = 1 ;
+      } else  {
         num [ i ] = s  ;
-        per  = 0 ; } } }
+        per  = 0 ;
+      }
+    }
+  }
   if ( per > 0 )
-    num [ i ] = 1 ; }
+    num [ i ] = 1 ;
+}
   
 // [ 0..15 , 0..14 , 0..13 , ... , 0..2 , 0..1 ] = [ x , y , z , ... , u , v ] =
 // = x + y * 16 + z * 16 * 15 + ... + u * 16! / 2 / 3 + v * 16! / 2 = 0 .. 16!-1
@@ -598,12 +675,14 @@ let js_shifr_pass_to_array2 = function ( password ) {
     { // re += password [ jn ] * mu ;
       let mux = mu . slice ( ) ;
       js_number_mul_byte ( mux  , password [ jn ] ) ;
-      js_number_add  ( re , mux ) ; }
+      js_number_add  ( re , mux ) ;
+    }
     // mu *= 16 - jn ;
     js_number_mul_byte ( mu , 0x10 - jn ) ;
     ++  jn ;
   } while ( jn < 0x0f ) ;
-  return  re ; }
+  return  re ;
+}
 
 // [ 0..63 , 0..62 , 0..61 , ... , 0..2 , 0..1 ] = [ x , y , z , ... , u , v ] =
 // = x + y * 64 + z * 64 * 63 + ... + u * 64! / 2 / 3 + v * 64! / 2 = 0 .. 64!-1
@@ -615,18 +694,21 @@ let js_shifr_pass_to_array3 = function ( password ) {
     { // re += password [ jn ] * mu ;
       let mux = mu . slice ( ) ;
       js_number_mul_byte ( mux  , password [ jn ] ) ;
-      js_number_add  ( re , mux ) ; }
+      js_number_add  ( re , mux ) ;
+    }
     // mu *= 64 - jn ;
     js_number_mul_byte ( mu , 0x40 - jn ) ;
     ++  jn ;
   } while ( jn < 0x3f ) ;
-  return  re ; }
+  return  re ;
+}
   
 let js_shifr_set_version = function ( sh , ver ) {
   if  ( ver  ==  2 )
     sh . key_mode = 45 ;
   else 
-    sh . key_mode = 296 ; }
+    sh . key_mode = 296 ;
+}
 
 let js_shifr_salt_init = function ( sh  ) {
   sh . messageout = [ ] ;
@@ -641,7 +723,8 @@ let js_shifr_salt_init = function ( sh  ) {
   sh . out_bufbitsize = 0 ;
   sh . bytecount = 0 ;
   sh . old_last_data  = { n : 0 } ;
-  sh . old_last_salt  = { n : 0 } ; }
+  sh . old_last_salt  = { n : 0 } ;
+}
     
 let js_shifr_init = function ( sh ) {
   //  ascii ' ' => '~'
@@ -671,17 +754,20 @@ let js_shifr_init = function ( sh ) {
   sh  . localerus = false ;
   sh  . flagtext  = true  ;
   sh  . flag_debug  = false ;
-  sh  . array_log = [ ] ; }
+  sh  . array_log = [ ] ;
+}
 
 let js_shifr_version = function ( sh ) {
   if  ( sh . key_mode == 45 )
     return 2 ;
-  return  3 ; }
+  return  3 ;
+}
 
 let js_shifr_password_get = function ( shifr ) {
   if  ( shifr . flag_debug )
     shifr . array_log . push ( "js_shifr_password_get `" + shifr . password + "`" ) ;
-  return  shifr . password  ; }
+  return  shifr . password  ;
+}
 
 let js_shifr_password_load2 = function ( sh , password0 ) {
   sh . shifra = Array ( 0x10  ) . fill  ( 0xff  ) ;
@@ -697,7 +783,8 @@ let js_shifr_password_load2 = function ( sh , password0 ) {
     sh . deshia [ arrind [ cindex ] ] = inde ;
     arrind  . splice  ( cindex  , 1 ) ;
     ++ inde  ;
-  } while ( inde < 0x10 ) ; }
+  } while ( inde < 0x10 ) ;
+}
 
 let js_shifr_password_load3 = function ( sh , password0 ) {
   sh . shifra = Array ( 0x40 ) . fill ( 0xff ) ;
@@ -713,7 +800,8 @@ let js_shifr_password_load3 = function ( sh , password0 ) {
     sh . deshia [ arrind [ cindex ] ] = inde ;
     arrind  . splice  ( cindex  , 1 ) ;
     ++ inde  ;
-  } while ( inde < 0x40 ) ; }
+  } while ( inde < 0x40 ) ;
+}
 
 let js_shifr_string_to_key_array  = function ( sh , str ) {
   let strn = str . length ;
@@ -724,7 +812,8 @@ let js_shifr_string_to_key_array  = function ( sh , str ) {
       js_shifr_password_load2  ( sh , passarr ) ;
     else 
       js_shifr_password_load3  ( sh , passarr ) ;
-    return passarr ; }
+    return passarr ;
+  }
   let letters ;
   switch  ( sh . letters_mode ) {
   case  95  :
@@ -741,14 +830,16 @@ let js_shifr_string_to_key_array  = function ( sh , str ) {
     break ;
   default :
     alert ( 'sh . letters_mode = ' + sh . letters_mode ) ;
-    return  ; }
+    return  ;
+  }
   let letters_count  = letters . length ;
   let mult = [ ] ;
   js_number_set_byte ( mult , 1 ) ;
   let stringi  = 0 ;
   do  {
     let i = letters_count ;
-search : {
+search :
+    {
       do {
         -- i ;
         if ( str [ stringi ] == letters [ i ] ) 
@@ -758,7 +849,8 @@ search : {
         alert ( 'неправильная буква в пароле' ) ;
       else 
         alert ( 'wrong letter in password' ) ;
-      return ; }
+      return ;
+    }
     let tmp = mult . slice ( ) ;
     js_number_mul_byte ( tmp , i + 1 ) ;
     js_number_add ( passarr , tmp ) ;
@@ -769,7 +861,8 @@ search : {
     js_shifr_password_load2  ( sh , passarr ) ;
   else 
     js_shifr_password_load3  ( sh , passarr ) ;
-  return  passarr ; }
+  return  passarr ;
+}
 
 // input : shifr . message = 'abc' or "лук" or [ 0 .. 127 .. 255 ]
 // sh . message_array = array of bytes
@@ -786,7 +879,8 @@ let js_shifr_encrypt  = function  ( shifr ) {
   if ( js_shifr_version  ( shifr  ) == 2 ) 
     js_shifr_encrypt2 ( shifr ) ; 
   else 
-    js_shifr_encrypt3 ( shifr  ) ; }
+    js_shifr_encrypt3 ( shifr  ) ;
+}
 
 // input : shifr . message = 'abc' or "лук" or [ 0 .. 127 .. 255 ]
 // sh . message_array = array of bytes
@@ -799,7 +893,8 @@ let js_shifr_decrypt  = function  ( shifr ) {
   if ( js_shifr_version  ( shifr  ) == 2 ) 
     js_shifr_decrypt2 ( shifr ) ; 
   else 
-    js_shifr_decrypt3 ( shifr ) ; }
+    js_shifr_decrypt3 ( shifr ) ; 
+}
 
 // message_array -> message ( decrypted array )
 let js_shifr_decrypt2 = function  ( sh ) {
@@ -811,7 +906,8 @@ let js_shifr_decrypt2 = function  ( sh ) {
           ( sh . message_array [ i ] ) > ( 'z' . charCodeAt ( 0 ) ) )  {
           ++  i  ;
           if ( i >= ( sh . message_array . length ) )
-            break ; }
+            break ;
+        }
         if ( i >= ( sh . message_array . length ) )
           break ;
         sh . buf3 . push ( sh . message_array [ i ] - 'R' . charCodeAt ( 0 ) ) ;
@@ -837,9 +933,9 @@ let js_shifr_decrypt2 = function  ( sh ) {
         sh  . message . push ( ( decrypteddata [ 0 ] & 0b11  ) |
           ( ( decrypteddata [ 1 ] & 0b11  ) << 2  ) |
           ( ( decrypteddata [ 2 ] & 0b11  ) <<  4 ) |
-          ( ( decrypteddata [ 3 ] & 0b11  ) << 6  ) ) ; } // for $i    
-    }
-  else {
+          ( ( decrypteddata [ 3 ] & 0b11  ) << 6  ) ) ;
+    } // for $i    
+  } else {
     // binary
     for ( let i = 0 ; i < sh . message_array . length - 1 ; i += 2 ) {
       let secretdata = [
@@ -853,7 +949,10 @@ let js_shifr_decrypt2 = function  ( sh ) {
       sh . message . push ( ( decrypteddata [ 0 ] & 0b11 ) |
           ( ( decrypteddata [ 1 ] & 0b11 ) << 2  ) |
           ( ( decrypteddata [ 2 ] & 0b11 ) <<  4 ) |
-          ( ( decrypteddata [ 3 ] & 0b11 ) << 6  ) ) ; } } }
+          ( ( decrypteddata [ 3 ] & 0b11 ) << 6  ) ) ;
+    }
+  }
+}
 
 // читаю 6 бит
 // 6 bits reads
@@ -863,7 +962,8 @@ let js_isEOFstreambuf_read6bits   = function  ( sh , encrypteddata ) {
     sh . in_bufbitsize -=  6 ;
     encrypteddata . push ( sh . in_buf & ( 0x40 - 1 ) ) ;
     sh . in_buf  >>= 6 ;
-    return  false ; }
+    return  false ;
+  }
   if ( sh . decode_read_index >= ( sh . message_array . length ) )
     return true ;
   let reads = ( sh . message_array [ sh . decode_read_index ] ) ;
@@ -876,28 +976,34 @@ let js_isEOFstreambuf_read6bits   = function  ( sh , encrypteddata ) {
       if ( sh . decode_read_index >= ( sh . message_array . length ) )
         return true ;
       reads = ( sh . message_array [ sh . decode_read_index ] ) ;
-      ++ ( sh . decode_read_index ) ; }
-    encrypteddata . push ( reads - ( ';' . charCodeAt ( 0 ) ) ) ; } // flagtext
-  else  {
+      ++ ( sh . decode_read_index ) ;
+    }
+    encrypteddata . push ( reads - ( ';' . charCodeAt ( 0 ) ) ) ;
+  // flagtext
+  } else  {
     encrypteddata . push ( ( sh . in_buf | 
       ( reads <<  sh . in_bufbitsize ) ) & ( 0x40 - 1 ) ) ;
     sh . in_buf = reads >>  ( 6 - sh . in_bufbitsize ) ;
-    sh . in_bufbitsize +=  2 ; } // + 8 - 6
-  return  false ; }
+    sh . in_bufbitsize +=  2 ;
+  } // + 8 - 6
+  return  false ;
+}
 
 // версия 3 пишу три бита для расшифровки
 // version 3 write three bits to decode
 let js_streambuf_write3bits = function  ( sh , decrypteddata ) {
   if  ( sh . out_bufbitsize < 5 ) {
     sh . out_buf |= ( decrypteddata << ( sh . out_bufbitsize ) ) ;
-    sh . out_bufbitsize +=  3 ; }
-  else  {
+    sh . out_bufbitsize +=  3 ;
+  } else  {
     let to_write  = ( ( decrypteddata << sh . out_bufbitsize ) |
       ( sh . out_buf ) ) & 0xff ;
     sh . messageout . push ( to_write ) ;
     // + 3 - 8
     sh . out_bufbitsize -= 5 ;
-    sh . out_buf = decrypteddata >> ( 3 - ( sh . out_bufbitsize ) ) ; } }
+    sh . out_buf = decrypteddata >> ( 3 - ( sh . out_bufbitsize ) ) ;
+  }
+}
   
 // from sh . message_array to => sh . message
 let js_shifr_decrypt3 = function  ( sh  ) {
@@ -909,8 +1015,10 @@ let js_shifr_decrypt3 = function  ( sh  ) {
     js_shifr_decrypt_salt3 ( secretdata , sh . deshia , decrypteddata ,
       sh . old_last_salt ,  sh . old_last_data ) ;
     secretdata = [ ] ;
-    js_streambuf_write3bits ( sh , decrypteddata [ 0 ] ) ; }
-  sh . message = sh . messageout ; }
+    js_streambuf_write3bits ( sh , decrypteddata [ 0 ] ) ;
+  }
+  sh . message = sh . messageout ;
+}
 
 // [0x00,0xf0,0x0f,0xff] => "aa" + "ap" + "pa" + "pp"
 let js_shifr_Base64_encode_univer = function  ( array , start_letter  , bits_count  ) {
@@ -926,10 +1034,12 @@ let js_shifr_Base64_encode_univer = function  ( array , start_letter  , bits_cou
       str +=  String  . fromCharCode  ( acode + ( cache & bitmask ) ) ;
       cache >>= bits_count  ;
       cache_size  -=  bits_count  ;
-    } while ( cache_size  >=  bits_count  ) ; }
+    } while ( cache_size  >=  bits_count  ) ;
+  }
   if  ( cache_size  !=  0 )
     str +=  String  . fromCharCode  ( acode + cache ) ;
-  return  str ; }
+  return  str ;
+}
 
 /*
 Base64 = ( ;<=> ?@AB CDEF GHIJ
@@ -938,4 +1048,5 @@ Base64 = ( ;<=> ?@AB CDEF GHIJ
            klmn opqr stuv wxyz )
 */
 let js_shifr_Base64_encode = function  ( array ) {
-  return  js_shifr_Base64_encode_univer ( array , ';' , 6 ) ; }
+  return  js_shifr_Base64_encode_univer ( array , ';' , 6 ) ;
+}
