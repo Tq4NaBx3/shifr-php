@@ -294,6 +294,8 @@ class shifr {
   public  $letters10  ; // alphabet 10 digits // алфавит 10 цифры
   // password alphabet mode 10 or 62 or 95 or 26
   // режим алфавит пароля 10 или 62 или 95 или 26
+  const letters_mode_Digit = 10 ;
+  const letters_mode_Letter = 26 ;
   public  $letters_mode ;
   public  $localerus  ; // false or true // русская локаль false или true
   public  $flagtext ; // true or false // флаг текст true или false
@@ -369,20 +371,20 @@ function shifr_byte_to_array3 ( shifr & $sh , int $charcode )
   switch  ( $sh -> bitscount  ) {
   case  0 :
     // <= [ [1 0] [2 1 0] [2 1 0] ]
-    $secret_data = array ( $charcode & 0x7 , ( $charcode >>  3 ) & 0x7 ) ;
+    $secret_data = array ( $charcode & 0b111 , ( $charcode >>  3 ) & 0b111 ) ;
     $sh -> bufin = $charcode >>  6 ;
     $sh -> bitscount  = 2 ;  // 0 + 8 - 6
     break ;
   case  1 :
     // <= [ [2 1 0] [2 1 0] [2 1] ] <= [ [0]
-    $secret_data = array ( $sh -> bufin | ( ( $charcode & 0x3 ) << 1 ) ,
-      ( $charcode >> 2 ) & 0x7 , $charcode >>  5 ) ;
+    $secret_data = array ( $sh -> bufin | ( ( $charcode & 0b11 ) << 1 ) ,
+      ( $charcode >> 2 ) & 0b111 , $charcode >>  5 ) ;
     $sh -> bitscount  = 0 ;  // 1 + 8 - 9
     break ;
   case  2 :
     // <= [ [0] [2 1 0] [2 1 0] [2] ] <= [ [1 0] ..
-    $secret_data = array ( $sh -> bufin | ( ( $charcode & 0x1 ) << 2 ) ,
-      ( $charcode >> 1 ) & 0x7 , ( $charcode >>  4 ) & 0x7 ) ;
+    $secret_data = array ( $sh -> bufin | ( ( $charcode & 0b1 ) << 2 ) ,
+      ( $charcode >> 1 ) & 0b111 , ( $charcode >>  4 ) & 0b111 ) ;
     $sh -> bufin = $charcode >>  7 ;
     $sh -> bitscount  = 1 ;  // 2 + 8 - 9
     break ;
@@ -472,7 +474,7 @@ function  shifr_flush_file  ( shifr & $sh , & $fpw ) {
 function  isEOFstreambuf_read6bits ( shifr & $sh , array & $encrypteddata ) : bool {
   if  ( ( ! $sh -> flagtext ) and ( $sh -> in_bufbitsize >= 6 ) ) {
     $sh -> in_bufbitsize -=  6 ;
-    $encrypteddata [ ] = $sh -> in_buf & ( 0x40 - 1 ) ;
+    $encrypteddata [ ] = $sh -> in_buf & 0b111111 ;
     $sh -> in_buf  >>= 6 ;
     return  false ;
   }
@@ -493,7 +495,7 @@ function  isEOFstreambuf_read6bits ( shifr & $sh , array & $encrypteddata ) : bo
   // flagtext
   } else  {
     $encrypteddata [ ] = ( $sh -> in_buf | 
-      ( $reads <<  $sh -> in_bufbitsize ) ) & ( 0x40 - 1 )  ;
+      ( $reads <<  $sh -> in_bufbitsize ) ) & 0b111111 ;
     $sh -> in_buf = $reads >>  ( 6 - $sh -> in_bufbitsize ) ;
     $sh -> in_bufbitsize +=  2 ;
   } // + 8 - 6
@@ -556,35 +558,35 @@ function  shifr_decrypt2 ( shifr & $sh ) {
       $u16 = $sh  ->  buf3 [ 0 ] + 40 * ( $sh ->  buf3 [ 1 ] +
         40 * $sh  ->  buf3 [ 2 ] ) ;
       $sh ->  buf3 = array ( ) ;
-        $buf = array ( $u16 & 0xff , $u16 >> 8 ) ;
+        $buf = array ( $u16 & 0b11111111 , $u16 >> 8 ) ;
         $secretdata = array (
-          $buf [ 0 ] & 0xf ,
-          ( $buf [ 0 ] >> 4 ) & 0xf ,
-          $buf [ 1 ] & 0xf ,
-          ( $buf [ 1 ] >> 4 ) & 0xf ) ;
+          $buf [ 0 ] & 0b1111 ,
+          ( $buf [ 0 ] >> 4 ) & 0b1111 ,
+          $buf [ 1 ] & 0b1111 ,
+          ( $buf [ 1 ] >> 4 ) & 0b1111 ) ;
         $decrypteddata = array ( ) ;
         shifr_decrypt_salt2 ( $secretdata , $sh -> deshia , $decrypteddata ,
           $sh -> old_last_salt , $sh -> old_last_data ) ;
-        $sh -> message .= chr ( ( $decrypteddata [ 0 ] & 0x3  ) |
-          ( ( $decrypteddata [ 1 ] & 0x3  ) << 2  ) |
-          ( ( $decrypteddata [ 2 ] & 0x3  ) <<  4 ) |
-          ( ( $decrypteddata [ 3 ] & 0x3  ) << 6  ) ) ;
+        $sh -> message .= chr ( ( $decrypteddata [ 0 ] & 0b11 ) |
+          ( ( $decrypteddata [ 1 ] & 0b11 ) <<  2 ) |
+          ( ( $decrypteddata [ 2 ] & 0b11 ) <<  4 ) |
+          ( ( $decrypteddata [ 3 ] & 0b11 ) <<  6 ) ) ;
     } // for $i    
   } else {
     // binary
     for ( $i = 0 ; $i < count ( $message_array  ) - 1 ; $i += 2 ) {
       $secretdata = array (
-        ord ( $message_array [ $i ] ) & 0xf ,
-        ( ord ( $message_array [ $i ] ) >> 4 ) & 0xf ,
-        ord ( $message_array [ $i + 1 ] ) & 0xf ,
-        ( ord ( $message_array [ $i + 1 ] ) >> 4 ) & 0xf ) ;
+        ord ( $message_array [ $i ] ) & 0b1111 ,
+        ( ord ( $message_array [ $i ] ) >> 4 ) & 0b1111 ,
+        ord ( $message_array [ $i + 1 ] ) & 0b1111 ,
+        ( ord ( $message_array [ $i + 1 ] ) >> 4 ) & 0b1111 ) ;
       $decrypteddata = array ( ) ;
       shifr_decrypt_salt2 ( $secretdata , $sh -> deshia , $decrypteddata ,
         $sh -> old_last_salt , $sh -> old_last_data ) ;
-      $sh -> message .= chr ( ( $decrypteddata [ 0 ] & 0x3  ) |
-          ( ( $decrypteddata [ 1 ] & 0x3  ) << 2  ) |
-          ( ( $decrypteddata [ 2 ] & 0x3  ) <<  4 ) |
-          ( ( $decrypteddata [ 3 ] & 0x3  ) << 6  ) ) ;
+      $sh -> message .= chr ( ( $decrypteddata [ 0 ] & 0b11 ) |
+          ( ( $decrypteddata [ 1 ] & 0b11 ) <<  2 ) |
+          ( ( $decrypteddata [ 2 ] & 0b11 ) <<  4 ) |
+          ( ( $decrypteddata [ 3 ] & 0b11 ) <<  6 ) ) ;
     }
   }
 }
@@ -615,7 +617,7 @@ function  number_dec  ( array & $number ) {
       $number [ $i  ] = $number [ $i  ] - 1 ;
       break ;
     }
-    $number [ $i  ] = 0xff  ;
+    $number [ $i  ] = 0b11111111 ;
   }
   if ( $i == count  ( $number ) ) {
     echo  'number_dec:$i == count  ( $number )' ;
@@ -670,7 +672,7 @@ function  number_set_byte ( array & $number , int $byte ) {
   if ( $byte != 0 ) {
     if ( $byte < 0 ) 
       return  ; 
-    if ( $byte >= 0x100 ) 
+    if ( $byte >= 0x100 )
       return  ; 
     $number = array ( $byte ) ;
   } else
@@ -733,7 +735,7 @@ function  number_mul_byte ( array & $number , int $byte ) {
   $per = 0 ;
   for ( $i = 0 ; $i < count  ( $number ) ; ++ $i )  {
     $x = $number [ $i ] *  $byte  + $per ;
-    $number [ $i ] = $x & 0xff ;
+    $number [ $i ] = $x & 0b11111111 ;
     $per = $x >> 8 ;
   }
   if ( $per > 0 )
@@ -755,7 +757,7 @@ function  shifr_pass_to_array2 ( array $password ) : array {
     //$mu *=  16 - $in ;
     number_mul_byte ( $mu , 0x10 - $in  ) ;
     ++  $in ;
-  } while ( $in < 0x0f ) ;
+  } while ( $in < 0b1111 ) ;
   return  $re ;
 }
 
@@ -772,15 +774,15 @@ function  shifr_pass_to_array3 ( array $password ) : array {
       number_add  ( $re , $mux  ) ;
     }
     //$mu *=  64 - $in ;
-    number_mul_byte ( $mu , 0x40 - $in  ) ;
+    number_mul_byte ( $mu , 0b1000000 - $in  ) ;
     ++  $in ;
-  } while ( $in < 0x3f ) ;
+  } while ( $in < 0b111111 ) ;
   return  $re ;
 }
   
 function  shifr_password_load2  ( shifr & $sh , array $password ) {
-  $sh -> shifra = array_fill  ( 0 , 0x10 , 0xff  ) ;
-  $sh -> deshia = array_fill  ( 0 , 0x10 , 0xff  ) ;
+  $sh -> shifra = array_fill  ( 0 , 0x10 , 0b11111111 ) ;
+  $sh -> deshia = array_fill  ( 0 , 0x10 , 0b11111111 ) ;
   $arrind = array ( ) ;
   for ( $i = 0 ; $i < 0x10 ; ++ $i ) 
     $arrind [ ] = $i ;
@@ -796,20 +798,20 @@ function  shifr_password_load2  ( shifr & $sh , array $password ) {
 }
 
 function  shifr_password_load3  ( shifr & $sh , array $password ) {
-  $sh -> shifra = array_fill  ( 0 , 0x40 , 0xff  ) ;
-  $sh -> deshia = array_fill  ( 0 , 0x40 , 0xff  ) ;
+  $sh -> shifra = array_fill  ( 0 , 0b1000000 , 0b11111111 ) ;
+  $sh -> deshia = array_fill  ( 0 , 0b1000000 , 0b11111111 ) ;
   $arrind = array ( ) ;
-  for ( $i = 0 ; $i < 0x40 ; ++ $i ) 
+  for ( $i = 0 ; $i < 0b1000000 ; ++ $i ) 
     $arrind [ ] = $i ;
   $inde = 0 ;
   do {
-    $cindex = number_div8_mod ( $password , 0x40 - $inde ) ;
+    $cindex = number_div8_mod ( $password , 0b1000000 - $inde ) ;
     $sh -> shifra [ $inde ] = $arrind [ $cindex ] ;
     $sh -> deshia [ $arrind [ $cindex ] ] = $inde ;
     unset ( $arrind [ $cindex ] ) ;
     $arrind = array_values ( $arrind ) ;
     ++ $inde  ;
-  } while ( $inde < 0x40 ) ;
+  } while ( $inde < 0b1000000 ) ;
 }
 
 function  shifr_generate_password  ( shifr & $shifr ) {
@@ -981,7 +983,7 @@ function  shifr_Base64_decode_univer  ( string & $string  , $start_letter ,
       $cache_size +=  $bits_count ;
       ++  $i  ;
     } while ( $cache_size < 8 and $i  < $strlen ) ;
-    $result .=  chr ( $cache  & 0xff  ) ;
+    $result .=  chr ( $cache  & 0b11111111 ) ;
     $cache  >>= 8 ;
     $cache_size -=  8 ;
   }
