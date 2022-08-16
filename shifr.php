@@ -928,7 +928,7 @@ function  shifr_init ( shifr & $sh ) {
     $sh ->  letters26 [ ] = chr ( $i  ) ;
   // default is digits and letters
   $sh ->  letters_mode = 62 ;
-  shifr_set_version ( $sh , 3 ) ;
+  shifr_set_version ( $sh , 2 ) ;
   $sh ->  old_last_data  = 0 ;
   $sh ->  old_last_salt  = 0 ;
   $sh ->  bytecount  = 0 ;

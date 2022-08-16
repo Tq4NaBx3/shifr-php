@@ -749,7 +749,7 @@ let js_shifr_init = function ( sh ) {
     sh . letters26 . push ( String . fromCharCode ( i ) ) ;
   // default is digits and letters
   sh  . letters_mode = 62 ;
-  js_shifr_set_version ( sh , 3 ) ;
+  js_shifr_set_version ( sh , 2 ) ;
   js_shifr_salt_init  ( sh  ) ;
   sh  . localerus = false ;
   sh  . flagtext  = true  ;
