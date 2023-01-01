@@ -331,9 +331,15 @@ class shifr {
   public  $flag_debug ;
 
 }
-    
+
+function  shifr_str_split ( string & $st ) {
+  if ( strlen ( $st ) > 0 )
+    return  str_split  ( $st  ) ;
+  return  array ( ) ;
+}
+
 function  shifr_encrypt2 ( shifr & $sh ) {
-  $message_array = str_split  ( $sh -> message  ) ;
+  $message_array = shifr_str_split  ( $sh -> message  ) ;
   $sh -> message =  '' ;
   foreach ( $message_array as $char ) {
     $secret_data = shifr_byte_to_array2 ( ord ( $char ) ) ;
@@ -429,7 +435,7 @@ function  shifr_write_array ( shifr & $sh , array $secret_data  ) {
 }
         
 function  shifr_encrypt3 ( shifr & $sh ) {
-  $message_array = str_split  ( $sh -> message  ) ;
+  $message_array = shifr_str_split  ( $sh -> message  ) ;
   $sh -> message =  ''  ;
   foreach ( $message_array as $char ) 
     shifr_write_array ( $sh , shifr_byte_to_array3 ( $sh , ord ( $char ) ) ) ;
@@ -534,7 +540,7 @@ function  shifr_decrypt3 ( shifr & $sh ) {
 }
     
 function  shifr_decrypt2 ( shifr & $sh ) {
-  $message_array = str_split  ( $sh -> message  ) ;
+  $message_array = shifr_str_split  ( $sh -> message  ) ;
   $sh -> message = '' ;
   if ( $sh -> flagtext ) {
     for ( $i = 0 ; $i < count ( $message_array  )  ; ++ $i ) {
