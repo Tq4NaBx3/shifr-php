@@ -1,4 +1,5 @@
 <?php
+session_start ( ) ;
 require ( 'shifr.php' ) ;
 $shifr  = new shifr ( ) ;
 shifr_init ( $shifr  ) ;
@@ -104,6 +105,28 @@ input.largerCheckbox { transform : scale(2); }
 label { font-size: 24px; }
 legend { font-size: 24px; }
 fieldset { font-size: 36px; border-radius: 10px; }
+body {
+    width:100%;
+    max-width: <?php
+  if  ( isset ( $_SESSION [ 'bodyclientwidth'  ] ) )
+    echo  floor ( $_SESSION [ 'bodyclientwidth'  ]  * 1 ) . 'px; ' . PHP_EOL ;
+  else
+    echo  '100%;' . PHP_EOL ;
+  ?>
+    height:100%;
+    margin:0 auto;
+}
+div.fieldsetclass{
+  width:100%;
+    max-width: <?php
+  if  ( isset ( $_SESSION [ 'bodyclientwidth'  ] ) )
+    echo  floor ( $_SESSION [ 'bodyclientwidth'  ]  * 1 ) . 'px; ' . PHP_EOL ;
+  else
+    echo  '100%;' . PHP_EOL ;
+  ?>
+    height:100%;
+    margin:0 auto;
+}
 </style>
 <script>
 'use strict';
@@ -128,7 +151,12 @@ if  ( $shifr -> flag_debug  )
 <body>
 <form action="<?php echo $_SERVER['PHP_SELF'] ; ?>" method="POST"
   enctype="multipart/form-data" id="form_id"  >
-<table>
+<?php
+  if  ( isset ( $_SESSION [ 'bodyclientwidth'  ] ) )
+    echo  '<table style="width: ' . floor ( $_SESSION [ 'bodyclientwidth'  ]  * 1 ) . 'px">' . PHP_EOL ;
+  else
+    echo  '<table>' . PHP_EOL ;
+?>
 <tr>
   <td>
   <div class="div_message">
@@ -295,7 +323,10 @@ else
 </label>
 <br>
 <input name="password" type="password" value="<?php 
-echo htmlspecialchars ( shifr_password_get ( $shifr ) ) ; ?>" size ="47" id="password" />
+  echo htmlspecialchars ( shifr_password_get ( $shifr ) ) ; ?>" <?php
+  if  ( isset ( $_SESSION [ 'bodyclientwidth'  ] ) )
+    echo  'style="width: ' . floor ( $_SESSION [ 'bodyclientwidth'  ]  * 1 ) . 'px" ' . PHP_EOL ;
+  ?> size ="47" id="password" />
 <script>
 
 if ( document . getElementById ( 'passlettersdigits' ) . checked ) 
@@ -377,9 +408,11 @@ echo ' : <input type="checkbox"' .
   ' class="largerCheckbox" name="Encryption_in_text_mode" value="1" id="SText" ';
 if($shifr -> flagtext)
   echo 'checked' ;
-?>
-/>
-<fieldset>
+?> />
+
+<div class="fieldsetclass">
+
+<fieldset >
 <legend><i>PHP</i></legend>
 <input type="hidden" name="MAX_FILE_SIZE" value="2048000000" />
 <input type=file name=uploadfile><br>
@@ -396,8 +429,14 @@ else
   echo '<input type=submit name="encrypt_decrypt_name" value="Decrypt file" >'.PHP_EOL  ;
 ?>
 </fieldset>
+
+</div>
+
 </form>
 <form method="POST" enctype="multipart/form-data" id="form_file">
+
+<div class="fieldsetclass">
+
 <fieldset>
 <legend><i>JavaScript</i></legend>
 <input type="hidden" name="MAX_FILE_SIZE" value="2048000000" />
@@ -419,6 +458,9 @@ else
     PHP_EOL  ;
 ?>
 </fieldset>
+
+</div>
+
 <script>
 js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
 js_shifr  . message = document . getElementById ( 'message' ) . value ;
@@ -544,6 +586,26 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
   let chbox_fenc = document  . getElementById  ( 'encrypt3'  ) ;
   chbox_fenc . addEventListener  ( 'click' , fencrypt3 ) ;  
 </script>
-</form>
-</body>
+      <script>
+        //  send  body  clientWidth
+        let xhrw  = new XMLHttpRequest  ( ) ;
+        xhrw . open  ( 'POST'  , 'getbodyclientwidth.php'  ) ;
+        xhrw . setRequestHeader  ( "Content-type"  , "application/x-www-form-urlencoded" ) ;
+        xhrw . onload = function ( ) {
+          if ( xhrw  . response ) {
+            //document  . getElementById  ( "BodWid"  ) . textContent = xhrw  . response ;
+          }
+        } ;
+        xhrw . send  ( 'bodyclientwidth=' + encodeURIComponent ( document . body . clientWidth ) ) ;
+      </script>
+      <?php
+        /*if  ( $shifr -> localerus )
+          echo  '<div class="p1 anchor">Ширина страницы отправлена : <span id="BodWid"></span></div>'
+            . PHP_EOL ;
+        else
+          echo  '<div class="p1 anchor">Body client width sended : <span id="BodWid"></span></div>'
+            . PHP_EOL ;*/
+      ?>
+    </form>
+  </body>
 </html>
