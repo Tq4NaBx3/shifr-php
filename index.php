@@ -105,28 +105,6 @@ input.largerCheckbox { transform : scale(2); }
 label { font-size: 24px; }
 legend { font-size: 24px; }
 fieldset { font-size: 36px; border-radius: 10px; }
-body {
-    width:100%;
-    max-width: <?php
-  if  ( isset ( $_SESSION [ 'bodyclientwidth'  ] ) )
-    echo  floor ( $_SESSION [ 'bodyclientwidth'  ]  * 1 ) . 'px; ' . PHP_EOL ;
-  else
-    echo  '100%;' . PHP_EOL ;
-  ?>
-    height:100%;
-    margin:0 auto;
-}
-div.fieldsetclass{
-  width:100%;
-    max-width: <?php
-  if  ( isset ( $_SESSION [ 'bodyclientwidth'  ] ) )
-    echo  floor ( $_SESSION [ 'bodyclientwidth'  ]  * 1 ) . 'px; ' . PHP_EOL ;
-  else
-    echo  '100%;' . PHP_EOL ;
-  ?>
-    height:100%;
-    margin:0 auto;
-}
 </style>
 <script>
 'use strict';
@@ -323,10 +301,7 @@ else
 </label>
 <br>
 <input name="password" type="password" value="<?php 
-  echo htmlspecialchars ( shifr_password_get ( $shifr ) ) ; ?>" <?php
-  if  ( isset ( $_SESSION [ 'bodyclientwidth'  ] ) )
-    echo  'style="width: ' . floor ( $_SESSION [ 'bodyclientwidth'  ]  * 1 ) . 'px" ' . PHP_EOL ;
-  ?> size ="47" id="password" />
+  echo htmlspecialchars ( shifr_password_get ( $shifr ) ) ; ?>" size ="60" id="password" />
 <script>
 
 if ( document . getElementById ( 'passlettersdigits' ) . checked ) 
@@ -410,9 +385,9 @@ if($shifr -> flagtext)
   echo 'checked' ;
 ?> />
 
-<div class="fieldsetclass">
+<div class="fieldsetclassphp" id="iddivfieldsetclassphp">
 
-<fieldset >
+<fieldset id="idfieldsetclassphp">
 <legend><i>PHP</i></legend>
 <input type="hidden" name="MAX_FILE_SIZE" value="2048000000" />
 <input type=file name=uploadfile><br>
@@ -435,7 +410,7 @@ else
 </form>
 <form method="POST" enctype="multipart/form-data" id="form_file">
 
-<div class="fieldsetclass">
+<div class="fieldsetclassjavascript">
 
 <fieldset>
 <legend><i>JavaScript</i></legend>
@@ -597,6 +572,10 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
           }
         } ;
         xhrw . send  ( 'bodyclientwidth=' + encodeURIComponent ( document . body . clientWidth ) ) ;
+        document  . getElementById  ( "password" ) . style . width  =
+          Math  . floor ( document . body . clientWidth * 0.99 ) . toString ( ) + "px" ;
+        document  . getElementById  ( "message" ) . style  = "width: " +
+          Math  . floor ( document . body . clientWidth * 0.75 ) . toString ( ) + "px" ;
       </script>
       <?php
         /*if  ( $shifr -> localerus )
