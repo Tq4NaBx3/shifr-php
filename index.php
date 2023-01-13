@@ -97,7 +97,6 @@ if  ( $_POST  ) {
 p { font-size: 36px; }
 textarea { font-size: 36px; }
 .div_message textarea {
-width: 100%;
 box-sizing: border-box;
 }
 input { font-size: 36px; border-radius: 10px; }
@@ -105,6 +104,9 @@ input.largerCheckbox { transform : scale(2); }
 label { font-size: 24px; }
 legend { font-size: 24px; }
 fieldset { font-size: 36px; border-radius: 10px; }
+body  {
+  width: 99%;
+}
 </style>
 <script>
 'use strict';
@@ -129,14 +131,9 @@ if  ( $shifr -> flag_debug  )
 <body>
 <form action="<?php echo $_SERVER['PHP_SELF'] ; ?>" method="POST"
   enctype="multipart/form-data" id="form_id"  >
-<?php
-  if  ( isset ( $_SESSION [ 'bodyclientwidth'  ] ) )
-    echo  '<table style="width: ' . floor ( $_SESSION [ 'bodyclientwidth'  ]  * 1 ) . 'px">' . PHP_EOL ;
-  else
-    echo  '<table>' . PHP_EOL ;
-?>
-<tr>
-  <td>
+<table style="width: 99%">
+<tr  style="width: 99%">
+  <td style="width: 75%">
   <div class="div_message">
   <label>
     <?php
@@ -145,14 +142,14 @@ if  ( $shifr -> flag_debug  )
       else
         echo 'Message:' ; ?>
     <br />
-    <textarea name="message" rows="12" cols="61" id="message"
+    <textarea name="message" rows="12" cols="61" id="message" style="width: 99%"
       maxlength="2048000000"><?php
     echo htmlspecialchars($shifr -> message) ; ?></textarea>
   </label>
   </div>
   <br />
   </td>
-  <td>
+  <td  style="width: 25%">
 <?php
 echo '<fieldset><legend><i>PHP</i></legend>' ;
 if  ( $shifr -> localerus ) {
@@ -177,7 +174,7 @@ echo  '</fieldset><br>'  ;
   </td>
 <tr>
 </table>
-<table width="100%">
+<table width="99%">
 <tr>
 <td>
 <fieldset>
@@ -300,8 +297,10 @@ else
 </table>
 </label>
 <br>
+<div class="divclasspassword" id="dividpassword" style="width: 99%">
 <input name="password" type="password" value="<?php 
-  echo htmlspecialchars ( shifr_password_get ( $shifr ) ) ; ?>" size ="60" id="password" />
+  echo htmlspecialchars ( shifr_password_get ( $shifr ) ) ; ?>" size ="60" id="password" style="width: 99%" />
+</div>
 <script>
 
 if ( document . getElementById ( 'passlettersdigits' ) . checked ) 
@@ -385,9 +384,9 @@ if($shifr -> flagtext)
   echo 'checked' ;
 ?> />
 
-<div class="fieldsetclassphp" id="iddivfieldsetclassphp">
+<div class="fieldsetclassphp" id="iddivfieldsetclassphp"  style="width: 99%">
 
-<fieldset id="idfieldsetclassphp">
+<fieldset id="idfieldsetclassphp" >
 <legend><i>PHP</i></legend>
 <input type="hidden" name="MAX_FILE_SIZE" value="2048000000" />
 <input type=file name=uploadfile><br>
@@ -410,7 +409,7 @@ else
 </form>
 <form method="POST" enctype="multipart/form-data" id="form_file">
 
-<div class="fieldsetclassjavascript">
+<div class="fieldsetclassjavascript" id="iddivfieldsetclassjavascript"  style="width: 99%">
 
 <fieldset>
 <legend><i>JavaScript</i></legend>
@@ -561,30 +560,6 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
   let chbox_fenc = document  . getElementById  ( 'encrypt3'  ) ;
   chbox_fenc . addEventListener  ( 'click' , fencrypt3 ) ;  
 </script>
-      <script>
-        //  send  body  clientWidth
-        let xhrw  = new XMLHttpRequest  ( ) ;
-        xhrw . open  ( 'POST'  , 'getbodyclientwidth.php'  ) ;
-        xhrw . setRequestHeader  ( "Content-type"  , "application/x-www-form-urlencoded" ) ;
-        xhrw . onload = function ( ) {
-          if ( xhrw  . response ) {
-            //document  . getElementById  ( "BodWid"  ) . textContent = xhrw  . response ;
-          }
-        } ;
-        xhrw . send  ( 'bodyclientwidth=' + encodeURIComponent ( document . body . clientWidth ) ) ;
-        document  . getElementById  ( "password" ) . style . width  =
-          Math  . floor ( document . body . clientWidth * 0.99 ) . toString ( ) + "px" ;
-        document  . getElementById  ( "message" ) . style  = "width: " +
-          Math  . floor ( document . body . clientWidth * 0.75 ) . toString ( ) + "px" ;
-      </script>
-      <?php
-        /*if  ( $shifr -> localerus )
-          echo  '<div class="p1 anchor">Ширина страницы отправлена : <span id="BodWid"></span></div>'
-            . PHP_EOL ;
-        else
-          echo  '<div class="p1 anchor">Body client width sended : <span id="BodWid"></span></div>'
-            . PHP_EOL ;*/
-      ?>
     </form>
   </body>
 </html>
