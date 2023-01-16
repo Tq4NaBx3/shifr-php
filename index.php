@@ -96,9 +96,6 @@ if  ( $_POST  ) {
 <style>
 p { font-size: 36px; }
 textarea { font-size: 36px; }
-.div_message textarea {
-box-sizing: border-box;
-}
 input { font-size: 36px; border-radius: 10px; }
 input.largerCheckbox { transform : scale(2); }
 label { font-size: 24px; }
@@ -107,6 +104,7 @@ fieldset { font-size: 36px; border-radius: 10px; }
 body  {
   width: 99%;
 }
+table.wide { width: 99%; }
 </style>
 <script>
 'use strict';
@@ -131,25 +129,21 @@ if  ( $shifr -> flag_debug  )
 <body>
 <form action="<?php echo $_SERVER['PHP_SELF'] ; ?>" method="POST"
   enctype="multipart/form-data" id="form_id"  >
-<table style="width: 99%">
-<tr  style="width: 99%">
-  <td style="width: 75%">
-  <div class="div_message">
+<table class="wide">
+<tr>
+  <td>
   <label>
     <?php
       if  ( $shifr -> localerus )
         echo 'Сообщение:'  ;
       else
         echo 'Message:' ; ?>
-    <br />
-    <textarea name="message" rows="12" cols="61" id="message" style="width: 99%"
-      maxlength="2048000000"><?php
-    echo htmlspecialchars($shifr -> message) ; ?></textarea>
   </label>
-  </div>
-  <br />
+  <textarea name="message" rows="12" cols="61" id="message" style="width: 99%"
+     maxlength="2048000000"><?php
+  echo htmlspecialchars($shifr -> message) ; ?></textarea>
   </td>
-  <td  style="width: 25%">
+  <td>
 <?php
 echo '<fieldset><legend><i>PHP</i></legend>' ;
 if  ( $shifr -> localerus ) {
@@ -174,7 +168,7 @@ echo  '</fieldset><br>'  ;
   </td>
 <tr>
 </table>
-<table width="99%">
+<table style="width: 99%">
 <tr>
 <td>
 <fieldset>
@@ -297,7 +291,7 @@ else
 </table>
 </label>
 <br>
-<div class="divclasspassword" id="dividpassword" style="width: 99%">
+<div style="width: 99%">
 <input name="password" type="password" value="<?php 
   echo htmlspecialchars ( shifr_password_get ( $shifr ) ) ; ?>" size ="60" id="password" style="width: 99%" />
 </div>
@@ -343,22 +337,21 @@ chboxg.addEventListener('click', fgenerate ) ;
 </script>
 <br>
 <?php
-if  ( $shifr -> localerus ) {
-  echo 'Показать пароль : <input type="checkbox" '.
-  ' class="largerCheckbox" name="Показать_пароль" value="0"'.
-  ' id="showpassword" onchange="fshowpassword()" />' ;
-} else {
-  echo 'Show password : <input type="checkbox"' .
-  ' class="largerCheckbox" name="Show_password" value="0" id="showpassword" '.
-  ' onchange="fshowpassword()" />' ;
-}
+if  ( $shifr -> localerus )
+  echo 'Показать пароль' ;
+else
+  echo 'Show password' ;
+echo ' : <input type="checkbox" class="largerCheckbox" name="' ;
+if  ( $shifr -> localerus )
+  echo  'Показать_пароль' ;
+else
+  echo 'Show_password' ;
+echo '" value="0" id="showpassword" onchange="fshowpassword()" />' ;
 ?>
 <script>
-if ( document.getElementById('showpassword') . checked ) 
-  document  . forms [ 'form_id' ] [ 'password' ] . type  = 'text'  ; 
-else 
-  document  . forms [ 'form_id' ] [ 'password' ] . type  = 'password'  ; 
-
+document  . forms [ 'form_id' ] [ 'password' ] . type  =
+  ( ( document  . getElementById  ( 'showpassword'  ) . checked ) ?
+    'text'  : 'password'  ) ;
 let fshowpassword = function ( ) {
   let chbox = document.getElementById('showpassword');
 	if (chbox.checked) {
@@ -391,16 +384,18 @@ if($shifr -> flagtext)
 <input type="hidden" name="MAX_FILE_SIZE" value="2048000000" />
 <input type=file name=uploadfile><br>
 <?php
+echo '<input type=submit name="encrypt_decrypt_name" value="' ;
 if  ( $shifr -> localerus )
-  echo '<input type=submit name="encrypt_decrypt_name" value="Зашифровать файл" > '.
-    PHP_EOL ;
+  echo 'Зашифровать файл' ;
 else
-  echo '<input type=submit name="encrypt_decrypt_name" value="Encrypt file" > '.PHP_EOL  ;
+  echo 'Encrypt file' ;
+echo '" >' . PHP_EOL  ;
+echo '<input type=submit name="encrypt_decrypt_name" value="' ;
 if  ( $shifr -> localerus )
-  echo '<input type=submit name="encrypt_decrypt_name" value="Расшифровать файл" >'.
-    PHP_EOL ;
+  echo 'Расшифровать файл' ;
 else
-  echo '<input type=submit name="encrypt_decrypt_name" value="Decrypt file" >'.PHP_EOL  ;
+  echo 'Decrypt file' ;
+echo '" >' . PHP_EOL  ;
 ?>
 </fieldset>
 
@@ -417,19 +412,18 @@ else
 <input type=file name="js_uploadfile_name" onchange="js_readFile(this)"
   id="js_inputfile_id"><br>
 <?php
+echo '<input type="submit" name="encrypt3" value="' ;
 if  ( $shifr -> localerus )
-  echo '<input type="submit" name="encrypt3" value="Зашифровать файл" id="encrypt3" > '.
-    PHP_EOL ;
+  echo 'Зашифровать файл' ;
 else
-  echo '<input type="submit" name="encrypt3" value="Encrypt file" id="encrypt3" > '.
-    PHP_EOL  ;
-
+  echo 'Encrypt file' ;
+echo '" id="encrypt3" >' . PHP_EOL ;
+echo '<input type="button" name="decrypt3" value="' ;
 if  ( $shifr -> localerus )
-  echo '<input type="button" name="decrypt3" value="Расшифровать файл" id="decrypt3" >'.
-    PHP_EOL ;
+  echo 'Расшифровать файл' ;
 else
-  echo '<input type="button" name="decrypt3" value="Decrypt file" id="decrypt3" >'.
-    PHP_EOL  ;
+  echo 'Decrypt file' ;
+echo '" id="decrypt3" >' . PHP_EOL ;
 ?>
 </fieldset>
 
@@ -494,14 +488,11 @@ let js_readFile = function  ( input ) {
 }
 
 let fencrypt3 = function  ( ) {
-
-  if ( document . getElementById ( 'SText' ) . checked )  {
+  if ( document . getElementById ( 'SText' ) . checked )
     js_shifr  . flagtext  = true  ;
-    document . getElementById ( 'JSText' ) . checked  = true  ; 
-  } else {
+  else
     js_shifr  . flagtext  = false ;
-    document . getElementById ( 'JSText' ) . checked  = false ; 
-  }
+  document . getElementById ( 'JSText' ) . checked  = js_shifr  . flagtext ; 
   
   js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
   
@@ -518,14 +509,11 @@ let fencrypt3 = function  ( ) {
 }
 
 let fdecrypt3 = function ( ) {
-
-  if ( document . getElementById ( 'SText' ) . checked )  {
+  if ( document . getElementById ( 'SText' ) . checked )
     js_shifr  . flagtext  = true  ;
-    document . getElementById ( 'JSText' ) . checked  = true  ;
-  } else  {
+  else  
     js_shifr  . flagtext  = false ;
-    document . getElementById ( 'JSText' ) . checked  = false ;
-  }
+  document . getElementById ( 'JSText' ) . checked  = js_shifr  . flagtext ;
 
   js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
     
