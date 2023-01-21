@@ -72,7 +72,9 @@ if  ( $_POST  ) {
       $_POST  [ 'encrypt_decrypt_name'  ] == 'load'  ) {
     } else if ( ( $_POST  [ 'encrypt_decrypt_name'] == 'Зашифровать файл' or 
         $_POST  [ 'encrypt_decrypt_name'  ] == 'Encrypt file'  ) and
-      ( $_FILES [ 'uploadfile'  ] [ 'size' ] > 0 ) ) {
+      ( $_FILES [ 'uploadfile'  ] [ 'size' ] > 0 )/*isset ( $_FILES [ 'uploadfile'  ] ) and
+      ( ( ! isset($_FILES['file_upload']['error'] ) ) or
+          $_FILES['file_upload']['error'] != UPLOAD_ERR_NO_FILE )*/) {
       include  ( './encrypt_file.php' ) ;
       die ( ) ;
     } else if  ( ( $_POST  [ 'encrypt_decrypt_name' ] == 'Расшифровать файл' or 

@@ -542,23 +542,26 @@ function  shifr_decrypt3 ( shifr & $sh ) {
 function  shifr_decrypt2 ( shifr & $sh ) {
   $message_array = shifr_str_split  ( $sh -> message  ) ;
   $sh -> message = '' ;
+  $message_count  = count ( $message_array  ) ;
   if ( $sh -> flagtext ) {
-    for ( $i = 0 ; $i < count ( $message_array  )  ; ++ $i ) {
+    for ( $i = 0 ; $i < $message_count ; ++ $i ) {
       do  {
         while ( ord ( $message_array [ $i ] ) < ord ( 'R' ) or
           ord ( $message_array [ $i ] ) > ord ( 'z' ) )  {
           ++  $i  ;
-          if ( $i >= count ( $message_array  ) )
+          if ( $i >= $message_count )
             break ;  
         }
-        if ( $i >= count  (  $message_array  ) )
+        if ( $i >= $message_count )
           break ; 
         $sh ->  buf3 [ ] = ord ( $message_array [ $i ] ) - ord ( 'R' ) ;
         ++  $sh -> buf3_index ;
         if ( $sh -> buf3_index < 3 )
           ++  $i  ;
+        if ( $i >= $message_count )
+          break ;
       } while ( $sh -> buf3_index < 3 ) ;
-      if ( $i >= count  (  $message_array  ) )
+      if ( $i >= $message_count )
         break ; 
       $sh -> buf3_index = 0 ;
       $u16 = $sh  ->  buf3 [ 0 ] + 40 * ( $sh ->  buf3 [ 1 ] +
@@ -580,7 +583,7 @@ function  shifr_decrypt2 ( shifr & $sh ) {
     } // for $i    
   } else {
     // binary
-    for ( $i = 0 ; $i < count ( $message_array  ) - 1 ; $i += 2 ) {
+    for ( $i = 0 ; $i < $message_count - 1 ; $i += 2 ) {
       $secretdata = array (
         ord ( $message_array [ $i ] ) & 0b1111 ,
         ( ord ( $message_array [ $i ] ) >> 4 ) & 0b1111 ,
