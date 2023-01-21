@@ -556,10 +556,11 @@ function  shifr_decrypt2 ( shifr & $sh ) {
           break ; 
         $sh ->  buf3 [ ] = ord ( $message_array [ $i ] ) - ord ( 'R' ) ;
         ++  $sh -> buf3_index ;
-        if ( $sh -> buf3_index < 3 )
+        if ( $sh -> buf3_index < 3 ) {
           ++  $i  ;
-        if ( $i >= $message_count )
-          break ;
+          if ( $i >= $message_count )
+            break ;
+        }
       } while ( $sh -> buf3_index < 3 ) ;
       if ( $i >= $message_count )
         break ; 
