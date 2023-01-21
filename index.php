@@ -466,25 +466,26 @@ let chbox_dec = document  . getElementById  ( 'decrypt2'  ) ;
 chbox_dec . addEventListener  ( 'click' , fdecrypt ) ;
 
 let js_readFile = function  ( input ) {
-  let file = input  . files [ 0 ] ;
-  let filename  = document  . getElementById  ( 'filename_id' ) ;
-  filename  . value = input . files [ 0 ] . name  ;
-  let reader = new FileReader();
+  if ( input  . files . length > 0 ) {
+    let file = input  . files [ 0 ] ;
+    let filename  = document  . getElementById  ( 'filename_id' ) ;
+    filename  . value = input . files [ 0 ] . name  ;
+    let reader = new FileReader();
 
-  reader.onload = function() {
-    let buffer  = reader.result ;
+    reader.onload = function() {
+      let buffer  = reader.result ;
     
-    let view = new Uint8Array(buffer);
+      let view = new Uint8Array(buffer);
     
-    js_shifr  . message = Array . from  ( view ) ;
-  };
+      js_shifr  . message = Array . from  ( view ) ;
+    } ;
 
-  reader.onerror = function() {
-    alert(reader.error);
-  };
+    reader.onerror = function() {
+      alert(reader.error);
+    };
   
-  reader.readAsArrayBuffer(file);
-
+    reader.readAsArrayBuffer(file);
+  }
 }
 
 let fencrypt3 = function  ( ) {
