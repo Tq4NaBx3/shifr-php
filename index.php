@@ -548,10 +548,11 @@ chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
 <script>
   let chbox_fenc = document  . getElementById  ( 'encrypt3'  ) ;
   chbox_fenc . addEventListener  ( 'click' , fencrypt3 ) ;  
-  let js_post  ;
+  //let js_post  ;
 <?php
-  if ( isset ( $_POST ) )
+/*  if ( isset ( $_POST ) )
     echo "js_post = " . json_encode ( $_POST ) . " ; " ;
+*/
 ?>
 </script>
     </form>
