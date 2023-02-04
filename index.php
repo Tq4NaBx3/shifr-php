@@ -51,13 +51,12 @@ if  ( $_POST  ) {
     if  ( $shifr -> flag_debug  )
       $shifr -> array_log [ ] = 'index : generate password `' .
         $shifr -> password . '`' ;
-  } else
-    if ( isset ( $_POST [ 'password'  ] ) ) {
-      shifr_password_set  ( $shifr  , $_POST [ 'password'  ] ) ;
-      if  ( $shifr -> flag_debug  )
-        $shifr -> array_log [ ] = 'index : set password `' .
-          $_POST [ 'password'  ] . '`' ;
-    }
+  } else  if ( isset ( $_POST [ 'password'  ] ) ) {
+    shifr_password_set  ( $shifr  , $_POST [ 'password'  ] ) ;
+    if  ( $shifr -> flag_debug  )
+      $shifr -> array_log [ ] = 'index : set password `' .
+        $_POST [ 'password'  ] . '`' ;
+  }
   
   if  ( isset ( $_POST  [ 'encrypt_decrypt_name'  ] ) ) {
     if  ( $_POST  [ 'encrypt_decrypt_name'] == 'зашифровать' or 
@@ -108,25 +107,6 @@ body  {
 }
 table.wide { width: 99%; }
 </style>
-<script>
-'use strict';
-</script>
-<script type="text/javascript" src="shifr.js"></script>
-<script>
-  let js_shifr  = { } ;
-  js_shifr_init ( js_shifr ) ;
-  js_shifr . localerus = <?php
-  if ( $shifr -> localerus )
-    echo 'true' ;
-  else
-    echo 'false' ; ?> ;
-<?php
-if  ( $shifr -> flag_debug  )
-  foreach ( $shifr -> array_log as $value  )
-    echo  'js_shifr . array_log . push ( \'php : ' . str_replace (
-      array  ( "\\" , "'" ) , array  ( "\\\\" , "\'" ) , $value ) . '\' ) ;' ;
-?>
-</script>
 </head>
 <body>
 <form action="<?php echo $_SERVER['PHP_SELF'] ; ?>" method="POST"
@@ -240,25 +220,6 @@ else
 </td>
 </tr>
 </table>
-<script>
-if ( document . getElementById ( 'keysize45' ) . checked )
-  js_shifr_set_version  ( js_shifr  , 2 ) ;
-else
-  if ( document . getElementById ( 'keysize296' ) . checked ) 
-    js_shifr_set_version  ( js_shifr  , 3 ) ;
-
-let fkeysize45  = function ( ) {
-  js_shifr_set_version  ( js_shifr  , 2 ) ;
-}
-let chboxg_keys45 = document  . getElementById ( 'keysize45' ) ;
-chboxg_keys45 . addEventListener  ( 'click' , fkeysize45 ) ;
-let fkeysize296  = function ( ) {
-  js_shifr_set_version  ( js_shifr  , 3 ) ;
-}
-let chboxg_keys296 = document  . getElementById ( 'keysize296' ) ;
-chboxg_keys296 . addEventListener  ( 'click' , fkeysize296 ) ;
-
-</script>
 <br>
 <label>
 <?php
@@ -297,46 +258,6 @@ else
 <input name="password" type="password" value="<?php 
   echo htmlspecialchars ( shifr_password_get ( $shifr ) ) ; ?>" size ="60" id="password" style="width: 99%" />
 </div>
-<script>
-
-if ( document . getElementById ( 'passlettersdigits' ) . checked ) 
-  js_shifr . letters_mode = 62 ;
-if ( document . getElementById ( 'passalpha' ) . checked ) 
-  js_shifr . letters_mode = 95 ;
-if  ( document  . getElementById  ( 'passSmallLetters'  ) . checked )
-  js_shifr  . letters_mode  = 26  ;
-if ( document . getElementById ( 'passdigits' ) . checked ) 
-  js_shifr . letters_mode = 10 ;
-
-let falpha95  = function ( ) {
-  js_shifr . letters_mode = 95 ; 
-}
-document  . getElementById ( 'passalpha' ) . addEventListener  ( 'click' , falpha95 ) ;
-
-let falpha62  = function ( ) {
-  js_shifr . letters_mode = 62 ;
-}
-document  . getElementById ( 'passlettersdigits' ) . addEventListener  ( 'click' , falpha62 ) ;
-
-let falpha26  = function  ( ) {
-  js_shifr  . letters_mode  = 26  ;
-}
-document  . getElementById  ( 'passSmallLetters'  ) . addEventListener  ( 'click' , falpha26  ) ;
-
-let falpha10  = function ( ) {
-  js_shifr . letters_mode = 10 ;
-}
-document  . getElementById ( 'passdigits' ) . addEventListener  ( 'click' , falpha10 ) ;
-    
-let fgenerate = function ( ) {
-  js_shifr_generate_password  ( js_shifr  ) ;
-  document . getElementById ( 'password' ) . value  = js_shifr_password_get ( js_shifr ) ;
-}
-  
-let chboxg = document.getElementById('generate2');
-chboxg.addEventListener('click', fgenerate ) ;
-
-</script>
 <br>
 <?php
 if  ( $shifr -> localerus )
@@ -350,21 +271,6 @@ else
   echo 'Show_password' ;
 echo '" value="0" id="showpassword" onchange="fshowpassword()" />' ;
 ?>
-<script>
-document  . forms [ 'form_id' ] [ 'password' ] . type  =
-  ( ( document  . getElementById  ( 'showpassword'  ) . checked ) ?
-    'text'  : 'password'  ) ;
-let fshowpassword = function ( ) {
-  let chbox = document.getElementById('showpassword');
-	if (chbox.checked) {
-    document  . forms [ 'form_id' ] [ 'password' ] . type  = 'text'  ;
-    chbox.setAttribute("checked", "checked" );
-  }	else {
-    document  . forms [ 'form_id' ] [ 'password' ] . type  = 'password'  ;
-    chbox.removeAttribute("checked");
-  }
-}
-</script>
 <br>
 <hr>
 <br>
@@ -428,24 +334,118 @@ else
 echo '" id="decrypt3" >' . PHP_EOL ;
 ?>
 </fieldset>
-
 </div>
-
+<br>
+<textarea name="boxes_info"  rows="2" cols="61" id="boxes_info" value = ""
+  maxlength="2048000000" readonly hidden ><?php
+  echo htmlspecialchars($shifr -> boxes_info) ; ?></textarea>
+<textarea name="filename_name" rows="1" cols="61" id="filename_id" value = ""
+  maxlength="2048" readonly hidden ><?php
+  echo htmlspecialchars($shifr -> filename) ; ?></textarea>    
+<input type="checkbox" name="text_mode" value="1" id="JSText" <?php
+  if ( $shifr -> flagtext )
+    echo 'checked' ;
+?>  hidden />
+    </form>
 <script>
+'use strict';
+</script>
+<script type="text/javascript" src="shifr.js"></script>
+<script>
+  let js_shifr  = { } ;
+  js_shifr_init ( js_shifr ) ;
+  js_shifr . localerus = <?php
+  if ( $shifr -> localerus )
+    echo 'true' ;
+  else
+    echo 'false' ; ?> ;
+<?php
+if  ( $shifr -> flag_debug  )
+  foreach ( $shifr -> array_log as $value  )
+    echo  'js_shifr . array_log . push ( \'php : ' . str_replace (
+      array  ( "\\" , "'" ) , array  ( "\\\\" , "\'" ) , $value ) . '\' ) ;' ;
+?>
+
+if ( document . getElementById ( 'keysize45' ) . checked )
+  js_shifr_set_version  ( js_shifr  , 2 ) ;
+else  if ( document . getElementById ( 'keysize296' ) . checked )
+  js_shifr_set_version  ( js_shifr  , 3 ) ;
+
+let fkeysize45  = function ( ) {
+  js_shifr_set_version  ( js_shifr  , 2 ) ;
+}
+let chboxg_keys45 = document  . getElementById ( 'keysize45' ) ;
+chboxg_keys45 . addEventListener  ( 'click' , fkeysize45 ) ;
+let fkeysize296  = function ( ) {
+  js_shifr_set_version  ( js_shifr  , 3 ) ;
+}
+let chboxg_keys296 = document  . getElementById ( 'keysize296' ) ;
+chboxg_keys296 . addEventListener  ( 'click' , fkeysize296 ) ;
+
+if ( document . getElementById ( 'passlettersdigits' ) . checked )
+  js_shifr . letters_mode = 62 ;
+else  if ( document . getElementById ( 'passalpha' ) . checked )
+  js_shifr . letters_mode = 95 ;
+else  if  ( document  . getElementById  ( 'passSmallLetters'  ) . checked )
+  js_shifr  . letters_mode  = 26  ;
+else  if ( document . getElementById ( 'passdigits' ) . checked )
+  js_shifr . letters_mode = 10 ;
+
+let falpha95  = function ( ) {
+  js_shifr . letters_mode = 95 ;
+}
+document  . getElementById ( 'passalpha' ) . addEventListener  ( 'click' , falpha95 ) ;
+
+let falpha62  = function ( ) {
+  js_shifr . letters_mode = 62 ;
+}
+document  . getElementById ( 'passlettersdigits' ) . addEventListener  ( 'click' , falpha62 ) ;
+
+let falpha26  = function  ( ) {
+  js_shifr  . letters_mode  = 26  ;
+}
+document  . getElementById  ( 'passSmallLetters'  ) . addEventListener  ( 'click' , falpha26  ) ;
+
+let falpha10  = function ( ) {
+  js_shifr . letters_mode = 10 ;
+}
+document  . getElementById ( 'passdigits' ) . addEventListener  ( 'click' , falpha10 ) ;
+
+let fgenerate = function ( ) {
+  js_shifr_generate_password  ( js_shifr  ) ;
+  document . getElementById ( 'password' ) . value  = js_shifr_password_get ( js_shifr ) ;
+}
+
+let chboxg = document.getElementById('generate2');
+chboxg.addEventListener('click', fgenerate ) ;
+
+document  . forms [ 'form_id' ] [ 'password' ] . type  =
+  ( ( document  . getElementById  ( 'showpassword'  ) . checked ) ?
+    'text'  : 'password'  ) ;
+let fshowpassword = function ( ) {
+  let chbox = document.getElementById('showpassword');
+	if (chbox.checked) {
+    document  . forms [ 'form_id' ] [ 'password' ] . type  = 'text'  ;
+    chbox.setAttribute("checked", "checked" );
+  }	else {
+    document  . forms [ 'form_id' ] [ 'password' ] . type  = 'password'  ;
+    chbox.removeAttribute("checked");
+  }
+}
 js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
 js_shifr  . message = document . getElementById ( 'message' ) . value ;
-js_shifr  . flagtext  = document . getElementById ( 'SText' ) . checked ; 
+js_shifr  . flagtext  = document . getElementById ( 'SText' ) . checked ;
 let fencrypt = function ( ) {
 
   document . getElementById ( 'SText' ) . checked = true ;
   js_shifr  . flagtext  = true  ;
   js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
   js_shifr  . message = document . getElementById ( 'message' ) . value ;
-  
+
   js_shifr_salt_init  ( js_shifr ) ;
-  js_shifr_encrypt ( js_shifr ) ; 
+  js_shifr_encrypt ( js_shifr ) ;
   js_shifr_flush ( js_shifr  ) ;
-  
+
   document . getElementById ( 'message' ) . value  = js_shifr  . message ;
 }
 let fdecrypt = function ( ) {
@@ -454,13 +454,13 @@ let fdecrypt = function ( ) {
   js_shifr  . flagtext  = true  ;
   js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
   js_shifr  . message = document . getElementById ( 'message' ) . value ;
-  
+
   js_shifr_salt_init  ( js_shifr ) ;
-  js_shifr_decrypt ( js_shifr ) ; 
-  js_shifr . message  = js_Utf8ArrayToStr ( js_shifr  . message ) ; 
-    
+  js_shifr_decrypt ( js_shifr ) ;
+  js_shifr . message  = js_Utf8ArrayToStr ( js_shifr  . message ) ;
+
   document . getElementById ( 'message' ) . value  = js_shifr  . message ;
-  
+
 }
 let chbox_enc = document  . getElementById  ( 'encrypt2'  ) ;
 chbox_enc . addEventListener  ( 'click' , fencrypt ) ;
@@ -476,16 +476,17 @@ let js_readFile = function  ( input ) {
 
     reader.onload = function() {
       let buffer  = reader.result ;
-    
+
       let view = new Uint8Array(buffer);
-    
+
       js_shifr  . message = Array . from  ( view ) ;
+      // not cleaned buffer
     } ;
 
     reader.onerror = function() {
       alert(reader.error);
     };
-  
+
     reader.readAsArrayBuffer(file);
   }
 }
@@ -495,18 +496,18 @@ let fencrypt3 = function  ( ) {
     js_shifr  . flagtext  = true  ;
   else
     js_shifr  . flagtext  = false ;
-  document . getElementById ( 'JSText' ) . checked  = js_shifr  . flagtext ; 
-  
+  document . getElementById ( 'JSText' ) . checked  = js_shifr  . flagtext ;
+
   js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
-  
+
   js_shifr_salt_init  ( js_shifr ) ;
-  js_shifr_encrypt ( js_shifr ) ; 
+  js_shifr_encrypt ( js_shifr ) ;
   js_shifr_flush ( js_shifr  ) ;
   if ( !  js_shifr  . flagtext )
     js_shifr . message  = js_shifr_Base64_encode ( js_shifr  . message ) ;
   let boxinfo = document . getElementById ( 'boxes_info' ) ;
   boxinfo . value = js_shifr  . message ;
-  
+
   document  . forms [ 'form_file' ] . action  = 'post_file.php' ;
   document  . forms [ 'form_file' ] . submit  ( ) ;
 }
@@ -514,19 +515,19 @@ let fencrypt3 = function  ( ) {
 let fdecrypt3 = function ( ) {
   if ( document . getElementById ( 'SText' ) . checked )
     js_shifr  . flagtext  = true  ;
-  else  
+  else
     js_shifr  . flagtext  = false ;
   document . getElementById ( 'JSText' ) . checked  = js_shifr  . flagtext ;
 
   js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
-    
+
   js_shifr_salt_init  ( js_shifr ) ;
   js_shifr_decrypt ( js_shifr ) ;
   js_shifr . message  = js_shifr_Base64_encode ( js_shifr  . message ) ;
 
   let boxinfo = document . getElementById ( 'boxes_info' ) ;
   boxinfo . value = js_shifr  . message ;
-  
+
   document  . forms [ 'form_file' ] . action  = 'post_defile.php' ;
   document  . forms [ 'form_file' ] . submit ( ) ;
 }
@@ -534,29 +535,8 @@ let fdecrypt3 = function ( ) {
 let chbox_fdec = document  . getElementById  ( 'decrypt3'  ) ;
 chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
 
-</script>
-<br>
-
-<textarea name="boxes_info"  rows="2" cols="61" id="boxes_info" value = ""
-  maxlength="2048000000" readonly hidden ><?php
-  echo htmlspecialchars($shifr -> boxes_info) ; ?></textarea>
-<textarea name="filename_name" rows="1" cols="61" id="filename_id" value = ""
-  maxlength="2048" readonly hidden ><?php
-  echo htmlspecialchars($shifr -> filename) ; ?></textarea>    
-<input type="checkbox" name="text_mode" value="1" id="JSText" <?php
-  if ( $shifr -> flagtext )
-    echo 'checked' ;
-?>  hidden />
-<script>
   let chbox_fenc = document  . getElementById  ( 'encrypt3'  ) ;
   chbox_fenc . addEventListener  ( 'click' , fencrypt3 ) ;  
-  //let js_post  ;
-<?php
-/*  if ( isset ( $_POST ) )
-    echo "js_post = " . json_encode ( $_POST ) . " ; " ;
-*/
-?>
 </script>
-    </form>
   </body>
 </html>
