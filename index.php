@@ -308,50 +308,72 @@ echo '" >' . PHP_EOL  ;
 </fieldset>
 
 </div>
-
 </form>
-<form method="POST" enctype="multipart/form-data" id="form_file">
-
-<div class="fieldsetclassjavascript" id="iddivfieldsetclassjavascript"  style="width: 99%">
-
-<fieldset>
-<legend><i>JavaScript</i></legend>
-<input type="hidden" name="MAX_FILE_SIZE" value="2048000000" />
-<input type=file name="js_uploadfile_name" onchange="js_readFile(this)"
-  id="js_inputfile_id"><br>
+<div id="shifrcode"></div>
 <?php
-echo '<input type="submit" name="encrypt3" value="' ;
+$stringsec  = '' ;
+$stringsec  .=  '<form method="POST" enctype="multipart/form-data" id="form_file">' . PHP_EOL ;
+$stringsec  .=  '<div class="fieldsetclassjavascript" ' .
+  'id="iddivfieldsetclassjavascript"  style="width: 99%">' .  PHP_EOL ;
+$stringsec  .=  '<fieldset>' . PHP_EOL ;
+$stringsec  .=  '<legend><i>JavaScript</i></legend>' . PHP_EOL ;
+$stringsec  .=  '<input type="hidden" name="MAX_FILE_SIZE" value="2048000000" />' . PHP_EOL ;
+$stringsec  .=  '<input type=file name="js_uploadfile_name" ' .
+  'onchange="js_readFile(this)" id="js_inputfile_id"><br>' . PHP_EOL ;
+$stringsec  .=  '<input type="submit" name="encrypt3" value="' ;
 if  ( $shifr -> localerus )
-  echo 'Зашифровать файл' ;
+  $stringsec  .=  'Зашифровать файл' ;
 else
-  echo 'Encrypt file' ;
-echo '" id="encrypt3" >' . PHP_EOL ;
-echo '<input type="button" name="decrypt3" value="' ;
+  $stringsec  .=  'Encrypt file' ;
+$stringsec  .=  '" id="encrypt3" >' . PHP_EOL ;
+$stringsec  .=  '<input type="button" name="decrypt3" value="' ;
 if  ( $shifr -> localerus )
-  echo 'Расшифровать файл' ;
+  $stringsec  .=  'Расшифровать файл' ;
 else
-  echo 'Decrypt file' ;
-echo '" id="decrypt3" >' . PHP_EOL ;
-?>
-</fieldset>
-</div>
-<br>
-<textarea name="boxes_info"  rows="2" cols="61" id="boxes_info" value = ""
-  maxlength="2048000000" readonly hidden ><?php
-  echo htmlspecialchars($shifr -> boxes_info) ; ?></textarea>
-<textarea name="filename_name" rows="1" cols="61" id="filename_id" value = ""
-  maxlength="2048" readonly hidden ><?php
-  echo htmlspecialchars($shifr -> filename) ; ?></textarea>    
-<input type="checkbox" name="text_mode" value="1" id="JSText" <?php
+  $stringsec  .=  'Decrypt file' ;
+$stringsec  .=  '" id="decrypt3" >' . PHP_EOL ;
+$stringsec  .=  '</fieldset>' . PHP_EOL ;
+$stringsec  .=  '</div>' . PHP_EOL ; // fieldsetclassjavascript
+$stringsec  .=  '<br>' . PHP_EOL ;
+$stringsec  .=  '<textarea name="boxes_info"  rows="2" cols="61" id="boxes_info" value = "" ' .
+  'maxlength="2048000000" readonly hidden >' . htmlspecialchars ( $shifr -> boxes_info  ) .
+  '</textarea>' . PHP_EOL ;
+$stringsec  .=  '<textarea name="filename_name" rows="1" cols="61" id="filename_id" value = "" maxlength="2048" ' .
+  'readonly hidden >' . htmlspecialchars  ( $shifr -> filename  ) . '</textarea> ' . PHP_EOL ;
+$stringsec  .=  '<input type="checkbox" name="text_mode" value="1" id="JSText" ' ;
   if ( $shifr -> flagtext )
-    echo 'checked' ;
-?>  hidden />
-    </form>
+    $stringsec  .=  'checked ' ;
+$stringsec  .=  'hidden />' ;
+$stringsec  .=  '</form>' . PHP_EOL ;
+$shifrhtml  = new shifr ( ) ;
+  shifr_init ( $shifrhtml  ) ;
+  shifr_set_version ( $shifrhtml , 2 ) ;
+  $shifrhtml -> flagtext = true ;
+  $shifrhtml -> letters_mode = shifr :: letters_mode_Letter ;
+  $secrethtmlpsw = 'qwertyuiop' ;
+  shifr_password_set ( $shifrhtml , $secrethtmlpsw ) ;
+  $shifrhtml -> message = $stringsec ;
+  shifr_encrypt ( $shifrhtml ) ;
+  shifr_flush ( $shifrhtml  ) ;
+?>
 <script>
 'use strict';
 </script>
 <script type="text/javascript" src="shifr.js"></script>
 <script>
+let stext = '<?php
+  echo str_replace ( "\n" , "' +" . PHP_EOL . " '" , str_replace ( "\\" , "\\\\" ,  $shifrhtml -> message ) ) ;
+  ?>' ;
+let js_shifrhtml  = { } ;
+js_shifr_init ( js_shifrhtml ) ;
+js_shifr_set_version ( js_shifrhtml , 2 ) ;
+js_shifrhtml  . flagtext  = true ;
+js_shifrhtml  . letters_mode  = 26  ;
+js_shifr_password_set ( js_shifrhtml , '<?php echo $secrethtmlpsw ; ?>' ) ;
+js_shifrhtml  . message = stext ;
+js_shifr_decrypt ( js_shifrhtml ) ;
+document . getElementById ( 'shifrcode' ) . innerHTML = js_Utf8ArrayToStr ( js_shifrhtml  . message ) ;
+
   let js_shifr  = { } ;
   js_shifr_init ( js_shifr ) ;
   js_shifr . localerus = <?php
@@ -480,7 +502,11 @@ let js_readFile = function  ( input ) {
       let view = new Uint8Array(buffer);
 
       js_shifr  . message = Array . from  ( view ) ;
-      // not cleaned buffer
+
+// ! save file name for post_file ?
+// ... = document . getElementById ( 'filename_id' ) . value
+      // document . getElementById ( 'filename_id' ) . value = null ;
+
     } ;
 
     reader.onerror = function() {

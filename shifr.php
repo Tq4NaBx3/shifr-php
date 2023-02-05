@@ -294,8 +294,10 @@ class shifr {
   public  $letters10  ; // alphabet 10 digits // алфавит 10 цифры
   // password alphabet mode 10 or 62 or 95 or 26
   // режим алфавит пароля 10 или 62 или 95 или 26
-  const letters_mode_Digit = 10 ;
-  const letters_mode_Letter = 26 ;
+  const letters_mode_Digit  = 10  ;
+  const letters_mode_Letter = 26  ;
+  const letters_mode_LetterDigit  = 62  ;
+  const letters_mode_ASCII  = 95  ;
   public  $letters_mode ;
   public  $localerus  ; // false or true // русская локаль false или true
   public  $flagtext ; // true or false // флаг текст true или false
@@ -648,7 +650,7 @@ function  number_not_zero ( array & $number ) {
 
 function  shifr_password_to_string ( shifr & $sh , array $passworda ) : string {
   switch  ( $sh  ->  letters_mode ) {
-  case  95  :
+  case  shifr :: letters_mode_ASCII  :
     $letters  = $sh ->  letters95  ;
     break ;
   case  62  :
@@ -855,7 +857,7 @@ function  shifr_string_to_key_array  ( shifr & $sh , string & $str ) {
     return $passarr ;
   }
   switch  ( $sh ->  letters_mode ) {
-  case  95  :
+  case  shifr :: letters_mode_ASCII  :
     $letters  = $sh ->  letters95  ;
     break ;
   case  62  :
