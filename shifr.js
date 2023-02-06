@@ -324,30 +324,42 @@ let js_Utf8ArrayToStr  = function (  array ) {
     }
     return out  ;
 }
-    
+
+const js_shifr_text_num_to_let_v2 = new Array (
+  'a' , 'b' , 'c' , 'd' , 'e' , 'f' , 'g' , 'h' , 'i' , 'j' , 'k' , 'l' ,
+  'm' , 'n' , 'o' , 'p' , 'q' , 'r' , 's' , 't' , 'u' , 'v' , 'w' , 'x' ,
+  'y' , 'z' , 'A' , 'B' , 'C' , 'D' , 'E' , 'F' , 'G' , 'H' , 'I' , 'J' ,
+  'K' , 'L' , 'M' , 'N' , 'O'
+) ;
+
+const js_shifr_text_let_to_num_v2 = {
+  'a' : 0 , 'b' : 1 , 'c' : 2 , 'd' : 3 , 'e' : 4 , 'f' : 5 ,
+  'g' : 6 , 'h' : 7 , 'i' : 8 , 'j' : 9 , 'k' : 10  , 'l' : 11  ,
+  'm' : 12  , 'n' : 13  , 'o' : 14  , 'p' : 15  , 'q' : 16  , 'r' : 17  ,
+  's' : 18  , 't' : 19  , 'u' : 20  , 'v' : 21  , 'w' : 22  , 'x' : 23  ,
+  'y' : 24  , 'z' : 25  , 'A' : 26  , 'B' : 27  , 'C' : 28  , 'D' : 29  ,
+  'E' : 30  , 'F' : 31  , 'G' : 32  , 'H' : 33  , 'I' : 34  , 'J' : 35  ,
+  'K' : 36  , 'L' : 37  , 'M' : 38  , 'N' : 39  , 'O' : 40  ,
+} ;
+
 // sh . message_array of bytes -> sh . message of bytes
 // if flagtext :               -> sh . message of characters
 let js_shifr_encrypt2 = function ( sh ) {
   for ( let char of sh . message_array ) {
     let secret_data = js_shifr_byte_to_array2 ( char ) ;
     let secret_data_salt = js_shifr_data_salt2 ( secret_data ) ;
-    js_shifr_data_xor2 ( sh . old_last_data , sh . old_last_salt ,
-      secret_data_salt ) ;
-    let encrypteddata = js_shifr_crypt_decrypt ( secret_data_salt ,
-      sh . shifra )  ;
+    js_shifr_data_xor2 ( sh . old_last_data , sh . old_last_salt , secret_data_salt ) ;
+    let encrypteddata = js_shifr_crypt_decrypt ( secret_data_salt , sh . shifra )  ;
     if ( sh . flagtext ) {
       let buf16 = ( encrypteddata [ 0 ] & 0b1111 ) |
         ( ( encrypteddata [ 1 ] & 0b1111 ) << 4 ) |
         ( ( encrypteddata [ 2 ] & 0b1111 ) << 8 ) |
         ( ( encrypteddata [ 3 ] & 0b1111 ) << 12 ) ;
-      sh . message +=  String.fromCharCode (
-        ( 'R' . charCodeAt ( 0 ) ) + ( buf16 % 40 ) ) ;
+      sh  . message +=  js_shifr_text_num_to_let_v2 [ buf16 % 40  ] ;
       buf16 = Math . floor ( ( buf16 + 0.5 ) / 40 )  ;      
-      sh . message += String.fromCharCode (
-        ( 'R' . charCodeAt ( 0 ) ) + ( buf16 % 40 ) ) ;
+      sh  . message +=  js_shifr_text_num_to_let_v2 [ buf16 % 40  ] ;
       buf16 = Math . floor ( ( buf16 + 0.5 )  / 40 )  ;            
-      sh . message +=  String.fromCharCode ( ( 'R' . charCodeAt ( 0 ) ) +
-        buf16 ) ;
+      sh  . message +=  js_shifr_text_num_to_let_v2 [ buf16 ] ;
       sh . bytecount += 3 ;
       if ( sh . bytecount >= 60 ) {
         sh . message += "\n" ;
@@ -358,6 +370,64 @@ let js_shifr_encrypt2 = function ( sh ) {
         ( ( encrypteddata [ 1 ] & 0b1111 ) << 4 ) ) ;
       sh . message . push ( ( encrypteddata [ 2 ] & 0b1111 ) |
         ( ( encrypteddata [ 3 ] & 0b1111 ) << 4 ) ) ;
+    }
+  }
+}
+
+// message_array -> message ( decrypted array )
+let js_shifr_decrypt2 = function  ( sh ) {
+  sh  . message = [ ] ;
+  if ( sh . flagtext ) {
+    for ( let i = 0 ; i < sh . message_array . length ; ++ i ) {
+      do  {
+        let leti  ;
+        do  {
+          leti  = String  . fromCharCode ( sh . message_array [ i ] ) ;
+          if  ( leti in js_shifr_text_let_to_num_v2 )
+            break ;
+          ++  i ;
+        } while ( i < ( sh . message_array . length ) ) ;
+        if ( i >= ( sh . message_array . length ) )
+          break ;
+        sh . buf3 . push ( js_shifr_text_let_to_num_v2 [ leti ] ) ;
+        ++  sh . buf3_index ;
+        if ( sh . buf3_index < 3 )
+          ++  i  ;
+      } while ( sh . buf3_index < 3 ) ;
+      if ( i >= ( sh . message_array . length ) )
+        break ;
+      sh . buf3_index = 0 ;
+      let u16 = sh  . buf3 [ 0 ] + 40 * ( sh . buf3 [ 1 ] + 40 * sh  . buf3 [ 2 ] ) ;
+      sh . buf3 = [ ] ;
+      let buf = [ u16 & 0xff , u16 >> 8 ] ;
+      let secretdata = [
+        buf [ 0 ] & 0b1111 ,
+        ( buf [ 0 ] >> 4 ) & 0b1111 ,
+        buf [ 1 ] & 0b1111 ,
+        ( buf [ 1 ] >> 4 ) & 0b1111 ] ;
+      let decrypteddata = [ ] ;
+      js_shifr_decrypt_salt2 ( secretdata , sh . deshia , decrypteddata ,
+        sh . old_last_salt , sh . old_last_data ) ;
+      sh  . message . push ( ( decrypteddata [ 0 ] & 0b11  ) |
+        ( ( decrypteddata [ 1 ] & 0b11  ) << 2  ) |
+        ( ( decrypteddata [ 2 ] & 0b11  ) <<  4 ) |
+        ( ( decrypteddata [ 3 ] & 0b11  ) << 6  ) ) ;
+    } // for $i
+  } else {
+    // binary
+    for ( let i = 0 ; i < sh . message_array . length - 1 ; i += 2 ) {
+      let secretdata = [
+        ( sh . message_array [ i ] ) & 0xf ,
+        ( ( sh . message_array [ i ] ) >> 4 ) & 0xf ,
+        ( sh . message_array [ i + 1 ] ) & 0xf ,
+        ( ( sh . message_array [ i + 1 ] ) >> 4 ) & 0xf ] ;
+      let decrypteddata = [ ] ;
+      js_shifr_decrypt_salt2 ( secretdata , sh . deshia , decrypteddata ,
+        sh . old_last_salt , sh . old_last_data ) ;
+      sh . message . push ( ( decrypteddata [ 0 ] & 0b11 ) |
+          ( ( decrypteddata [ 1 ] & 0b11 ) << 2  ) |
+          ( ( decrypteddata [ 2 ] & 0b11 ) <<  4 ) |
+          ( ( decrypteddata [ 3 ] & 0b11 ) << 6  ) ) ;
     }
   }
 }
@@ -870,64 +940,6 @@ let js_shifr_decrypt  = function  ( shifr ) {
     js_shifr_decrypt2 ( shifr ) ; 
   else 
     js_shifr_decrypt3 ( shifr ) ; 
-}
-
-// message_array -> message ( decrypted array )
-let js_shifr_decrypt2 = function  ( sh ) {
-  sh  . message = [ ] ;
-  if ( sh . flagtext ) {
-    for ( let i = 0 ; i < sh . message_array . length ; ++ i ) {
-      do  {
-        while ( ( sh . message_array [ i ] ) < ( 'R' . charCodeAt ( 0 ) ) ||
-          ( sh . message_array [ i ] ) > ( 'z' . charCodeAt ( 0 ) ) )  {
-          ++  i  ;
-          if ( i >= ( sh . message_array . length ) )
-            break ;
-        }
-        if ( i >= ( sh . message_array . length ) )
-          break ;
-        sh . buf3 . push ( sh . message_array [ i ] - 'R' . charCodeAt ( 0 ) ) ;
-        ++  sh . buf3_index ;
-        if ( sh . buf3_index < 3 )
-          ++  i  ;
-      } while ( sh . buf3_index < 3 ) ;
-      if ( i >= ( sh . message_array . length ) )
-        break ;
-      sh . buf3_index = 0 ;
-      let u16 = sh  . buf3 [ 0 ] + 40 * ( sh . buf3 [ 1 ] +
-        40 * sh  . buf3 [ 2 ] ) ;
-      sh . buf3 = [ ] ;
-        let buf = [ u16 & 0xff , u16 >> 8 ] ;
-        let secretdata = [
-          buf [ 0 ] & 0b1111 ,
-          ( buf [ 0 ] >> 4 ) & 0b1111 ,
-          buf [ 1 ] & 0b1111 ,
-          ( buf [ 1 ] >> 4 ) & 0b1111 ] ;
-        let decrypteddata = [ ] ;
-        js_shifr_decrypt_salt2 ( secretdata , sh . deshia , decrypteddata ,
-          sh . old_last_salt , sh . old_last_data ) ;
-        sh  . message . push ( ( decrypteddata [ 0 ] & 0b11  ) |
-          ( ( decrypteddata [ 1 ] & 0b11  ) << 2  ) |
-          ( ( decrypteddata [ 2 ] & 0b11  ) <<  4 ) |
-          ( ( decrypteddata [ 3 ] & 0b11  ) << 6  ) ) ;
-    } // for $i    
-  } else {
-    // binary
-    for ( let i = 0 ; i < sh . message_array . length - 1 ; i += 2 ) {
-      let secretdata = [
-        ( sh . message_array [ i ] ) & 0xf ,
-        ( ( sh . message_array [ i ] ) >> 4 ) & 0xf ,
-        ( sh . message_array [ i + 1 ] ) & 0xf ,
-        ( ( sh . message_array [ i + 1 ] ) >> 4 ) & 0xf ] ;
-      let decrypteddata = [ ] ;
-      js_shifr_decrypt_salt2 ( secretdata , sh . deshia , decrypteddata ,
-        sh . old_last_salt , sh . old_last_data ) ;
-      sh . message . push ( ( decrypteddata [ 0 ] & 0b11 ) |
-          ( ( decrypteddata [ 1 ] & 0b11 ) << 2  ) |
-          ( ( decrypteddata [ 2 ] & 0b11 ) <<  4 ) |
-          ( ( decrypteddata [ 3 ] & 0b11 ) << 6  ) ) ;
-    }
-  }
 }
 
 // читаю 6 бит
