@@ -359,7 +359,7 @@ $shifrhtml  = new shifr ( ) ;
 <script>
 'use strict';
 </script>
-<script type="text/javascript" src="shifr.js"></script>
+<script type="text/javascript" src="shifr.js?time=<?=time();?>"></script>
 <script>
 let stext = '<?php
   echo str_replace ( "\n" , "' +" . PHP_EOL . " '" , str_replace ( "\\" , "\\\\" ,  $shifrhtml -> message ) ) ;
