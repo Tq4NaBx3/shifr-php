@@ -325,21 +325,27 @@ let js_Utf8ArrayToStr  = function (  array ) {
     return out  ;
 }
 
-const js_shifr_text_num_to_let_v2 = new Array (
-  'a' , 'b' , 'c' , 'd' , 'e' , 'f' , 'g' , 'h' , 'i' , 'j' , 'k' , 'l' ,
-  'm' , 'n' , 'o' , 'p' , 'q' , 'r' , 's' , 't' , 'u' , 'v' , 'w' , 'x' ,
-  'y' , 'z' , 'A' , 'B' , 'C' , 'D' , 'E' , 'F' , 'G' , 'H' , 'I' , 'J' ,
-  'K' , 'L' , 'M' , 'N' , 'O'
+const js_shifr_base64_num_to_let  = new Array (
+  'A' , 'B' , 'C' , 'D' , 'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' , 'L' ,
+  'M' , 'N' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' , 'U' , 'V' , 'W' , 'X' ,
+  'Y' , 'Z' , 'a' , 'b' , 'c' , 'd' , 'e' , 'f' , 'g' , 'h' , 'i' , 'j' ,
+  'k' , 'l' , 'm' , 'n' , 'o' , 'p' , 'q' , 'r' , 's' , 't' , 'u' , 'v' ,
+  'w' , 'x' , 'y' , 'z' , '0' , '1' , '2' , '3' , '4' , '5' , '6' , '7' ,
+  '8' , '9' , '+' , '/'
 ) ;
 
-const js_shifr_text_let_to_num_v2 = {
-  'a' : 0 , 'b' : 1 , 'c' : 2 , 'd' : 3 , 'e' : 4 , 'f' : 5 ,
-  'g' : 6 , 'h' : 7 , 'i' : 8 , 'j' : 9 , 'k' : 10  , 'l' : 11  ,
-  'm' : 12  , 'n' : 13  , 'o' : 14  , 'p' : 15  , 'q' : 16  , 'r' : 17  ,
-  's' : 18  , 't' : 19  , 'u' : 20  , 'v' : 21  , 'w' : 22  , 'x' : 23  ,
-  'y' : 24  , 'z' : 25  , 'A' : 26  , 'B' : 27  , 'C' : 28  , 'D' : 29  ,
-  'E' : 30  , 'F' : 31  , 'G' : 32  , 'H' : 33  , 'I' : 34  , 'J' : 35  ,
-  'K' : 36  , 'L' : 37  , 'M' : 38  , 'N' : 39  , 'O' : 40  ,
+const js_shifr_base64_let_to_num = {
+  'A' : 0x00  , 'B' : 0x01  , 'C' : 0x02  , 'D' : 0x03  , 'E' : 0x04  , 'F' : 0x05  ,
+  'G' : 0x06  , 'H' : 0x07  , 'I' : 0x08  , 'J' : 0x09  , 'K' : 0x0a  , 'L' : 0x0b  ,
+  'M' : 0x0c  , 'N' : 0x0d  , 'O' : 0x0e  , 'P' : 0x0f  , 'Q' : 0x10  , 'R' : 0x11  ,
+  'S' : 0x12  , 'T' : 0x13  , 'U' : 0x14  , 'V' : 0x15  , 'W' : 0x16  , 'X' : 0x17  ,
+  'Y' : 0x18  , 'Z' : 0x19  , 'a' : 0x1a  , 'b' : 0x1b  , 'c' : 0x1c  , 'd' : 0x1d  ,
+  'e' : 0x1e  , 'f' : 0x1f  , 'g' : 0x20  , 'h' : 0x21  , 'i' : 0x22  , 'j' : 0x23  ,
+  'k' : 0x24  , 'l' : 0x25  , 'm' : 0x26  , 'n' : 0x27  , 'o' : 0x28  , 'p' : 0x29  ,
+  'q' : 0x2a  , 'r' : 0x2b  , 's' : 0x2c  , 't' : 0x2d  , 'u' : 0x2e  , 'v' : 0x2f  ,
+  'w' : 0x30  , 'x' : 0x31  , 'y' : 0x32  , 'z' : 0x33  , '0' : 0x34  , '1' : 0x35  ,
+  '2' : 0x36  , '3' : 0x37  , '4' : 0x38  , '5' : 0x39  , '6' : 0x3a  , '7' : 0x3b  ,
+  '8' : 0x3c  , '9' : 0x3d  , '+' : 0x3e  , '/' : 0x3f  ,
 } ;
 
 // sh . message_array of bytes -> sh . message of bytes
@@ -355,11 +361,11 @@ let js_shifr_encrypt2 = function ( sh ) {
         ( ( encrypteddata [ 1 ] & 0b1111 ) << 4 ) |
         ( ( encrypteddata [ 2 ] & 0b1111 ) << 8 ) |
         ( ( encrypteddata [ 3 ] & 0b1111 ) << 12 ) ;
-      sh  . message +=  js_shifr_text_num_to_let_v2 [ buf16 % 40  ] ;
+      sh  . message +=  js_shifr_base64_num_to_let [ buf16 % 40  ] ;
       buf16 = Math . floor ( ( buf16 + 0.5 ) / 40 )  ;      
-      sh  . message +=  js_shifr_text_num_to_let_v2 [ buf16 % 40  ] ;
+      sh  . message +=  js_shifr_base64_num_to_let [ buf16 % 40  ] ;
       buf16 = Math . floor ( ( buf16 + 0.5 )  / 40 )  ;            
-      sh  . message +=  js_shifr_text_num_to_let_v2 [ buf16 ] ;
+      sh  . message +=  js_shifr_base64_num_to_let [ buf16 ] ;
       sh . bytecount += 3 ;
       if ( sh . bytecount >= 60 ) {
         sh . message += "\n" ;
@@ -383,13 +389,13 @@ let js_shifr_decrypt2 = function  ( sh ) {
         let leti  ;
         do  {
           leti  = String  . fromCharCode ( sh . message_array [ i ] ) ;
-          if  ( leti in js_shifr_text_let_to_num_v2 )
+          if  ( leti in js_shifr_base64_let_to_num )
             break ;
           ++  i ;
         } while ( i < ( sh . message_array . length ) ) ;
         if ( i >= ( sh . message_array . length ) )
           break ;
-        sh . buf3 . push ( js_shifr_text_let_to_num_v2 [ leti ] ) ;
+        sh . buf3 . push ( js_shifr_base64_let_to_num [ leti ] ) ;
         ++  sh . buf3_index ;
         if ( sh . buf3_index < 3 )
           ++  i  ;
@@ -409,9 +415,9 @@ let js_shifr_decrypt2 = function  ( sh ) {
       js_shifr_decrypt_salt2 ( secretdata , sh . deshia , decrypteddata ,
         sh . old_last_salt , sh . old_last_data ) ;
       sh  . message . push ( ( decrypteddata [ 0 ] & 0b11  ) |
-        ( ( decrypteddata [ 1 ] & 0b11  ) << 2  ) |
+        ( ( decrypteddata [ 1 ] & 0b11  ) <<  2 ) |
         ( ( decrypteddata [ 2 ] & 0b11  ) <<  4 ) |
-        ( ( decrypteddata [ 3 ] & 0b11  ) << 6  ) ) ;
+        ( ( decrypteddata [ 3 ] & 0b11  ) <<  6 ) ) ;
     } // for $i
   } else {
     // binary
