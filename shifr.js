@@ -468,10 +468,8 @@ let js_shifr_byte_to_array3 = function ( sh , charcode ) {
 // if flagtext : push to string
 let js_shifr_write_array  = function  ( sh , secret_data  ) {
   let secret_data_salt = js_shifr_data_salt3 ( secret_data ) ;
-  js_shifr_data_xor3 ( sh . old_last_data , sh . old_last_salt ,
-    secret_data_salt ) ;
-  let encrypteddata = js_shifr_crypt_decrypt ( secret_data_salt ,
-    sh . shifra )  ;
+  js_shifr_data_xor3 ( sh . old_last_data , sh . old_last_salt , secret_data_salt ) ;
+  let encrypteddata = js_shifr_crypt_decrypt ( secret_data_salt , sh . shifra )  ;
   if ( sh . flagtext ) {
     for ( let ed  of  encrypteddata ) {
       sh . message  +=  String . fromCharCode ( ';' . charCodeAt ( 0 ) + ed ) ;
