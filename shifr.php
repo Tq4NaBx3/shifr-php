@@ -499,12 +499,12 @@ function shifr_byte_to_array3 ( shifr & $sh , int $charcode ) : array {
     
 function  shifr_write_array ( shifr & $sh , array $secret_data  ) {
   $secret_data_salt = shifr_data_salt3 ( $secret_data ) ;
-  shifr_data_xor3 ( $sh -> old_last_data , $sh -> old_last_salt ,
-    $secret_data_salt ) ;
+  shifr_data_xor3 ( $sh -> old_last_data , $sh -> old_last_salt , $secret_data_salt ) ;
   $encrypteddata = shifr_crypt_decrypt ( $secret_data_salt , $sh -> shifra )  ;
   if ( $sh -> flagtext ) {
+    global  $shifr_base64_num_to_let  ;
     foreach ( $encrypteddata as $ed ) {
-      $sh -> message  .=  chr ( ord ( ';' ) + $ed ) ;
+      $sh -> message  .=  $shifr_base64_num_to_let [ $ed ] ;
       ++ $sh -> bytecount ;
       if ( $sh -> bytecount >= 60 ) {
         $sh -> message .= "\n" ;
@@ -521,8 +521,7 @@ function  shifr_write_array ( shifr & $sh , array $secret_data  ) {
           ( ( $ed << ( $sh ->  out_bufbitsize ) ) & 0xff ) | $sh ->  out_buf ) ;
         // + 6 - 8
         $sh -> out_bufbitsize -= 2 ;
-        $sh -> out_buf  = $ed >>
-          ( 6 - ( $sh -> out_bufbitsize ) ) ;
+        $sh -> out_buf  = $ed >> ( 6 - ( $sh -> out_bufbitsize ) ) ;
       }
     }
 }
@@ -577,20 +576,27 @@ function  isEOFstreambuf_read6bits ( shifr & $sh , array & $encrypteddata ) : bo
     $sh -> in_buf  >>= 6 ;
     return  false ;
   }
-  if ( $sh -> decode_read_index >= strlen ( $sh -> message ) )
+  $messlen  = strlen ( $sh -> message ) ;
+  if ( $sh -> decode_read_index >= $messlen )
     return true ;
-  $reads = ord ( $sh -> message [ $sh -> decode_read_index ] ) ;
+  $readsl = $sh -> message [ $sh -> decode_read_index ] ;
+  $reads = ord ( $readsl ) ;
   ++  $sh -> decode_read_index  ;
   if  ( $sh -> flagtext ) {
-    // читаем одну букву ';'-'z' -> декодируем в шесть бит
-    // reads one letter ';'-'z' -> decode to six bits
-    while ( ( $reads < ord ( ';' ) ) or ( $reads > ord ( 'z' ) ) ) {
-      if ( $sh -> decode_read_index >= strlen ( $sh -> message ) )
+    // читаем одну букву Base64 -> декодируем в шесть бит
+    // reads one letter Base64 -> decode to six bits
+    while ( ( $reads != ord ( '+' ) ) and
+      ( ( $reads < ord ( '/' ) ) or ( $reads > ord ( '9' ) ) ) and
+      ( ( $reads < ord ( 'A' ) ) or ( $reads > ord ( 'Z' ) ) ) and
+      ( ( $reads < ord ( 'a' ) ) or ( $reads > ord ( 'z' ) ) ) ) {
+      if ( $sh -> decode_read_index >= $messlen )
         return true ;
-      $reads = ord ( $sh -> message [ $sh -> decode_read_index ] ) ;
+      $readsl = $sh -> message [ $sh -> decode_read_index ] ;
+      $reads = ord ( $readsl ) ;
       ++  $sh -> decode_read_index  ;
     }
-    $encrypteddata [ ] = $reads - ord ( ';' ) ;
+    global  $shifr_base64_let_to_num  ;
+    $encrypteddata [ ] = $shifr_base64_let_to_num [ $readsl ] ;
   // flagtext
   } else  {
     $encrypteddata [ ] = ( $sh -> in_buf | 
