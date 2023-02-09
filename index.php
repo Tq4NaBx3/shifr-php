@@ -109,44 +109,33 @@ table.wide { width: 99%; }
 </style>
 </head>
 <body>
-<form action="<?php echo $_SERVER['PHP_SELF'] ; ?>" method="POST"
-  enctype="multipart/form-data" id="form_id"  >
+<div id="shifrcode"></div>
+<?php
+$stringsec  = '' ;
+$stringsec  .=  '<form action="' . $_SERVER  [ 'PHP_SELF'  ] .
+  '" method="POST" enctype="multipart/form-data" id="form_id"  >
 <table class="wide">
 <tr>
   <td>
-  <label>
-    <?php
-      if  ( $shifr -> localerus )
-        echo 'Сообщение:'  ;
-      else
-        echo 'Message:' ; ?>
-  </label>
-  <textarea name="message" rows="12" cols="61" id="message" style="width: 99%"
-     maxlength="2048000000"><?php
-  echo htmlspecialchars($shifr -> message) ; ?></textarea>
+  <label>' . PHP_EOL  ;
+$stringsec  .=  ( ( $shifr -> localerus ) ? 'Сообщение:' : 'Message:' ) ;
+$stringsec  .=  '  </label>
+  <textarea name="message" rows="12" cols="61" id="message" style="width: 99%"' .
+  ' maxlength="2048000000">' . htmlspecialchars ( $shifr -> message ) . '</textarea>
   </td>
   <td>
-<?php
-echo '<fieldset><legend><i>PHP</i></legend>' ;
-if  ( $shifr -> localerus ) {
-  echo ' <input type="submit" name="encrypt_decrypt_name" value="зашифровать" /><br>'  ;
-  echo ' <input type="submit" name="encrypt_decrypt_name" value="расшифровать" /><br>'  ;
-} else {
-  echo ' <input type="submit" name="encrypt_decrypt_name" value="encrypt" />' ;
-  echo ' <input type="submit" name="encrypt_decrypt_name" value="decrypt" />' ;
-}
-echo  '</fieldset><br>'  ;
-  
-echo '<fieldset><legend><i>JavaScript</i></legend>' ;
-if  ( $shifr -> localerus ) {
-  echo ' <input type="button" name="submit2" value="зашифровать" id="encrypt2" /><br>'  ;
-  echo ' <input type="button" name="submit2" value="расшифровать" id="decrypt2" /><br>' ;
-} else {
-  echo ' <input type="button" name="submit2" value="encrypt"  id="encrypt2" />' ;
-  echo ' <input type="button" name="submit2" value="decrypt"  id="decrypt2" />' ;
-}
-echo  '</fieldset><br>'  ;
-?>  
+<fieldset><legend><i>PHP</i></legend>
+ <input type="submit" name="encrypt_decrypt_name" value=' .
+  ( ( $shifr -> localerus ) ? '"зашифровать"' : "encrypt" ) . ' /><br>
+ <input type="submit" name="encrypt_decrypt_name" value=' .
+  ( ( $shifr -> localerus ) ? '"расшифровать"' : "decrypt" ) . ' /><br>
+</fieldset><br>
+<fieldset><legend><i>JavaScript</i></legend>
+ <input type="button" name="submit2" value='  .
+  ( ( $shifr -> localerus ) ? '"зашифровать"' : '"encrypt"' ) . ' id="encrypt2" /><br>
+ <input type="button" name="submit2" value='  .
+  ( ( $shifr -> localerus ) ? '"расшифровать"' : '"decrypt"' ) . ' id="decrypt2" /><br>
+</fieldset><br>
   </td>
 <tr>
 </table>
@@ -154,100 +143,106 @@ echo  '</fieldset><br>'  ;
 <tr>
 <td>
 <fieldset>
-<legend>
-<?php
+<legend>' . PHP_EOL ;
 if  ( $shifr -> localerus )
-  echo 'Алфавит знаков в пароле' ;
+  $stringsec  .= 'Алфавит знаков в пароле' ;
 else
-  echo 'Alphabet of characters in a password' ;
-?>
-</legend>
-<input type="radio" name="radio" value="ASCII" id="passalpha" <?php 
+  $stringsec  .= 'Alphabet of characters in a password' ;
+$stringsec  .=  '</legend>
+<input type="radio" name="radio" value="ASCII" id="passalpha" '  ;
 if ( $shifr -> letters_mode == 95 )
-  echo 'checked' ; ?> >ASCII <?php 
+  $stringsec  .= 'checked' ;
+$stringsec  .= ' >ASCII ' ;
 if  ( $shifr -> localerus ) 
-  echo 'буквы цифры знаки пробел' ;
+  $stringsec  .= 'буквы цифры знаки пробел' ;
 else
-  echo 'letters digits signs space' ; ?><br>
-<input type="radio" name="radio" value="LettDigit" id="passlettersdigits" <?php
+  $stringsec  .= 'letters digits signs space' ;
+$stringsec  .= '<br>
+<input type="radio" name="radio" value="LettDigit" id="passlettersdigits" ' ;
 if ( $shifr -> letters_mode == 62 ) 
-  echo 'checked' ;  ?> ><?php 
+  $stringsec  .= 'checked' ;
+$stringsec  .= ' >' ;
 if  ( $shifr -> localerus )
-  echo 'цифры и буквы'  ; 
+  $stringsec  .= 'цифры и буквы'  ;
 else 
-  echo 'digits and letters' ; ?><br>
-<input type="radio" name="radio" value="SmallLetters" id="passSmallLetters" <?php
+  $stringsec  .= 'digits and letters' ;
+$stringsec  .= '<br>
+<input type="radio" name="radio" value="SmallLetters" id="passSmallLetters" ' ;
 if ( $shifr -> letters_mode == 26 )
-  echo 'checked' ;  ?> ><?php 
+  $stringsec  .= 'checked' ;
+$stringsec  .= ' >' ;
 if  ( $shifr -> localerus )
-  echo 'маленькие буквы'  ; 
+  $stringsec  .= 'маленькие буквы'  ;
 else 
-  echo 'small letters' ; ?><br>
-<input type="radio" name="radio" value="Digit" id="passdigits" <?php
+  $stringsec  .= 'small letters' ;
+$stringsec  .= '<br>
+<input type="radio" name="radio" value="Digit" id="passdigits" ' ;
 if ( $shifr -> letters_mode == 10 )
-  echo 'checked' ;  ?> ><?php 
+  $stringsec  .= 'checked' ;
+$stringsec  .=  ' >' ;
 if  ( $shifr -> localerus )
-  echo 'цифры'  ; 
+  $stringsec  .= 'цифры'  ;
 else
-  echo 'digits' ; ?>
-</fieldset>
+  $stringsec  .= 'digits' ;
+$stringsec  .=  '</fieldset>
 </td>
 <td>
 <fieldset>
-<legend>
-<?php
+<legend>' . PHP_EOL ;
 if  ( $shifr -> localerus )
-  echo 'Размер ключа'  ;
+  $stringsec  .= 'Размер ключа'  ;
 else
-  echo 'Key size' ;
-?>
-</legend>
-<input type="radio" name="radiokey" value="Key45" id="keysize45" <?php 
+  $stringsec  .= 'Key size' ;
+$stringsec  .= '</legend>
+<input type="radio" name="radiokey" value="Key45" id="keysize45" ' ;
 if ( shifr_version  ( $shifr  ) == 2 )
-  echo 'checked' ?> >45 <?php
+  $stringsec  .= 'checked' ;
+$stringsec  .=  ' >45 ' ;
 if  ( $shifr -> localerus )
-  echo 'бит , 6-14 букв';
+  $stringsec  .= 'бит , 6-14 букв' ;
 else
-  echo 'bits , 6-14 letters'; ?><br>
-<input type="radio" name="radiokey" value="Key296" id="keysize296" <?php 
+  $stringsec  .= 'bits , 6-14 letters' ;
+$stringsec  .= '<br>
+<input type="radio" name="radiokey" value="Key296" id="keysize296" ' ;
 if ( shifr_version  ( $shifr  ) == 3 )
-  echo 'checked' ?> >296 <?php 
+  $stringsec  .= 'checked' ;
+$stringsec  .=  ' >296 '  ;
 if  ( $shifr -> localerus )
-  echo 'бит , 45-90 букв';
+  $stringsec  .= 'бит , 45-90 букв' ;
 else
-  echo 'bits , 45-90 letters'; ?>
-</fieldset>
+  $stringsec  .= 'bits , 45-90 letters' ;
+$stringsec  .= '</fieldset>
 </td>
 </tr>
 </table>
 <br>
-<label>
-<?php
+<label>' . PHP_EOL ;
 if  ( $shifr -> localerus )
-  echo 'Ваш пароль : '  ;
+  $stringsec  .= 'Ваш пароль : '  ;
 else
-  echo 'Your password : ' ;
-?>
-<table>
+  $stringsec  .= 'Your password : ' ;
+$stringsec  .= '<table>
   <tr>
     <td>
       <fieldset>
         <legend><i>PHP</i></legend>
-        <input type="submit" name="password_generate" value="<?php
+        <input type="submit" name="password_generate" value="' ;
           if  ( $shifr -> localerus )        
-            echo 'генерировать' ;
+            $stringsec  .= 'генерировать' ;
           else
-            echo 'generate' ; ?>" id="generate_id" />
+            $stringsec  .= 'generate' ;
+$stringsec  .= '" id="generate_id" />
       </fieldset>
     </td>
     <td>
       <fieldset>
         <legend><i>JavaScript</i></legend>
-        <input type="button" name="submit2" value="<?php
+        <input type="button" name="submit2" value="' ;
           if  ( $shifr -> localerus )        
-            echo 'генерировать' ;
+            $stringsec  .= 'генерировать' ;
           else
-            echo 'generate' ; ?>" id="generate2" />
+            $stringsec  .= 'generate' ;
+$stringsec  .= '" id="generate2" />
       </fieldset>
     </td>
   </tr>
@@ -255,96 +250,86 @@ else
 </label>
 <br>
 <div style="width: 99%">
-<input name="password" type="password" value="<?php 
-  echo htmlspecialchars ( shifr_password_get ( $shifr ) ) ; ?>" size ="60" id="password" style="width: 99%" />
+<input name="password" type="password" value="' ;
+$stringsec  .= htmlspecialchars ( shifr_password_get ( $shifr ) ) ;
+$stringsec  .= '" size ="60" id="password" style="width: 99%" />
 </div>
-<br>
-<?php
+<br>' . PHP_EOL ;
 if  ( $shifr -> localerus )
-  echo 'Показать пароль' ;
+  $stringsec  .= 'Показать пароль' ;
 else
-  echo 'Show password' ;
-echo ' : <input type="checkbox" class="largerCheckbox" name="' ;
+  $stringsec  .= 'Show password' ;
+$stringsec  .= ' : <input type="checkbox" class="largerCheckbox" name="' ;
 if  ( $shifr -> localerus )
-  echo  'Показать_пароль' ;
+  $stringsec  .=  'Показать_пароль' ;
 else
-  echo 'Show_password' ;
-echo '" value="0" id="showpassword" onchange="fshowpassword()" />' ;
-?>
+  $stringsec  .= 'Show_password' ;
+$stringsec  .= '" value="0" id="showpassword" onchange="fshowpassword()" />
 <br>
 <hr>
-<br>
-<?php
+<br>' . PHP_EOL ;
 if  ( $shifr -> localerus )
-  echo 'Шифрование в текстовом режиме' ;
+  $stringsec  .= 'Шифрование в текстовом режиме' ;
 else 
-  echo 'Encryption in text mode' ;
-echo ' : <input type="checkbox"' .
-  ' class="largerCheckbox" name="Encryption_in_text_mode" value="1" id="SText" ';
-if($shifr -> flagtext)
-  echo 'checked' ;
-?> />
-
+  $stringsec  .= 'Encryption in text mode' ;
+$stringsec  .= ' : <input type="checkbox"' .
+  ' class="largerCheckbox" name="Encryption_in_text_mode" value="1" id="SText" ' ;
+if  ( $shifr -> flagtext  )
+  $stringsec  .= 'checked' ;
+$stringsec  .=  ' />
 <div class="fieldsetclassphp" id="iddivfieldsetclassphp"  style="width: 99%">
-
 <fieldset id="idfieldsetclassphp" >
 <legend><i>PHP</i></legend>
 <input type="hidden" name="MAX_FILE_SIZE" value="2048000000" />
 <input type=file name=uploadfile><br>
-<?php
-echo '<input type=submit name="encrypt_decrypt_name" value="' ;
+<input type=submit name="encrypt_decrypt_name" value="' ;
 if  ( $shifr -> localerus )
-  echo 'Зашифровать файл' ;
+  $stringsec  .= 'Зашифровать файл' ;
 else
-  echo 'Encrypt file' ;
-echo '" >' . PHP_EOL  ;
-echo '<input type=submit name="encrypt_decrypt_name" value="' ;
+  $stringsec  .= 'Encrypt file' ;
+$stringsec  .= '" >
+<input type=submit name="encrypt_decrypt_name" value="' ;
 if  ( $shifr -> localerus )
-  echo 'Расшифровать файл' ;
+  $stringsec  .= 'Расшифровать файл' ;
 else
-  echo 'Decrypt file' ;
-echo '" >' . PHP_EOL  ;
-?>
+  $stringsec  .= 'Decrypt file' ;
+$stringsec  .= '" >
 </fieldset>
-
 </div>
 </form>
-<div id="shifrcode"></div>
-<?php
-$stringsec  = '' ;
-$stringsec  .=  '<form method="POST" enctype="multipart/form-data" id="form_file">' . PHP_EOL ;
-$stringsec  .=  '<div class="fieldsetclassjavascript" ' .
-  'id="iddivfieldsetclassjavascript"  style="width: 99%">' .  PHP_EOL ;
-$stringsec  .=  '<fieldset>' . PHP_EOL ;
-$stringsec  .=  '<legend><i>JavaScript</i></legend>' . PHP_EOL ;
-$stringsec  .=  '<input type="hidden" name="MAX_FILE_SIZE" value="2048000000" />' . PHP_EOL ;
-$stringsec  .=  '<input type=file name="js_uploadfile_name" ' .
-  'onchange="js_readFile(this)" id="js_inputfile_id"><br>' . PHP_EOL ;
-$stringsec  .=  '<input type="submit" name="encrypt3" value="' ;
+<form method="POST" enctype="multipart/form-data" id="form_file">
+<div class="fieldsetclassjavascript" ' .
+  'id="iddivfieldsetclassjavascript"  style="width: 99%">
+<fieldset>
+<legend><i>JavaScript</i></legend>
+<input type="hidden" name="MAX_FILE_SIZE" value="2048000000" />
+<input type=file name="js_uploadfile_name" ' .
+  'onchange="js_readFile(this)" id="js_inputfile_id"><br>
+<input type="submit" name="encrypt3" value="' ;
 if  ( $shifr -> localerus )
   $stringsec  .=  'Зашифровать файл' ;
 else
   $stringsec  .=  'Encrypt file' ;
-$stringsec  .=  '" id="encrypt3" >' . PHP_EOL ;
-$stringsec  .=  '<input type="button" name="decrypt3" value="' ;
+$stringsec  .=  '" id="encrypt3" >
+<input type="button" name="decrypt3" value="' ;
 if  ( $shifr -> localerus )
   $stringsec  .=  'Расшифровать файл' ;
 else
   $stringsec  .=  'Decrypt file' ;
-$stringsec  .=  '" id="decrypt3" >' . PHP_EOL ;
-$stringsec  .=  '</fieldset>' . PHP_EOL ;
-$stringsec  .=  '</div>' . PHP_EOL ; // fieldsetclassjavascript
-$stringsec  .=  '<br>' . PHP_EOL ;
-$stringsec  .=  '<textarea name="boxes_info"  rows="2" cols="61" id="boxes_info" value = "" ' .
+$stringsec  .=  '" id="decrypt3" >
+</fieldset>
+</div>' . PHP_EOL ; // fieldsetclassjavascript
+$stringsec  .=  '<br>
+<textarea name="boxes_info"  rows="2" cols="61" id="boxes_info" value = "" ' .
   'maxlength="2048000000" readonly hidden >' . htmlspecialchars ( $shifr -> boxes_info  ) .
-  '</textarea>' . PHP_EOL ;
-$stringsec  .=  '<textarea name="filename_name" rows="1" cols="61" id="filename_id" value = "" maxlength="2048" ' .
-  'readonly hidden >' . htmlspecialchars  ( $shifr -> filename  ) . '</textarea> ' . PHP_EOL ;
-$stringsec  .=  '<input type="checkbox" name="text_mode" value="1" id="JSText" ' ;
+  '</textarea>
+<textarea name="filename_name" rows="1" cols="61" id="filename_id" value = "" maxlength="2048" ' .
+  'readonly hidden >' . htmlspecialchars  ( $shifr -> filename  ) . '</textarea>
+<input type="checkbox" name="text_mode" value="1" id="JSText" ' ;
   if ( $shifr -> flagtext )
     $stringsec  .=  'checked ' ;
-$stringsec  .=  'hidden />' ;
-$stringsec  .=  '</form>' . PHP_EOL ;
+$stringsec  .=  'hidden />
+</form>' . PHP_EOL ;
 $shifrhtml  = new shifr ( ) ;
   shifr_init ( $shifrhtml  ) ;
   shifr_set_version ( $shifrhtml , 2 ) ;
