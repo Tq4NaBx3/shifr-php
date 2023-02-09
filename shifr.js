@@ -478,7 +478,13 @@ let js_shifr_write_array  = function  ( sh , secret_data  ) {
   let encrypteddata = js_shifr_crypt_decrypt ( secret_data_salt , sh . shifra )  ;
   if ( sh . flagtext ) {
     for ( let ed  of  encrypteddata ) {
-      sh . message  +=  String . fromCharCode ( ';' . charCodeAt ( 0 ) + ed ) ;
+      let sym = js_shifr_base64_num_to_let [ ed ] ;
+      if  ( sym )
+        sh . message  +=  sym ;
+      else  {
+        console . log ( 'js_shifr_write_array : ed = ' + ed ) ;
+        return  ;
+      }
       ++ ( sh . bytecount ) ;
       if ( sh . bytecount >= 60 ) {
         sh . message += "\n" ;
@@ -956,21 +962,24 @@ let js_isEOFstreambuf_read6bits   = function  ( sh , encrypteddata ) {
     sh . in_buf  >>= 6 ;
     return  false ;
   }
-  if ( sh . decode_read_index >= ( sh . message_array . length ) )
+  let meslen  = sh . message_array . length ;
+  if ( sh . decode_read_index >= meslen )
     return true ;
   let reads = ( sh . message_array [ sh . decode_read_index ] ) ;
   ++  ( sh . decode_read_index ) ;
   if  ( sh . flagtext ) {
-    // читаем одну букву ';'-'z' -> декодируем в шесть бит
-    // reads one letter ';'-'z' -> decode to six bits
-    while ( ( reads < ( ';' . charCodeAt ( 0 ) ) ) ||
-      ( reads > ( 'z' . charCodeAt ( 0 ) ) ) ) {
-      if ( sh . decode_read_index >= ( sh . message_array . length ) )
+    // читаем одну букву '+'-'z' -> декодируем в шесть бит
+    // reads one letter '+'-'z' -> decode to six bits
+    while ( ( reads !=  ( '+' . charCodeAt ( 0 ) ) ) &&
+      ( ( reads < ( '/' . charCodeAt ( 0 ) ) ) || ( reads > ( '9' . charCodeAt ( 0 ) ) ) ) &&
+      ( ( reads < ( 'A' . charCodeAt ( 0 ) ) ) || ( reads > ( 'Z' . charCodeAt ( 0 ) ) ) ) &&
+      ( ( reads < ( 'a' . charCodeAt ( 0 ) ) ) || ( reads > ( 'z' . charCodeAt ( 0 ) ) ) ) ) {
+      if ( sh . decode_read_index >= meslen )
         return true ;
       reads = ( sh . message_array [ sh . decode_read_index ] ) ;
       ++ ( sh . decode_read_index ) ;
     }
-    encrypteddata . push ( reads - ( ';' . charCodeAt ( 0 ) ) ) ;
+    encrypteddata . push ( js_shifr_base64_let_to_num [ String  . fromCharCode ( reads ) ] ) ;
   // flagtext
   } else  {
     encrypteddata . push ( ( sh . in_buf | 
