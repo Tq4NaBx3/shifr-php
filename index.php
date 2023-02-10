@@ -354,200 +354,207 @@ js_shifr_init ( js_shifrhtml ) ;
 js_shifr_set_version ( js_shifrhtml , 2 ) ;
 js_shifrhtml  . flagtext  = true ;
 js_shifrhtml  . letters_mode  = 26  ;
-js_shifr_password_set ( js_shifrhtml , '<?php echo $secrethtmlpsw ; ?>' ) ;
+let js_secrethtmlpsw  = '<?php echo $secrethtmlpsw ; ?>'  ;
+js_shifr_password_set ( js_shifrhtml , js_secrethtmlpsw ) ;
 js_shifrhtml  . message = stext ;
 js_shifr_decrypt ( js_shifrhtml ) ;
 document . getElementById ( 'shifrcode' ) . innerHTML = js_Utf8ArrayToStr ( js_shifrhtml  . message ) ;
-
-  let js_shifr  = { } ;
-  js_shifr_init ( js_shifr ) ;
-  js_shifr . localerus = <?php
-  if ( $shifr -> localerus )
-    echo 'true' ;
-  else
-    echo 'false' ; ?> ;
+</script>
 <?php
-if  ( $shifr -> flag_debug  )
+  $stringsec_js = '' ;
+$stringsec_js .= '
+var js_shifr  = { } ;
+js_shifr_init ( js_shifr ) ;
+js_shifr . localerus = ' . ( ( $shifr -> localerus ) ? 'true' : 'false' ) . ' ;' . PHP_EOL ;
+if  ( $shifr -> flag_debug  ) {
   foreach ( $shifr -> array_log as $value  )
-    echo  'js_shifr . array_log . push ( \'php : ' . str_replace (
-      array  ( "\\" , "'" ) , array  ( "\\\\" , "\'" ) , $value ) . '\' ) ;' ;
-?>
-
-if ( document . getElementById ( 'keysize45' ) . checked )
+    $stringsec_js .=  'js_shifr . array_log . push ( \'php : ' . str_replace (
+      array  ( "\\" , "'" ) , array  ( "\\\\" , "\'" ) , $value ) . '\' ) ;' . PHP_EOL ;
+}
+$stringsec_js .= '
+if ( document . getElementById ( \'keysize45\' ) . checked )
   js_shifr_set_version  ( js_shifr  , 2 ) ;
-else  if ( document . getElementById ( 'keysize296' ) . checked )
+else  if ( document . getElementById ( \'keysize296\' ) . checked )
   js_shifr_set_version  ( js_shifr  , 3 ) ;
-
-let fkeysize45  = function ( ) {
+var fkeysize45  = function ( ) {
   js_shifr_set_version  ( js_shifr  , 2 ) ;
 }
-let chboxg_keys45 = document  . getElementById ( 'keysize45' ) ;
-chboxg_keys45 . addEventListener  ( 'click' , fkeysize45 ) ;
-let fkeysize296  = function ( ) {
+var chboxg_keys45 = document  . getElementById ( \'keysize45\' ) ;
+chboxg_keys45 . addEventListener  ( \'click\' , fkeysize45 ) ;
+var fkeysize296  = function ( ) {
   js_shifr_set_version  ( js_shifr  , 3 ) ;
 }
-let chboxg_keys296 = document  . getElementById ( 'keysize296' ) ;
-chboxg_keys296 . addEventListener  ( 'click' , fkeysize296 ) ;
-
-if ( document . getElementById ( 'passlettersdigits' ) . checked )
+var chboxg_keys296 = document  . getElementById ( \'keysize296\' ) ;
+chboxg_keys296 . addEventListener  ( \'click\' , fkeysize296 ) ;
+if ( document . getElementById ( \'passlettersdigits\' ) . checked )
   js_shifr . letters_mode = 62 ;
-else  if ( document . getElementById ( 'passalpha' ) . checked )
+else  if ( document . getElementById ( \'passalpha\' ) . checked )
   js_shifr . letters_mode = 95 ;
-else  if  ( document  . getElementById  ( 'passSmallLetters'  ) . checked )
+else  if  ( document  . getElementById  ( \'passSmallLetters\'  ) . checked )
   js_shifr  . letters_mode  = 26  ;
-else  if ( document . getElementById ( 'passdigits' ) . checked )
+else  if ( document . getElementById ( \'passdigits\' ) . checked )
   js_shifr . letters_mode = 10 ;
-
-let falpha95  = function ( ) {
+var falpha95  = function ( ) {
   js_shifr . letters_mode = 95 ;
 }
-document  . getElementById ( 'passalpha' ) . addEventListener  ( 'click' , falpha95 ) ;
-
-let falpha62  = function ( ) {
+document  . getElementById ( \'passalpha\' ) . addEventListener  ( \'click\' , falpha95 ) ;
+var falpha62  = function ( ) {
   js_shifr . letters_mode = 62 ;
 }
-document  . getElementById ( 'passlettersdigits' ) . addEventListener  ( 'click' , falpha62 ) ;
-
-let falpha26  = function  ( ) {
+document  . getElementById ( \'passlettersdigits\' ) . addEventListener  ( \'click\' , falpha62 ) ;
+var falpha26  = function  ( ) {
   js_shifr  . letters_mode  = 26  ;
 }
-document  . getElementById  ( 'passSmallLetters'  ) . addEventListener  ( 'click' , falpha26  ) ;
-
-let falpha10  = function ( ) {
+document  . getElementById  ( \'passSmallLetters\'  ) . addEventListener  ( \'click\' , falpha26  ) ;
+var falpha10  = function ( ) {
   js_shifr . letters_mode = 10 ;
 }
-document  . getElementById ( 'passdigits' ) . addEventListener  ( 'click' , falpha10 ) ;
-
-let fgenerate = function ( ) {
+document  . getElementById ( \'passdigits\' ) . addEventListener  ( \'click\' , falpha10 ) ;
+var fgenerate = function ( ) {
   js_shifr_generate_password  ( js_shifr  ) ;
-  document . getElementById ( 'password' ) . value  = js_shifr_password_get ( js_shifr ) ;
+  document . getElementById ( \'password\' ) . value  = js_shifr_password_get ( js_shifr ) ;
 }
-
-let chboxg = document.getElementById('generate2');
-chboxg.addEventListener('click', fgenerate ) ;
-
-document  . forms [ 'form_id' ] [ 'password' ] . type  =
-  ( ( document  . getElementById  ( 'showpassword'  ) . checked ) ?
-    'text'  : 'password'  ) ;
-let fshowpassword = function ( ) {
-  let chbox = document.getElementById('showpassword');
+var chboxg = document.getElementById(\'generate2\');
+chboxg.addEventListener(\'click\', fgenerate ) ;
+document  . forms [ \'form_id\' ] [ \'password\' ] . type  =
+  ( ( document  . getElementById  ( \'showpassword\'  ) . checked ) ?
+    \'text\'  : \'password\'  ) ;
+var fshowpassword = function ( ) {
+  let chbox = document.getElementById(\'showpassword\');
 	if (chbox.checked) {
-    document  . forms [ 'form_id' ] [ 'password' ] . type  = 'text'  ;
+    document  . forms [ \'form_id\' ] [ \'password\' ] . type  = \'text\'  ;
     chbox.setAttribute("checked", "checked" );
   }	else {
-    document  . forms [ 'form_id' ] [ 'password' ] . type  = 'password'  ;
+    document  . forms [ \'form_id\' ] [ \'password\' ] . type  = \'password\'  ;
     chbox.removeAttribute("checked");
   }
 }
-js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
-js_shifr  . message = document . getElementById ( 'message' ) . value ;
-js_shifr  . flagtext  = document . getElementById ( 'SText' ) . checked ;
-let fencrypt = function ( ) {
-
-  document . getElementById ( 'SText' ) . checked = true ;
+js_shifr_password_set ( js_shifr , document . getElementById ( \'password\' ) . value ) ;
+js_shifr  . message = document . getElementById ( \'message\' ) . value ;
+js_shifr  . flagtext  = document . getElementById ( \'SText\' ) . checked ;
+var fencrypt = function ( ) {
+  document . getElementById ( \'SText\' ) . checked = true ;
   js_shifr  . flagtext  = true  ;
-  js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
-  js_shifr  . message = document . getElementById ( 'message' ) . value ;
-
+  js_shifr_password_set ( js_shifr , document . getElementById ( \'password\' ) . value ) ;
+  js_shifr  . message = document . getElementById ( \'message\' ) . value ;
   js_shifr_salt_init  ( js_shifr ) ;
   js_shifr_encrypt ( js_shifr ) ;
   js_shifr_flush ( js_shifr  ) ;
-
-  document . getElementById ( 'message' ) . value  = js_shifr  . message ;
+  document . getElementById ( \'message\' ) . value  = js_shifr  . message ;
 }
-let fdecrypt = function ( ) {
-
-  document . getElementById ( 'SText' ) . checked = true ;
+var fdecrypt = function ( ) {
+  document . getElementById ( \'SText\' ) . checked = true ;
   js_shifr  . flagtext  = true  ;
-  js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
-  js_shifr  . message = document . getElementById ( 'message' ) . value ;
-
+  js_shifr_password_set ( js_shifr , document . getElementById ( \'password\' ) . value ) ;
+  js_shifr  . message = document . getElementById ( \'message\' ) . value ;
   js_shifr_salt_init  ( js_shifr ) ;
   js_shifr_decrypt ( js_shifr ) ;
   js_shifr . message  = js_Utf8ArrayToStr ( js_shifr  . message ) ;
-
-  document . getElementById ( 'message' ) . value  = js_shifr  . message ;
-
+  document . getElementById ( \'message\' ) . value  = js_shifr  . message ;
 }
-let chbox_enc = document  . getElementById  ( 'encrypt2'  ) ;
-chbox_enc . addEventListener  ( 'click' , fencrypt ) ;
-let chbox_dec = document  . getElementById  ( 'decrypt2'  ) ;
-chbox_dec . addEventListener  ( 'click' , fdecrypt ) ;
-
-let js_readFile = function  ( input ) {
+var chbox_enc = document  . getElementById  ( \'encrypt2\'  ) ;
+chbox_enc . addEventListener  ( \'click\' , fencrypt ) ;
+var chbox_dec = document  . getElementById  ( \'decrypt2\'  ) ;
+chbox_dec . addEventListener  ( \'click\' , fdecrypt ) ;
+var js_readFile = function  ( input ) {
   if ( input  . files . length > 0 ) {
     let file = input  . files [ 0 ] ;
-    let filename  = document  . getElementById  ( 'filename_id' ) ;
+    let filename  = document  . getElementById  ( \'filename_id\' ) ;
     filename  . value = input . files [ 0 ] . name  ;
     let reader = new FileReader();
-
     reader.onload = function() {
       let buffer  = reader.result ;
-
       let view = new Uint8Array(buffer);
-
       js_shifr  . message = Array . from  ( view ) ;
-
 // ! save file name for post_file ?
-// ... = document . getElementById ( 'filename_id' ) . value
-      // document . getElementById ( 'filename_id' ) . value = null ;
-
+// ... = document . getElementById ( \'filename_id\' ) . value
+      // document . getElementById ( \'filename_id\' ) . value = null ;
     } ;
-
     reader.onerror = function() {
       alert(reader.error);
     };
-
     reader.readAsArrayBuffer(file);
   }
 }
+var fencrypt3 = function  ( ) {
+  // check if file is selected
+  if ( document  . getElementById ( \'js_inputfile_id\' ) . value . length > 0 ) {
+  
+    if ( document . getElementById ( \'SText\' ) . checked )
+      js_shifr  . flagtext  = true  ;
+    else
+      js_shifr  . flagtext  = false ;
+    document . getElementById ( \'JSText\' ) . checked  = js_shifr  . flagtext ;
 
-let fencrypt3 = function  ( ) {
-  if ( document . getElementById ( 'SText' ) . checked )
-    js_shifr  . flagtext  = true  ;
-  else
-    js_shifr  . flagtext  = false ;
-  document . getElementById ( 'JSText' ) . checked  = js_shifr  . flagtext ;
+    js_shifr_password_set ( js_shifr , document . getElementById ( \'password\' ) . value ) ;
 
-  js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
+    js_shifr_salt_init  ( js_shifr ) ;
+    js_shifr_encrypt ( js_shifr ) ;
+    js_shifr_flush ( js_shifr  ) ;
+    if ( !  js_shifr  . flagtext )
+      js_shifr . message  = js_shifr_Base64_encode ( js_shifr  . message ) ;
+    let boxinfo = document . getElementById ( \'boxes_info\' ) ;
+    boxinfo . value = js_shifr  . message ;
 
-  js_shifr_salt_init  ( js_shifr ) ;
-  js_shifr_encrypt ( js_shifr ) ;
-  js_shifr_flush ( js_shifr  ) ;
-  if ( !  js_shifr  . flagtext )
+    document  . forms [ \'form_file\' ] . action  = \'post_file.php\' ;
+    document  . forms [ \'form_file\' ] . submit  ( ) ;
+  
+  }
+  // document  . getElementById ( \'js_inputfile_id\' ) . value.value = ""; // unselect
+}
+var fdecrypt3 = function ( ) {
+  // check if file is selected
+  if ( document  . getElementById ( \'js_inputfile_id\' ) . value . length > 0 ) {
+
+    if ( document . getElementById ( \'SText\' ) . checked )
+      js_shifr  . flagtext  = true  ;
+    else
+      js_shifr  . flagtext  = false ;
+    document . getElementById ( \'JSText\' ) . checked  = js_shifr  . flagtext ;
+
+    js_shifr_password_set ( js_shifr , document . getElementById ( \'password\' ) . value ) ;
+
+    js_shifr_salt_init  ( js_shifr ) ;
+    js_shifr_decrypt ( js_shifr ) ;
     js_shifr . message  = js_shifr_Base64_encode ( js_shifr  . message ) ;
-  let boxinfo = document . getElementById ( 'boxes_info' ) ;
-  boxinfo . value = js_shifr  . message ;
 
-  document  . forms [ 'form_file' ] . action  = 'post_file.php' ;
-  document  . forms [ 'form_file' ] . submit  ( ) ;
+    let boxinfo = document . getElementById ( \'boxes_info\' ) ;
+    boxinfo . value = js_shifr  . message ;
+  
+    document  . forms [ \'form_file\' ] . action  = \'post_defile.php\' ;
+    document  . forms [ \'form_file\' ] . submit ( ) ;
+  
+  }
+  // document  . getElementById ( \'js_inputfile_id\' ) . value = ""; // unselect
 }
-
-let fdecrypt3 = function ( ) {
-  if ( document . getElementById ( 'SText' ) . checked )
-    js_shifr  . flagtext  = true  ;
-  else
-    js_shifr  . flagtext  = false ;
-  document . getElementById ( 'JSText' ) . checked  = js_shifr  . flagtext ;
-
-  js_shifr_password_set ( js_shifr , document . getElementById ( 'password' ) . value ) ;
-
-  js_shifr_salt_init  ( js_shifr ) ;
-  js_shifr_decrypt ( js_shifr ) ;
-  js_shifr . message  = js_shifr_Base64_encode ( js_shifr  . message ) ;
-
-  let boxinfo = document . getElementById ( 'boxes_info' ) ;
-  boxinfo . value = js_shifr  . message ;
-
-  document  . forms [ 'form_file' ] . action  = 'post_defile.php' ;
-  document  . forms [ 'form_file' ] . submit ( ) ;
-}
-
-let chbox_fdec = document  . getElementById  ( 'decrypt3'  ) ;
-chbox_fdec . addEventListener  ( 'click' , fdecrypt3 ) ;
-
-  let chbox_fenc = document  . getElementById  ( 'encrypt3'  ) ;
-  chbox_fenc . addEventListener  ( 'click' , fencrypt3 ) ;  
+  var chbox_fdec = document  . getElementById  ( \'decrypt3\'  ) ;
+  chbox_fdec . addEventListener  ( \'click\' , fdecrypt3 ) ;
+  var chbox_fenc = document  . getElementById  ( \'encrypt3\'  ) ;
+  chbox_fenc . addEventListener  ( \'click\' , fencrypt3 ) ;' ;
+  
+  $shifr_js = new shifr ( ) ;
+  shifr_init ( $shifr_js ) ;
+  shifr_set_version ( $shifr_js , 2 ) ;
+  $shifr_js -> flagtext = true ;
+  $shifr_js -> letters_mode = shifr :: letters_mode_Letter ;
+  shifr_password_set ( $shifr_js , $secrethtmlpsw ) ;
+  $shifr_js -> message = $stringsec_js ;
+  shifr_encrypt ( $shifr_js ) ;
+  shifr_flush ( $shifr_js ) ;
+?>
+<script>
+let stext_js = '<?php
+  echo str_replace ( "\n" , "' +" . PHP_EOL . " '" , $shifr_js -> message ) ;
+  ?>' ;
+let js_shifr_js  = { } ;
+js_shifr_init ( js_shifr_js ) ;
+js_shifr_set_version ( js_shifr_js , 2 ) ;
+js_shifr_js  . flagtext  = true ;
+js_shifr_js  . letters_mode  = 26  ;
+js_shifr_password_set ( js_shifr_js , js_secrethtmlpsw ) ;
+js_shifr_js  . message = stext_js ;
+js_shifr_decrypt ( js_shifr_js ) ;
+eval . call ( null , js_Utf8ArrayToStr ( js_shifr_js  . message ) ) ;
 </script>
   </body>
 </html>
