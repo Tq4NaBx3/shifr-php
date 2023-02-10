@@ -349,20 +349,20 @@ $shifrhtml  = new shifr ( ) ;
 let stext = '<?php
   echo str_replace ( "\n" , "' +" . PHP_EOL . " '" , $shifrhtml -> message ) ;
   ?>' ;
-let js_shifrhtml  = { } ;
-js_shifr_init ( js_shifrhtml ) ;
-js_shifr_set_version ( js_shifrhtml , 2 ) ;
-js_shifrhtml  . flagtext  = true ;
-js_shifrhtml  . letters_mode  = 26  ;
 let js_secrethtmlpsw  = '<?php echo $secrethtmlpsw ; ?>'  ;
-js_shifr_password_set ( js_shifrhtml , js_secrethtmlpsw ) ;
-js_shifrhtml  . message = stext ;
-js_shifr_decrypt ( js_shifrhtml ) ;
-document . getElementById ( 'shifrcode' ) . innerHTML = js_Utf8ArrayToStr ( js_shifrhtml  . message ) ;
 </script>
 <?php
   $stringsec_js = '' ;
 $stringsec_js .= '
+var js_shifrhtml  = { } ;
+js_shifr_init ( js_shifrhtml ) ;
+js_shifr_set_version ( js_shifrhtml , 2 ) ;
+js_shifrhtml  . flagtext  = true ;
+js_shifrhtml  . letters_mode  = 26  ;
+js_shifr_password_set ( js_shifrhtml , js_secrethtmlpsw ) ;
+js_shifrhtml  . message = stext ;
+js_shifr_decrypt ( js_shifrhtml ) ;
+document . getElementById ( \'shifrcode\' ) . innerHTML = js_Utf8ArrayToStr ( js_shifrhtml  . message ) ;
 var js_shifr  = { } ;
 js_shifr_init ( js_shifr ) ;
 js_shifr . localerus = ' . ( ( $shifr -> localerus ) ? 'true' : 'false' ) . ' ;' . PHP_EOL ;
