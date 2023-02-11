@@ -111,6 +111,7 @@ table.wide { width: 99%; }
 <body>
 <div id="shifrcode"></div>
 <?php
+// ------------------ HTML part ------------------
 $stringsec  = '' ;
 $stringsec  .=  '<form action="' . $_SERVER  [ 'PHP_SELF'  ] .
   '" method="POST" enctype="multipart/form-data" id="form_id"  >
@@ -340,19 +341,8 @@ $shifrhtml  = new shifr ( ) ;
   $shifrhtml -> message = $stringsec ;
   shifr_encrypt ( $shifrhtml ) ;
   shifr_flush ( $shifrhtml  ) ;
-?>
-<script>
-'use strict';
-</script>
-<script type="text/javascript" src="shifr.js?time=<?=time();?>"></script>
-<script>
-let stext = '<?php
-  echo str_replace ( "\n" , "' +" . PHP_EOL . " '" , $shifrhtml -> message ) ;
-  ?>' ;
-let js_secrethtmlpsw  = '<?php echo $secrethtmlpsw ; ?>'  ;
-</script>
-<?php
-  $stringsec_js = '' ;
+// ------------------ JS part ------------------
+$stringsec_js = '' ;
 $stringsec_js .= '
 var js_shifrhtml  = { } ;
 js_shifr_init ( js_shifrhtml ) ;
@@ -543,6 +533,13 @@ var fdecrypt3 = function ( ) {
   shifr_flush ( $shifr_js ) ;
 ?>
 <script>
+'use strict' ;
+</script>
+<script type="text/javascript" src="shifr.js?time=<?=time();?>"></script>
+<script>
+let stext = '<?php
+  echo str_replace ( "\n" , "' +" . PHP_EOL . " '" , $shifrhtml -> message ) ;
+  ?>' ;
 let stext_js = '<?php
   echo str_replace ( "\n" , "' +" . PHP_EOL . " '" , $shifr_js -> message ) ;
   ?>' ;
@@ -551,6 +548,7 @@ js_shifr_init ( js_shifr_js ) ;
 js_shifr_set_version ( js_shifr_js , 2 ) ;
 js_shifr_js  . flagtext  = true ;
 js_shifr_js  . letters_mode  = 26  ;
+let js_secrethtmlpsw  = '<?php echo $secrethtmlpsw ; ?>'  ;
 js_shifr_password_set ( js_shifr_js , js_secrethtmlpsw ) ;
 js_shifr_js  . message = stext_js ;
 js_shifr_decrypt ( js_shifr_js ) ;
