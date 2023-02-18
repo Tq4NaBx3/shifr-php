@@ -506,8 +506,9 @@ $secrethtmlpsw = 'qwertyuiop' ;
 <script>
 'use strict' ;
 </script>
-<script type="text/javascript" src="shifr.js?time=<?=time();?>"></script>
+<script type="text/javascript" src="shifr.js"></script>
 <script>
+/* . js ? time = < ? = time ( ) ; ? > */
 let stext = '<?php
   echo str_replace ( "\n" , "' +" . PHP_EOL . " '" , EncryptString ( $stringsec  , $secrethtmlpsw  ) ) ;
   ?>' ;
