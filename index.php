@@ -88,32 +88,19 @@ if  ( $_POST  ) {
 } // if  ( $_POST  )
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="<?php echo ( ( $shifr -> localerus ) ? 'ru' : 'en' ) ; ?>">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width">
+<link rel="stylesheet" type="text/css" href="style/gray.css" />
 <link rel="shortcut icon" href="shifr.ico" type="image/x-icon" />
 <title>Shifr</title>
-<style>
-p { font-size: 36px; }
-textarea { font-size: 36px; }
-input { font-size: 36px; border-radius: 10px; }
-input.largerCheckbox { transform : scale(2); }
-label { font-size: 24px; }
-legend { font-size: 24px; }
-fieldset { font-size: 36px; border-radius: 10px; }
-body  {
-  width: 99%;
-}
-table.wide { width: 99%; }
-</style>
 </head>
 <body>
 <div id="shifrcode"></div>
 <?php
 // ------------------ HTML part ------------------
-$stringsec  = '' ;
-$stringsec  .=  '<form action="' . $_SERVER  [ 'PHP_SELF'  ] .
+$stringsec  =  '<form action="' . $_SERVER  [ 'PHP_SELF'  ] .
   '" method="POST" enctype="multipart/form-data" id="form_id"  >
 <table class="wide">
 <tr>
@@ -331,28 +318,9 @@ $stringsec  .=  '<br>
     $stringsec  .=  'checked ' ;
 $stringsec  .=  'hidden />
 </form>' . PHP_EOL ;
-$shifrhtml  = new shifr ( ) ;
-  shifr_init ( $shifrhtml  ) ;
-  shifr_set_version ( $shifrhtml , 2 ) ;
-  $shifrhtml -> flagtext = true ;
-  $shifrhtml -> letters_mode = shifr :: letters_mode_Letter ;
-  $secrethtmlpsw = 'qwertyuiop' ;
-  shifr_password_set ( $shifrhtml , $secrethtmlpsw ) ;
-  $shifrhtml -> message = $stringsec ;
-  shifr_encrypt ( $shifrhtml ) ;
-  shifr_flush ( $shifrhtml  ) ;
 // ------------------ JS part ------------------
-$stringsec_js = '' ;
-$stringsec_js .= '
-var js_shifrhtml  = { } ;
-js_shifr_init ( js_shifrhtml ) ;
-js_shifr_set_version ( js_shifrhtml , 2 ) ;
-js_shifrhtml  . flagtext  = true ;
-js_shifrhtml  . letters_mode  = 26  ;
-js_shifr_password_set ( js_shifrhtml , js_secrethtmlpsw ) ;
-js_shifrhtml  . message = stext ;
-js_shifr_decrypt ( js_shifrhtml ) ;
-document . getElementById ( \'shifrcode\' ) . innerHTML = js_Utf8ArrayToStr ( js_shifrhtml  . message ) ;
+$stringsec_js = '
+document . getElementById ( \'shifrcode\' ) . innerHTML = js_DecryptString ( stext , js_secrethtmlpsw ) ;
 var js_shifr  = { } ;
 js_shifr_init ( js_shifr ) ;
 js_shifr . localerus = ' . ( ( $shifr -> localerus ) ? 'true' : 'false' ) . ' ;' . PHP_EOL ;
@@ -521,16 +489,19 @@ var fdecrypt3 = function ( ) {
   chbox_fdec . addEventListener  ( \'click\' , fdecrypt3 ) ;
   var chbox_fenc = document  . getElementById  ( \'encrypt3\'  ) ;
   chbox_fenc . addEventListener  ( \'click\' , fencrypt3 ) ;' ;
-  
-  $shifr_js = new shifr ( ) ;
-  shifr_init ( $shifr_js ) ;
-  shifr_set_version ( $shifr_js , 2 ) ;
-  $shifr_js -> flagtext = true ;
-  $shifr_js -> letters_mode = shifr :: letters_mode_Letter ;
-  shifr_password_set ( $shifr_js , $secrethtmlpsw ) ;
-  $shifr_js -> message = $stringsec_js ;
-  shifr_encrypt ( $shifr_js ) ;
-  shifr_flush ( $shifr_js ) ;
+function EncryptString ( string & $str , string & $psw ) : string {
+  $shifr  = new shifr ( ) ;
+  shifr_init  ( $shifr  ) ;
+  shifr_set_version ( $shifr , 2 ) ;
+  $shifr  ->  flagtext = true ;
+  $shifr  ->  letters_mode = shifr :: letters_mode_Letter ;
+  shifr_password_set ( $shifr , $psw ) ;
+  $shifr  ->  message = $str ;
+  shifr_encrypt ( $shifr ) ;
+  shifr_flush ( $shifr  ) ;
+  return  $shifr -> message ;
+}
+$secrethtmlpsw = 'qwertyuiop' ;
 ?>
 <script>
 'use strict' ;
@@ -538,21 +509,24 @@ var fdecrypt3 = function ( ) {
 <script type="text/javascript" src="shifr.js?time=<?=time();?>"></script>
 <script>
 let stext = '<?php
-  echo str_replace ( "\n" , "' +" . PHP_EOL . " '" , $shifrhtml -> message ) ;
+  echo str_replace ( "\n" , "' +" . PHP_EOL . " '" , EncryptString ( $stringsec  , $secrethtmlpsw  ) ) ;
   ?>' ;
 let stext_js = '<?php
-  echo str_replace ( "\n" , "' +" . PHP_EOL . " '" , $shifr_js -> message ) ;
+  echo str_replace ( "\n" , "' +" . PHP_EOL . " '" , EncryptString ( $stringsec_js , $secrethtmlpsw  )  ) ;
   ?>' ;
-let js_shifr_js  = { } ;
-js_shifr_init ( js_shifr_js ) ;
-js_shifr_set_version ( js_shifr_js , 2 ) ;
-js_shifr_js  . flagtext  = true ;
-js_shifr_js  . letters_mode  = 26  ;
 let js_secrethtmlpsw  = '<?php echo $secrethtmlpsw ; ?>'  ;
-js_shifr_password_set ( js_shifr_js , js_secrethtmlpsw ) ;
-js_shifr_js  . message = stext_js ;
-js_shifr_decrypt ( js_shifr_js ) ;
-eval . call ( null , js_Utf8ArrayToStr ( js_shifr_js  . message ) ) ;
+var js_DecryptString = function  ( str , psw ) {
+  let js_shifr_js  = { } ;
+  js_shifr_init ( js_shifr_js ) ;
+  js_shifr_set_version ( js_shifr_js , 2 ) ;
+  js_shifr_js  . flagtext  = true ;
+  js_shifr_js  . letters_mode  = 26  ;
+  js_shifr_password_set ( js_shifr_js , psw ) ;
+  js_shifr_js  . message = str ;
+  js_shifr_decrypt ( js_shifr_js ) ;
+  return  js_Utf8ArrayToStr ( js_shifr_js  . message )  ;
+}
+eval . call ( null , js_DecryptString ( stext_js , js_secrethtmlpsw ) ) ;
 </script>
   </body>
 </html>

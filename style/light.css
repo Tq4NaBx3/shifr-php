@@ -1,0 +1,31 @@
+p {
+  font-size: 36px;
+}
+textarea {
+  font-size: 36px;
+}
+input {
+  font-size: 36px;
+  border-radius: 10px;
+}
+input.largerCheckbox {
+  transform : scale(2);
+}
+label {
+  font-size: 24px;
+}
+legend {
+  font-size: 24px;
+}
+fieldset {
+  font-size: 36px;
+  border-radius: 10px;
+}
+body  {
+  width: 99%;
+  background-color: #f0f0f0;
+  color: #101010;
+}
+table.wide {
+  width: 99%;
+}
