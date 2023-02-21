@@ -90,15 +90,17 @@ if  ( $_POST  ) {
 <!DOCTYPE html>
 <html lang="<?php echo ( ( $shifr -> localerus ) ? 'ru' : 'en' ) ; ?>">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width">
-<link rel="stylesheet" type="text/css" href="style/gray.css" />
-<link rel="shortcut icon" href="shifr.ico" type="image/x-icon" />
-<title>Shifr</title>
 </head>
 <body>
 <div id="shifrcode"></div>
 <?php
+// ----------- HEAD -----------
+$stringsec_head  =  '
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<link rel="stylesheet" type="text/css" href="style/gray.css" />
+<link rel="shortcut icon" href="shifr.ico" type="image/x-icon" />
+<title>Shifr</title>' ;
 // ------------------ HTML part ------------------
 $stringsec  =  '<form action="' . $_SERVER  [ 'PHP_SELF'  ] .
   '" method="POST" enctype="multipart/form-data" id="form_id"  >
@@ -320,6 +322,8 @@ $stringsec  .=  'hidden />
 </form>' . PHP_EOL ;
 // ------------------ JS part ------------------
 $stringsec_js = '
+document  . getElementsByTagName  ( "head"  ) [ 0 ] . innerHTML =
+  DecryptString  ( stext_head  , js_secrethtmlpsw ) ;
 document . getElementById ( \'shifrcode\' ) . innerHTML = DecryptString ( stext , js_secrethtmlpsw ) ;
 var js_shifr  = { } ;
 js_shifr_init ( js_shifr ) ;
@@ -499,6 +503,8 @@ $secrethtmlpsw = 'qwertyuiop' ;
 <script type="text/javascript" src="decrypt_str.js"></script>
 <script>
 /* . js ? time = < ? = time ( ) ; ? > */
+let stext_head = '<?php
+  echo str_replace ( "\n" , "' +" . PHP_EOL . " '" , EncryptString  ( $stringsec_head , $secrethtmlpsw ) ) ; ?>' ;
 let stext = '<?php
   echo str_replace ( "\n" , "' +" . PHP_EOL . " '" , EncryptString ( $stringsec  , $secrethtmlpsw  ) ) ;
   ?>' ;
