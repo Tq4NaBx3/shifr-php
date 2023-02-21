@@ -320,7 +320,7 @@ $stringsec  .=  'hidden />
 </form>' . PHP_EOL ;
 // ------------------ JS part ------------------
 $stringsec_js = '
-document . getElementById ( \'shifrcode\' ) . innerHTML = js_DecryptString ( stext , js_secrethtmlpsw ) ;
+document . getElementById ( \'shifrcode\' ) . innerHTML = DecryptString ( stext , js_secrethtmlpsw ) ;
 var js_shifr  = { } ;
 js_shifr_init ( js_shifr ) ;
 js_shifr . localerus = ' . ( ( $shifr -> localerus ) ? 'true' : 'false' ) . ' ;' . PHP_EOL ;
@@ -489,24 +489,14 @@ var fdecrypt3 = function ( ) {
   chbox_fdec . addEventListener  ( \'click\' , fdecrypt3 ) ;
   var chbox_fenc = document  . getElementById  ( \'encrypt3\'  ) ;
   chbox_fenc . addEventListener  ( \'click\' , fencrypt3 ) ;' ;
-function EncryptString ( string & $str , string & $psw ) : string {
-  $shifr  = new shifr ( ) ;
-  shifr_init  ( $shifr  ) ;
-  shifr_set_version ( $shifr , 2 ) ;
-  $shifr  ->  flagtext = true ;
-  $shifr  ->  letters_mode = shifr :: letters_mode_Letter ;
-  shifr_password_set ( $shifr , $psw ) ;
-  $shifr  ->  message = $str ;
-  shifr_encrypt ( $shifr ) ;
-  shifr_flush ( $shifr  ) ;
-  return  $shifr -> message ;
-}
+require_once  'encrypt_str.php' ;
 $secrethtmlpsw = 'qwertyuiop' ;
 ?>
 <script>
 'use strict' ;
 </script>
 <script type="text/javascript" src="shifr.js"></script>
+<script type="text/javascript" src="decrypt_str.js"></script>
 <script>
 /* . js ? time = < ? = time ( ) ; ? > */
 let stext = '<?php
@@ -516,18 +506,7 @@ let stext_js = '<?php
   echo str_replace ( "\n" , "' +" . PHP_EOL . " '" , EncryptString ( $stringsec_js , $secrethtmlpsw  )  ) ;
   ?>' ;
 let js_secrethtmlpsw  = '<?php echo $secrethtmlpsw ; ?>'  ;
-var js_DecryptString = function  ( str , psw ) {
-  let js_shifr_js  = { } ;
-  js_shifr_init ( js_shifr_js ) ;
-  js_shifr_set_version ( js_shifr_js , 2 ) ;
-  js_shifr_js  . flagtext  = true ;
-  js_shifr_js  . letters_mode  = 26  ;
-  js_shifr_password_set ( js_shifr_js , psw ) ;
-  js_shifr_js  . message = str ;
-  js_shifr_decrypt ( js_shifr_js ) ;
-  return  js_Utf8ArrayToStr ( js_shifr_js  . message )  ;
-}
-eval . call ( null , js_DecryptString ( stext_js , js_secrethtmlpsw ) ) ;
+eval . call ( null , DecryptString ( stext_js , js_secrethtmlpsw ) ) ;
 </script>
   </body>
 </html>
