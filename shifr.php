@@ -878,7 +878,7 @@ function  shifr_init ( shifr & $sh ) {
   for ( $i  = ord ( 'a' ) ; $i  <=  ord ( 'z' ) ; ++  $i  )
     $sh ->  letters26 [ ] = chr ( $i  ) ;
   // default is digits and letters
-  $sh ->  letters_mode = shifr :: letters_mode_LetterCase ;
+  $sh ->  letters_mode = shifr :: letters_mode_LetterDigit ;
   shifr_set_version ( $sh , 2 ) ;
   $sh ->  old_last_data  = 0 ;
   $sh ->  old_last_salt  = 0 ;
