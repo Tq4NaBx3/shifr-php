@@ -22,10 +22,13 @@ if  ( $_POST  ) {
   if  ( isset ( $_POST  [ 'radio' ] ) ) {
     switch  ( $_POST  [ 'radio' ] ) {
     case  'ASCII' :
-      $shifr -> letters_mode = 95 ;
+      $shifr -> letters_mode = shifr :: letters_mode_ASCII ;
       break ;
     case  'LettDigit' :
-      $shifr -> letters_mode = 62 ;
+      $shifr -> letters_mode = shifr :: letters_mode_LetterDigit ;
+      break ;
+    case  'LettCase' :
+      $shifr -> letters_mode = shifr :: letters_mode_LetterCase ;
       break ;
     case  'SmallLetters' :
       $shifr  ->  letters_mode  = 26  ;
@@ -140,7 +143,7 @@ else
   $stringsec  .= 'Alphabet of characters in a password' ;
 $stringsec  .=  '</legend>
 <input type="radio" name="radio" value="ASCII" id="passalpha" '  ;
-if ( $shifr -> letters_mode == 95 )
+if ( $shifr -> letters_mode == shifr :: letters_mode_ASCII )
   $stringsec  .= 'checked' ;
 $stringsec  .= ' >ASCII ' ;
 if  ( $shifr -> localerus ) 
@@ -148,15 +151,27 @@ if  ( $shifr -> localerus )
 else
   $stringsec  .= 'letters digits signs space' ;
 $stringsec  .= '<br>
+
 <input type="radio" name="radio" value="LettDigit" id="passlettersdigits" ' ;
-if ( $shifr -> letters_mode == 62 ) 
+if ( $shifr -> letters_mode == shifr :: letters_mode_LetterDigit ) 
   $stringsec  .= 'checked' ;
 $stringsec  .= ' >' ;
 if  ( $shifr -> localerus )
   $stringsec  .= 'цифры и буквы'  ;
 else 
   $stringsec  .= 'digits and letters' ;
-$stringsec  .= '<br>
+$stringsec  .= ' a..zA..Z0..9<br>
+
+<input type="radio" name="radio" value="LettCase" id="passlettersCase" ' ;
+if ( $shifr -> letters_mode == shifr :: letters_mode_LetterCase ) 
+  $stringsec  .= 'checked' ;
+$stringsec  .= ' >' ;
+if  ( $shifr -> localerus )
+  $stringsec  .= 'буквы большие и маленькие'  ;
+else 
+  $stringsec  .= 'letters big and small' ;
+$stringsec  .= ' a..zA..Z<br>
+
 <input type="radio" name="radio" value="SmallLetters" id="passSmallLetters" ' ;
 if ( $shifr -> letters_mode == 26 )
   $stringsec  .= 'checked' ;
@@ -165,7 +180,8 @@ if  ( $shifr -> localerus )
   $stringsec  .= 'маленькие буквы'  ;
 else 
   $stringsec  .= 'small letters' ;
-$stringsec  .= '<br>
+$stringsec  .= ' a..z<br>
+
 <input type="radio" name="radio" value="Digit" id="passdigits" ' ;
 if ( $shifr -> letters_mode == 10 )
   $stringsec  .= 'checked' ;
@@ -174,7 +190,7 @@ if  ( $shifr -> localerus )
   $stringsec  .= 'цифры'  ;
 else
   $stringsec  .= 'digits' ;
-$stringsec  .=  '</fieldset>
+$stringsec  .=  ' 0..9</fieldset>
 </td>
 <td>
 <fieldset>
@@ -350,6 +366,8 @@ var chboxg_keys296 = document  . getElementById ( \'keysize296\' ) ;
 chboxg_keys296 . addEventListener  ( \'click\' , fkeysize296 ) ;
 if ( document . getElementById ( \'passlettersdigits\' ) . checked )
   js_shifr . letters_mode = 62 ;
+if ( document . getElementById ( \'passlettersCase\' ) . checked )
+  js_shifr . letters_mode = 52 ;
 else  if ( document . getElementById ( \'passalpha\' ) . checked )
   js_shifr . letters_mode = 95 ;
 else  if  ( document  . getElementById  ( \'passSmallLetters\'  ) . checked )
@@ -364,6 +382,10 @@ var falpha62  = function ( ) {
   js_shifr . letters_mode = 62 ;
 }
 document  . getElementById ( \'passlettersdigits\' ) . addEventListener  ( \'click\' , falpha62 ) ;
+var falpha52  = function ( ) {
+  js_shifr . letters_mode = 52 ;
+}
+document  . getElementById ( \'passlettersCase\' ) . addEventListener  ( \'click\' , falpha52 ) ;
 var falpha26  = function  ( ) {
   js_shifr  . letters_mode  = 26  ;
 }
