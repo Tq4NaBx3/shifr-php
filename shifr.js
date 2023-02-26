@@ -776,8 +776,8 @@ let js_shifr_init = function ( sh ) {
   sh  . letters26 = [ ] ;
   for ( let i = ( 'a' . charCodeAt ( 0 ) ) ; i <= ( 'z' . charCodeAt ( 0 ) ) ; ++ i )
     sh . letters26 . push ( String . fromCharCode ( i ) ) ;
-  // default is big and small letters
-  sh  . letters_mode = 52 ;
+  // default is digits and letters
+  sh  . letters_mode = 62 ;
   js_shifr_set_version ( sh , 2 ) ;
   js_shifr_salt_init  ( sh  ) ;
   sh  . localerus = false ;
