@@ -22,6 +22,8 @@ set alphabet for password
   or
   js_shifr . letters_mode = 26 ; // small letters
   or
+  js_shifr . letters_mode = 52 ; // small and big letters
+  or
   js_shifr . letters_mode = 62 ; // digits and letters
   or
   js_shifr . letters_mode = 95 ; // letters digits signs space
@@ -216,45 +218,6 @@ let js_shifr_decrypt_salt3  = function  ( datap , tablep , decrp ,
     old_last_data . n = newdata ;
   } 
 }
-/*
-class shifr {
-  // alphabet ascii // алфавит ascii
-  letters95  ; // 0x20 пробел - 0x7e ~ тильда // 0x20 space - 0x7e ~ tilde
-  letters  ; // alphabet 62 letters digits // алфавит 62 буквы цифры
-  letters26  ; // small letters a..z // маленькие буквы a..z
-  letters10  ; // alphabet 10 digits // алфавит 10 цифры
-  // password alphabet mode 10 or 62 or 95 or 26
-  // режим алфавит пароля 10 или 62 или 95 или 26
-  letters_mode ;
-  localerus  ; // false or true // русская локаль false или true
-  flagtext ; // true or false // флаг текст true или false
-  password ; // пароль
-  message  ; // сообщение/данные // message/data
-  messageout  ; // сообщение/данные // message/data
-  old_last_data  ; // предыдущие данные
-  old_last_salt  ; // предыдущая соль
-  // текстовый режим : букв в строке написано
-  bytecount  ; // text mode: letters are written in a line
-  // decode : text place 0 .. 2 
-  buf3_index ; // расшифровка : позиция в тексте
-  buf3 ; // decode text buffer // расшифровка текстовый буфер
-  shifra ; // array for encryption // массив для шифрования
-  deshia ; // array for decryption // массив для расшифровки
-  key_mode ; // 45 или 296 // 45 or 296
-  filebuffrom ;
-  filebufto ;
-  in_buf  ; // buf to read // буфер чтения
-  out_buf  ; // buf to write // буфер записи
-  in_bufbitsize ; // размер буфера в битах
-  out_bufbitsize ; // размер буфера в битах
-  decode_read_index  ; // индекс чтения для расшифровки
-  // Размер битового буфера чтения
-  bitscount  ; // reading buffer bit size
-  // encode3
-  // 0-2 бит буфер чтения
-  bufin  ; // 0-2 bits buffer reading
-}
-*/
 
 let js_toUTF8Array = function ( str ) {
     let utf8 = [];
@@ -572,7 +535,7 @@ let js_number_dec = function  ( number ) {
   i = ( number . length ) ;
   while ( i > 0 ) {
     -- i ;
-    if ( number [ i ] != 0 ) 
+    if ( number [ i ] != 0 )
       break ;
     number . pop ( ) ;
   }
@@ -585,7 +548,7 @@ let js_number_not_zero  = function ( number ) {
 let js_number_set_zero = function  ( number ) {
   number . length = 0 ;
 }
-  
+
 let js_number_set_byte  = function  ( number , byte ) {
   if ( byte != 0 ) {
     if ( byte < 0 ) {
@@ -622,35 +585,6 @@ let js_number_div8_mod = function  ( number , div ) {
   }
   return  modi ;
 }
-  
-let js_shifr_password_to_string = function ( sh , passworda ) {
-  let letters ;
-  switch  ( sh  . letters_mode ) {
-  case  95  :
-    letters  = sh . letters95  ;
-    break ;
-  case  62  :
-    letters  = sh . letters  ;
-    break ;
-  case  26  :
-    letters  = sh . letters26  ;
-    break ;
-  case  10  :
-    letters  = sh . letters10  ;
-    break ;
-  default :
-    return  ''  ;
-  }
-  let letters_count = letters . length ;
-  let str = '' ;
-  if ( js_number_not_zero ( passworda ) ) {
-    do {
-      js_number_dec ( passworda ) ;
-      str += letters [ js_number_div8_mod ( passworda , letters_count ) ] ;
-    } while ( js_number_not_zero ( passworda ) ) ;
-  }
-  return str ;
-}
 
 let js_number_mul_byte = function ( number , byte ) {
   if ( byte == 0 ) {
@@ -660,7 +594,7 @@ let js_number_mul_byte = function ( number , byte ) {
   if ( byte == 1 )
     return ;
   if ( byte < 0 ) {
-    console . log ( 'js_number_mul_byte: byte < 0' ) ;    
+    console . log ( 'js_number_mul_byte: byte < 0' ) ;
     return  ;
   }
   if ( byte >= 0x100 ) {
@@ -677,7 +611,7 @@ let js_number_mul_byte = function ( number , byte ) {
   if ( per > 0 )
     number [ i ] = per ;
 }
-  
+
 let js_number_add = function ( num , xnum ) {
   let per = 0 ;
   let i = 0 ;
@@ -720,7 +654,40 @@ let js_number_add = function ( num , xnum ) {
   if ( per > 0 )
     num [ i ] = 1 ;
 }
+
+let js_shifr_password_to_string = function ( sh , passworda ) {
+  let letters ;
+  switch  ( sh  . letters_mode ) {
+  case  95  :
+    letters  = sh . letters95  ;
+    break ;
+  case  62  :
+    letters  = sh . letters62  ;
+    break ;
+  case  52  :
+    letters  = sh . letters52  ;
+    break ;
+  case  26  :
+    letters  = sh . letters26  ;
+    break ;
+  case  10  :
+    letters  = sh . letters10  ;
+    break ;
+  default :
+    return  ''  ;
+  }
+  let letters_count = letters . length ;
+  let str = '' ;
+  if ( js_number_not_zero ( passworda ) ) {
+    do {
+      js_number_dec ( passworda ) ;
+      str += letters [ js_number_div8_mod ( passworda , letters_count ) ] ;
+    } while ( js_number_not_zero ( passworda ) ) ;
+  }
+  return str ;
+}
   
+
 // [ 0..15 , 0..14 , 0..13 , ... , 0..2 , 0..1 ] = [ x , y , z , ... , u , v ] =
 // = x + y * 16 + z * 16 * 15 + ... + u * 16! / 2 / 3 + v * 16! / 2 = 0 .. 16!-1
 let js_shifr_pass_to_array2 = function ( password ) {
@@ -788,13 +755,19 @@ let js_shifr_init = function ( sh ) {
   for ( let i = ( ' ' . charCodeAt ( 0 ) ) ; i <= ( '~' . charCodeAt ( 0 ) ) ; ++ i )
     sh . letters95 . push ( String . fromCharCode ( i ) ) ;
   // '0' - '9' , 'A' - 'Z' , 'a' - 'z'  
-  sh  . letters = [ ] ;
+  sh  . letters62 = [ ] ;
   for ( let i = ( '0' . charCodeAt ( 0 ) ) ; i <= ( '9' . charCodeAt ( 0 ) ) ; ++ i )
-    sh . letters . push ( String . fromCharCode ( i ) ) ;
+    sh . letters62 . push ( String . fromCharCode ( i ) ) ;
   for ( let i = ( 'A' . charCodeAt ( 0 ) ) ; i <= ( 'Z' . charCodeAt ( 0 ) ) ; ++ i )
-    sh . letters . push ( String . fromCharCode ( i ) ) ;
+    sh . letters62 . push ( String . fromCharCode ( i ) ) ;
   for ( let i = ( 'a' . charCodeAt ( 0 ) ) ; i <= ( 'z' . charCodeAt ( 0 ) ) ; ++ i )
-    sh . letters . push ( String . fromCharCode ( i ) ) ;
+    sh . letters62 . push ( String . fromCharCode ( i ) ) ;
+  // 'A' - 'Z' , 'a' - 'z'
+  sh  . letters52 = [ ] ;
+  for ( let i = ( 'A' . charCodeAt ( 0 ) ) ; i <= ( 'Z' . charCodeAt ( 0 ) ) ; ++ i )
+    sh . letters52 . push ( String . fromCharCode ( i ) ) ;
+  for ( let i = ( 'a' . charCodeAt ( 0 ) ) ; i <= ( 'z' . charCodeAt ( 0 ) ) ; ++ i )
+    sh . letters52 . push ( String . fromCharCode ( i ) ) ;
   // '0' - '9'
   sh  . letters10 = [ ] ;
   for ( let i = ( '0' . charCodeAt ( 0 ) ) ; i <= ( '9' . charCodeAt ( 0 ) ) ; ++ i )
@@ -803,8 +776,8 @@ let js_shifr_init = function ( sh ) {
   sh  . letters26 = [ ] ;
   for ( let i = ( 'a' . charCodeAt ( 0 ) ) ; i <= ( 'z' . charCodeAt ( 0 ) ) ; ++ i )
     sh . letters26 . push ( String . fromCharCode ( i ) ) ;
-  // default is digits and letters
-  sh  . letters_mode = 62 ;
+  // default is big and small letters
+  sh  . letters_mode = 52 ;
   js_shifr_set_version ( sh , 2 ) ;
   js_shifr_salt_init  ( sh  ) ;
   sh  . localerus = false ;
@@ -870,13 +843,17 @@ let js_shifr_string_to_key_array  = function ( sh , str ) {
       js_shifr_password_load3  ( sh , passarr ) ;
     return passarr ;
   }
+// ! make assoc array ?
   let letters ;
   switch  ( sh . letters_mode ) {
   case  95  :
     letters  = sh . letters95  ;
     break ;
   case  62  :
-    letters  = sh . letters  ;
+    letters  = sh . letters62  ;
+    break ;
+  case  52  :
+    letters  = sh . letters52  ;
     break ;
   case  26  :
     letters  = sh . letters26  ;
@@ -1043,6 +1020,7 @@ let js_shifr_Base64_encode_univer = function  ( array , start_letter  , bits_cou
 }
 
 /*
+For file send post_file , post_defile
 Base64 = ( ;<=> ?@AB CDEF GHIJ
            KLMN OPQR STUV WXYZ
            [\]^ _`ab cdef ghij
