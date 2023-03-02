@@ -1,9 +1,19 @@
 <?php
 session_start ( ) ;
 require ( 'shifr.php' ) ;
+
+if ( ! isset ( $_SESSION [ 'shifr_session_password' ] ) ) {
+  $shifr3  = new shifr ( ) ;
+  shifr_init ( $shifr3  ) ;
+  shifr_set_version ( $shifr3 , 3 ) ;
+  shifr_generate_password ( $shifr3  ) ;
+  $_SESSION [ 'shifr_session_password' ] = $shifr3 -> password ;
+  $flagnewsession = true  ;
+} else
+  $flagnewsession = false ;
+
 $shifr  = new shifr ( ) ;
 shifr_init ( $shifr  ) ;
-
 $local = setlocale ( LC_ALL  , 'ru_RU.UTF-8'  ) ;
 if ( $local == 'ru_RU.UTF-8' )
   $shifr -> localerus = true ;
@@ -516,15 +526,14 @@ var fdecrypt3 = function ( ) {
   var chbox_fenc = document  . getElementById  ( \'encrypt3\'  ) ;
   chbox_fenc . addEventListener  ( \'click\' , fencrypt3 ) ;' ;
 require_once  'encrypt_str.php' ;
-$secrethtmlpsw = 'qwertyuiop' ;
+$secrethtmlpsw = $_SESSION [ 'shifr_session_password' ] ;
 ?>
 <script>
 'use strict' ;
 </script>
 <script type="text/javascript" src="shifr.js"></script>
-<script type="text/javascript" src="decrypt_str.js"></script>
+<script type="text/javascript" src="decrypt_str.js?t=1"></script>
 <script>
-/* . js ? time = < ? = time ( ) ; ? > */
 let stext_head = '<?php
   echo str_replace ( "\n" , "' +" . PHP_EOL . " '" , EncryptString  ( $stringsec_head , $secrethtmlpsw ) ) ; ?>' ;
 let stext = '<?php
@@ -533,7 +542,11 @@ let stext = '<?php
 let stext_js = '<?php
   echo str_replace ( "\n" , "' +" . PHP_EOL . " '" , EncryptString ( $stringsec_js , $secrethtmlpsw  )  ) ;
   ?>' ;
-let js_secrethtmlpsw  = '<?php echo $secrethtmlpsw ; ?>'  ;
+<?php
+if ( $flagnewsession )
+  echo  'localStorage  . setItem ( \'shifr_session_password\'  , \'' . $secrethtmlpsw . '\' ) ;'  ;
+?>
+let js_secrethtmlpsw  = localStorage  . getItem ( 'shifr_session_password' ) ;
 eval . call ( null , DecryptString ( stext_js , js_secrethtmlpsw ) ) ;
 </script>
   </body>
