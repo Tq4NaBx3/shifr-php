@@ -532,7 +532,7 @@ $secrethtmlpsw = $_SESSION [ 'shifr_session_password' ] ;
 'use strict' ;
 </script>
 <script type="text/javascript" src="shifr.js"></script>
-<script type="text/javascript" src="decrypt_str.js?t=1"></script>
+<script type="text/javascript" src="decrypt_str.js"></script>
 <script>
 let stext_head = '<?php
   echo str_replace ( "\n" , "' +" . PHP_EOL . " '" , EncryptString  ( $stringsec_head , $secrethtmlpsw ) ) ; ?>' ;
